@@ -1,0 +1,8 @@
+{
+  "size": 3,
+  "speed": 3,
+  "movement": "smooth",
+  "filter": "none",
+  "bonusTime": 4,
+  "debuff": 2
+}

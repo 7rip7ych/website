@@ -1,0 +1,8 @@
+{
+  "size": 2.25,
+  "speed": 2,
+  "movement": "jumpy",
+  "filter": "sepia(75%)",
+  "bonusTime": 3,
+  "debuff": 3
+}

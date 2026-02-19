@@ -1,0 +1,8 @@
+{
+  "size": 1.5,
+  "speed": 1,
+  "movement": "nonstop",
+  "filter": "grayscale(100%)",
+  "bonusTime": 2,
+  "debuff": 4
+}

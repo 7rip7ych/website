@@ -1,0 +1,29 @@
+{
+  "name": "webtec-idal24",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/bth-webtec/webtec-idal24#readme",
+  "bugs": {
+    "url": "https://github.com/bth-webtec/webtec-idal24/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bth-webtec/webtec-idal24.git"
+  },
+  "license": "ISC",
+  "author": "Ida Alin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx http-server"
+  },
+  "devDependencies": {
+    "@eslint/css": "^0.11.1",
+    "@eslint/js": "^9.34.0",
+    "@eslint/json": "^0.13.2",
+    "eslint": "^9.37.0",
+    "globals": "^16.4.0",
+    "http-server": "^14.1.1"
+  }
+}

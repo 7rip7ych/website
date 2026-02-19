@@ -1,0 +1,68 @@
+{
+  "easy": {
+    "1": {
+      "name": "purple-cat.jpg",
+      "color": "purple"
+    },
+    "2": {
+      "name": "aurora.png",
+      "color": "darkblue"
+    },
+    "3": {
+      "name": "red-city.jpg",
+      "color": "red"
+    },
+    "4": {
+      "name": "seoul.jpg",
+      "color": "purple"
+    },
+    "5": {
+      "name": "dissolving-buildings.jpg",
+      "color": "lightblue"
+    }
+  },
+  "normal": {
+    "1": {
+      "name": "blurry-street.jpg",
+      "color": "green"
+    },
+    "2": {
+      "name": "neon-skyline.jpg",
+      "color": "blue"
+    },
+    "3": {
+      "name": "purple-store.jpg",
+      "color": "purple"
+    },
+    "4": {
+      "name": "space-city.jpg",
+      "color": "grey"
+    },
+    "5": {
+      "name": "underwater-city.jpg",
+      "color": "blue"
+    }
+  },
+  "hard": {
+    "1": {
+      "name": "dull-game-city.jpg",
+      "color": "grey"
+    },
+    "2": {
+      "name": "house.jpg",
+      "color": "blue"
+    },
+    "3": {
+      "name": "neon-city-close.jpg",
+      "color": "black"
+    },
+    "4": {
+      "name": "orange-city.jpg",
+      "color": "orange"
+    },
+    "5": {
+      "name": "yellow-blue-city.jpg",
+      "color": "blue"
+    }
+  }
+}
