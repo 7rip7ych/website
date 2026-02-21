@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="sv">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Bthloggen</title>
+        <link rel="icon" href="img/pink/favicon.svg" />
+        <link rel="stylesheet" href="css/pink.css" />
+    </head>
+    <body class="retropink">
+        <header class="header retropink">
+            <h1>BTHLOGGEN - 7RIP7YCH</h1>
+        </header>
+        <main class="main retropink">
+            <nav class="navbar">
+                <img src="img/pink/heart.png" alt="heart" class="brand">
+                <ul class="nav">
+                    <li><a href="#">Start</a></li>
+                    <li><a href="#search">Sök</a></li>
+                    <li><a href="#reqs">Request</a></li>
+                </ul>
+            </nav>
+            <article class="article retropink" id="start">
+                <div class="popup center retropink home">
+                  <h2>WELCOME</h2>
+                  <div class="retropink">
+                    <p>
+                      Det här är webbklienten till bthloggen, skapad av Ida Alin (7rip7ych).
+                      Den är menad att redovisa bthloggens servers funktionalitet. På <a href="#search">sök</a>-sidan 
+                      så kan man söka i loggen. Sidan visar sedan upp resultatet blandat eller separerat efter matchande 
+                      värde beroende på vad man känner för. För att inte sakta ned sidan så renderas resultaten i grupper 
+                      om hundra. När du kommer till botten av resultaten finns det en knapp som visar nästa hundra rader, 
+                      om dem finns.
+                      <br>På <a href="#reqs">request</a>-sidan kan man skicka requests direkt till servern och få resultatet i json format.
+                    </p>
+                  </div>
+                </div>
+        
+                <div class="popup retropink right routes">
+                  <h2>ROUTES</h2>
+                  <div class="retropink">
+                    <ul class="nav">
+                        <li class="active"><a href="#">Start</a></li>
+                        <p>Den här sidan, med information om webbplatsen</p>
+                        <li class="active"><a href="#search">Sök</a></li>
+                        <p>En sida för att lätt kunna söka i loggen</p>
+                        <li class="active"><a href="#reqs">Request</a></li>
+                        <p>En sida för att själv kunna skicka iväg requests till servern</p>
+                    </ul>
+                  </div>
+                </div>
+            </article>
+            <article class="article retropink" id="reqs">
+                <div class="popup retropink left top tip">
+                  <h2>&#x24D8; TIPS</h2>
+                  <p>Lämna sökfältet tomt för att se serverns router</p>
+                </div>
+                <div class="popup retropink center top req">
+                  <h2>SKICKA ETT REQUEST TILL SERVERN</h2>
+                  <form class="search retropink" method="POST">
+                    <input type="text" name="query" class="searchbar retropink" value="<%= query %>" />
+                    <input type="submit" name="doit" value="Enter" class="button retropink"/>
+                  </form>
+                </div>
+                <% if (data) { %>
+                  <div class="popup retropink results center bottom">
+                    <h2>RESULTS</h2>
+                    <div>
+                      <pre><%= JSON.stringify(data, undefined, 2) %></pre>
+                    </div>
+                  </div>
+                <% }; %>
+            </article>
+
+            <article class="article retropink" id="search">
+                <div class="popup retropink center <% if (data) { %>left<% }; %>">
+                  <h2>SEARCH</h2>
+                  <form class="search retropink" method="POST">
+                    <p>Sök i loggen</p>
+                    <input type="text" name="search" class="searchbar retropink" value="<%= searchStr %>" required />
+                    <input type="submit" name="doit" value="Enter" class="button retropink"/>
+                  </form>
+                </div>
+                <% if (data) { %>
+                  <div class="popup retropink results right">
+                    <h2>RESULTS</h2>
+                    <div>
+                      <div class="radio-container" id="selectFilter">
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="all" checked="checked">
+                          <span class="radio-button">All</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="ip">
+                          <span class="radio-button">IP</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="url">
+                          <span class="radio-button">URL</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="year">
+                          <span class="radio-button">Year</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="month">
+                          <span class="radio-button">Month</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="day">
+                          <span class="radio-button">Day</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="filter" value="time">
+                          <span class="radio-button">Time</span>
+                        </label>
+                      </div>
+                      
+                      <div id="results" data-full="<%= JSON.stringify(data); %>">
+                      <% let counter = 1; %>
+                      <% for (const row of data.all) { %>
+                        <% if (counter > 100) { %>
+                        <button class="button retropink" onclick="loadMore()">Load more</button>
+                        <% break; %>
+                        <% }; %>
+                        <div class="row">
+                          <h4><%= row.ip %></h4>
+                          <p><a href="<%= row.url %>" target="_blank"><%= row.url %></a></p>
+                          <p><%= row.day %> <%= row.month %> <%= row.year %> <%= row.time %></p>
+                        </div>
+                        
+                        <% counter++ %>
+                      <% }; %>
+                      </div>
+                    </div>
+                  </div>
+                <% }; %>
+            </article>
+            <script>
+                document.querySelectorAll('input[name="filter"]').forEach(opt => opt.addEventListener("change", (e) => {
+                  changeFilter();
+                }));
+        
+                const container = document.getElementById("results");
+        
+                /** Sorts results by matching property */
+                function changeFilter() {
+                  let fullData = JSON.parse(container.dataset.full);
+                  let content = "";
+                  let counter = 1;
+                  let val = document.querySelector('input[name="filter"]:checked').value;
+        
+                  for (const row of fullData[val]) {
+                    if (counter > 100) {
+                      content += `<button class="button retropink" onclick="loadMore()">Load more</button>`;
+                      break;
+                    };
+                    content += `<div class="row">
+                          <h4>${row.ip}</h4>
+                          <p><a href="${row.url}" target="_blank">${row.url}</a></p>
+                          <p>${row.day} ${row.month} ${row.year} ${row.time}</p>
+                        </div>`;
+                    counter++
+                  }
+                  container.innerHTML = content;
+                }
+        
+                /** Loads 100 more rows */
+                function loadMore() {
+                  let fullData = JSON.parse(container.dataset.full);
+                  let len = container.childElementCount;
+                  let val = document.querySelector('input[name="filter"]:checked').value;
+        
+                  for (let i = len - 2; i < len + 99; i++) {
+                    if (i >= fullData[val].length) {
+                      container.querySelector('.button.retropink').remove();
+                      break;
+                    }
+        
+                    let row = document.createElement("div");
+                    row.className = "row";
+                    row.innerHTML = `
+                          <h4>${fullData[val][i].ip}</h4>
+                          <p><a href="${fullData[val][i].url}" target="_blank">${fullData[val][i].url}</a></p>
+                          <p>${fullData[val][i].day} ${fullData[val][i].month} ${fullData[val][i].year} ${fullData[val][i].time}</p>
+                        `;
+                    container.insertBefore(row, container.querySelector('.button.retropink'));
+                  }
+                }
+        
+            </script>
+        </main>
+    </body>
+</html>
