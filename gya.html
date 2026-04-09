@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Line Visualisation</title>
+<style type="text/css">
+ body {line-height: 1.3;font-size: 120%;font-family: Verdana, sans-serif;background:#e0e5ec;}
+ #page-container {position: relative;min-height: 100vh;margin:1%}
+ #content-wrap{padding-bottom: 2.5rem}
+ header {display: flex;justify-content: left;align-items: center;margin: -1% 0 -50px -1%;line-height: 1;}
+ header img{width: 70px;}
+ header h1 {position: relative;padding: 4px 150px 2px 30px;margin-left: -10px;border-bottom: 2px solid silver;font-size: 195%;color: #1b2665;}
+ footer {position: absolute;bottom:0;width: 100%;height: 2.5rem;}
+ footer img {display:block;margin-left: auto;margin-right: auto;width: 5%;}
+ input[type=submit] {background: #444;color: white;border-radius: 0 12px 0 12px;font-size: 105%;padding: 5px 8px;text-align: center;cursor: pointer;box-shadow: -0.5px 4px #888;}
+ input[type=submit]:hover {background-color: #555}
+ input[type=submit]:active {background-color: #383838;box-shadow: 0 2px #666;transform: translateY(4px);cursor:wait;}
+ input[type=checkbox]:active {cursor:wait;}
+ h4 {font-size: 110%;margin-bottom: 10px;margin-top: 20px;}
+ #fileIn{font-size: 90%;}
+ input[type=datetime-local]{font-size: 110%;}
+ .knobs,.layer {position: absolute;top: 0;right: 0;bottom: 0;left: 0;}
+ .switch-btn {
+  position: relative;
+  height: 32px;
+  margin: 0 auto 5px 0;
+  overflow: hidden;border-radius: 4px;}
+ #button-1{width: 525px;}
+ #button-2{width:340px;}
+ .checkbox {
+  position: relative;
+  width: 100%;height: 100%;
+  padding: 0;margin: 0;
+  opacity: 0;cursor: pointer;z-index: 3;}
+ .knobs {z-index: 2;}
+ .layer {
+  width: 100%;
+  background-color: white;
+  transition: 0.3s ease all;}
+ .knobs:before {content: "";left: 3px;background-color: #4d4f82;}
+ .knobs span {display: inline-block; color: #fff;}
+ .checkbox:checked + .knobs span {color: #333333;}
+ .checkbox:checked ~ .layer {background-color:#cccdeb;}
+
+ #knobs1:before,#knobs1:after,#knobs1 span {
+  position: absolute;
+  top: 3px;width: 255px;
+  height: 18px;
+  font-size: 90%;font-weight: normal;
+  letter-spacing: 1px;text-align: center;line-height: 1;
+  padding: 4px 1px;
+  border-radius: 3px;
+  transition: 0.3s ease all;}
+ #knobs1:after {content: "Running time of machine";right: 3px;color: #333333;}
+ .checkbox:checked + #knobs1:before {left: 264px;background-color: #4d4f82;}
+ .checkbox:checked + #knobs1:after {color: #fff;}
+
+ #knobs2:before,#knobs2:after,#knobs2 span {
+  position: absolute;top: 3px;
+  width: 165px;height: 18px;
+  font-size: 90%;
+  font-weight: normal;
+  letter-spacing: 1px;text-align: center;line-height: 1;
+  padding: 4px 1px;
+  border-radius: 3px;transition: 0.2s ease all;}
+ #knobs2:after {content: "Real Time";right: 3px;color: #333333;}
+ .checkbox:checked + #knobs2:before {left: 170px;background-color: #4d4f82;}
+ .checkbox:checked + #knobs2:after {color: #fff;}
+
+ #simVis {border-style: solid;display: grid;resize:horizontal;aspect-ratio: 142 / 60;min-width: 250px;width: 65%;grid-template-columns: repeat(142, 1fr);grid-template-rows: repeat(60, 1fr);column-gap: 0;row-gap: 0;overflow: auto;position: relative;}
+ .machineBox {padding: 0.1vw;background: darkgray;border: thin outset silver;cursor: pointer;}
+ .hide {display: none;}
+ .machineBox:hover + .hide {display:block;position: absolute;top: 1px;margin: 1px 0 0 36%;background-color: white;color: black;border: thin outset silver;padding:0.5% 1%;line-height: 1;font-size: 92%;}
+ #percTable{display: block;float: left;width: 100px;position: relative;}
+ #my_file_output {width: 100%; display: inline-block; height: fit-content;}
+ #selMachStats {margin: 1%;float: left;border-collapse: collapse;width: fit-content;}
+ #selMachStats1 {margin: 1%;float: left;border-collapse: collapse;}
+ #selMachStats2 {margin: 1%;float: left;border-collapse: collapse;}
+ .tblCell{border: solid silver 1px;padding: 5px 10px;}
+ .tblCello {border: solid silver 1px;border-right: solid black 2px;padding: 5px 10px;}
+
+ .slidecontainer {width: 100%;}
+ .slider {-webkit-appearance: none;  appearance: none;width: 100%; height: 10px;background: #d3d3d3;outline: none;opacity: 0.7;-webkit-transition: .2s;transition: opacity .2s;}
+ .slider:hover {opacity: 1; }
+ .slider::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 20px;  height: 20px;border-radius: 50%;background: black;cursor: pointer;}
+ #mach1 {grid-column: 4 / 6;grid-row: 2 / 56;}
+ #mach2 {grid-column: 16 / 44;grid-row: 8 / 10;}
+ #mach3 {grid-column: 46 / 128;grid-row: 8 / 10;}
+ #mach4 {grid-column: 7 / 102;grid-row: 36 / 38;}
+ #mach5 {grid-column: 76 / 101;grid-row: 46 / 48;}
+ #mach6 {grid-column: 52 / 54;grid-row: 12 / 36;}
+ #mach7 {grid-column: 104 / 106;grid-row: 11 / 61;}
+ #mach8 {grid-column: 126 / 128;grid-row: 11 / 61;}
+ #mach9 {grid-column: 74 / 76;grid-row: 38 / 60;}
+ #mach10 {grid-column: 17 / 21;grid-row: 2 / 4;}
+ #mach11 {grid-column: 130 / 142;grid-row: 2 / 8;}
+ #mach12 {grid-column: 48 / 52;grid-row: 48 / 50;}
+ #mach13 {grid-column: 60 / 66;grid-row: 46 / 49;}
+ #mach14 {grid-column: 62 / 66;grid-row: 56 / 62;}
+ #mach15 {grid-column: 18 / 26;grid-row: 10 / 14;}
+ #mach16 {grid-column: 28 / 34;grid-row: 10 / 14;}
+ #mach17 {grid-column: 46 / 50;grid-row: 10 / 16;}
+ #mach18 {grid-column: 64 / 72;grid-row: 10 / 14;}
+ #mach19 {grid-column: 82 / 90;grid-row: 10 / 14;}
+ #mach20 {grid-column: 114 / 122;grid-row: 10 / 14;}
+ #mach21 {grid-column: 106 / 111;grid-row: 37 / 43;}
+ #mach22 {grid-column: 106 / 111;grid-row: 48 / 53;}
+ #mach23 {grid-column: 106 / 111;grid-row: 55 / 60;}
+ #mach24 {grid-column: 121 / 126;grid-row: 24 / 30;}
+ #mach25 {grid-column: 121 / 126;grid-row: 39 / 44;}
+ #mach26 {grid-column: 121 / 126;grid-row: 47 / 53;}
+ #mach27 {grid-column: 121 / 126;grid-row: 55 / 61;}
+ #mach28 {grid-column: 76 / 80;grid-row: 40 / 44;}
+ #mach29 {grid-column: 76 / 80;grid-row: 50 / 54;}
+ #mach30 {grid-column: 76 / 80;grid-row: 55 / 59;}
+ #mach31 {grid-column: 6 / 14;grid-row: 42 / 48;}
+ #mach32 {grid-column: 11 / 16;grid-row: 32 / 36;}
+ #mach33 {grid-column: 18 / 23;grid-row: 32 / 36;}
+ #mach34 {grid-column: 34 / 38;grid-row: 32 / 36;}
+ #mach35 {grid-column: 40 / 45;grid-row: 32 / 36;}
+ #mach36 {grid-column: 54 / 58;grid-row: 32 / 36;}
+ #mach37 {grid-column: 60 / 64;grid-row: 32 / 36;}
+ #mach38 {grid-column: 82 / 90;grid-row: 32 / 36;}
+ #mach39 {grid-column: 48 / 58;grid-row: 41 / 45;}
+ #mach40 {grid-column: 52 / 54;grid-row: 39 / 41;}
+ #mach41 {grid-column: 23 / 27;grid-row: 50 / 56;}
+ #mach42 {grid-column: 8 / 22;grid-row: 50 / 51;}
+ #mach43 {grid-column: 8 / 22;grid-row: 55 / 56;}
+ #mach44 {grid-column: 8 / 10;grid-row: 51 / 55;}
+ #mach45 {grid-column: 14 / 16;grid-row: 51 / 55;}
+ #mach46 {grid-column: 20 / 22;grid-row: 51 / 55;}
+ #mach47 {grid-column: 68 / 70;grid-row: 33 / 34;}
+ #mach48 {grid-column: 28 / 30;grid-row: 33 / 34;}
+ #mach49 {grid-column: 55 / 57;grid-row: 38 / 40;}
+ #mach50 {grid-column: 38 / 40;grid-row: 38 / 45;}
+ #mach51 {grid-column: 28 / 34;grid-row: 50 / 51;}
+ #mach52 {grid-column: 28 / 34;grid-row: 55 / 56;}
+ #mach53 {grid-column: 28 / 29;grid-row: 51 / 55;}
+ #mach54 {grid-column: 33 / 34;grid-row: 51 / 55;}
+ #mach55 {grid-column: 6 / 14;grid-row: 4 / 5;}
+ #mach56 {grid-column: 6 / 14;grid-row: 11 / 12;}
+ #mach57 {grid-column: 6 / 7;grid-row: 5 / 11;}
+ #mach58 {grid-column: 12 / 14;grid-row: 4 / 12;}
+ #mach59 {grid-column: 12 / 16;grid-row: 6 / 10;}
+ #mach60 {grid-column: 8 / 10;grid-row: 4 / 6;}
+ #mach61 {grid-column: 36 / 42;grid-row: 10 / 11;}
+ #mach62 {grid-column: 36 / 42;grid-row: 15 / 16;}
+ #mach63 {grid-column: 36 / 37;grid-row: 11 / 15;}
+ #mach64 {grid-column: 41 / 42;grid-row: 11 / 15;}
+ #mach65 {grid-column: 25 / 33;grid-row: 29 / 30;}
+ #mach66 {grid-column: 25 / 33;grid-row: 35 / 36;}
+ #mach67 {grid-column: 25 / 26;grid-row: 30 / 35;}
+ #mach68 {grid-column: 32 / 33;grid-row: 30 / 35;}
+ #mach69 {grid-column: 36 / 45;grid-row: 40 / 41;}
+ #mach70 {grid-column: 36 / 45;grid-row: 46 / 47;}
+ #mach71 {grid-column: 36 / 37;grid-row: 41 / 46;}
+ #mach72 {grid-column: 44 / 45;grid-row: 41 / 46;}
+ #mach73 {grid-column: 54 / 62;grid-row: 12 / 13;}
+ #mach74 {grid-column: 54 / 62;grid-row: 18 / 19;}
+ #mach75 {grid-column: 54 / 55;grid-row: 13 / 18;}
+ #mach76 {grid-column: 61 / 62;grid-row: 13 / 18;}
+ #mach77 {grid-column: 66 / 75;grid-row: 28 / 29;}
+ #mach78 {grid-column: 66 / 75;grid-row: 35 / 36;}
+ #mach79 {grid-column: 66 / 67;grid-row: 29 / 35;}
+ #mach80 {grid-column: 74 / 75;grid-row: 29 / 35;}
+ #mach81 {grid-column: 41 / 43;grid-row: 41 / 42;}
+ #mach82 {grid-column: 55 / 58;grid-row: 14 / 15;}
+ #mach83 {grid-column: 58 / 61;grid-row: 14 / 15;}
+ #mach84 {grid-column: 8 / 10;grid-row: 8 / 10;border-radius: 50%;}
+ #mach85 {grid-column: 38 / 40;grid-row: 12 / 14;border-radius: 50%;}
+ #mach86 {grid-column: 57 / 59;grid-row: 15 / 17;border-radius: 50%;}
+ #mach87 {grid-column: 28 / 30;grid-row: 30 / 32;border-radius: 50%;}
+ #mach88 {grid-column: 70 / 72;grid-row: 30 / 32;border-radius: 50%;}
+ #mach89 {grid-column: 41 / 43;grid-row: 43 / 45;border-radius: 50%;}
+ #mach90 {grid-column: 11 / 13;grid-row: 52 / 54;border-radius: 50%;}
+ #mach91 {grid-column: 17 / 19;grid-row: 52 / 54;border-radius: 50%;}
+ #mach92 {grid-column: 30 / 32;grid-row: 52 / 54;border-radius: 50%;}
+ .fa-upload{margin:5px 10px}
+
+ /*play button*/
+ .frame{
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 45px;
+  width: 380px;
+  position: relative;
+  margin: 8px 25% 10px 13%;
+   box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001,
+   inset 0px 0px 0px 0px #fff9,
+   inset 0px 0px 0px 0px #0001,
+   inset 0px 0px 0px 0px #fff9,        inset 0px 0px 0px 0px #0001;
+ transition:box-shadow 0.6s cubic-bezier(.79,.21,.06,.81);
+   border-radius: 10px;}
+
+ .btn{
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  background: #e0e5ec;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+ transition:box-shadow 0.6s cubic-bezier(.79,.21,.06,.81);
+  font-size: 20px;
+  color: #666;
+  text-decoration: none;}
+
+ .btn:active{
+  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.5),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);}
+
+ @keyframes colorchange {to {filter: hue-rotate(360deg);}}
+ .pause-btn{
+   box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.5),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);}
+
+ #speed{
+  margin: 0 15px;
+  width:120px;
+  font-size:105%;
+  background: #e0e5ec;
+  border-radius:10px;
+  padding-left:7px;
+  box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+  color: #555;}
+ #out{
+  min-width: 50em;
+  min-height: 9em;
+  width:100%;
+  height:fit-content;
+  resize: both;
+  border: solid thin silver;
+  margin: 0.75% 0;
+  overflow: auto;}
+ #selMachDrop{margin:15px 0 0 5px;width:fit-content;font-size:95%;display: block; border-radius:15px;padding: 2px 5px;}
+ label:after{
+    padding: 5px;
+    display:none;
+    position: absolute;
+    max-width: 400px;
+    text-align: center;
+    background-color: #f4f4f4;
+    border: 1px solid silver;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+    font-weight:normal;
+    font-size:85%;
+ }
+ label:hover:after{display: block;}
+ #countI:after{content: "Amount of times every code has occured";}
+ #timeI:after{content: "Total amount of time the code has taken up";}
+ #percI:after{content: "Percent of running time or selected time period the code takes up";}
+ #avgI:after{content: "Average time each code lasts";}
+ #shortI:after{content: "Amount of codes under 5 minutes";}
+ #longI:after{content: "Amount of codes over 5 minutes";}
+ #warn2stopI:after{content: "Amount of warning codes that precede a stop code, i.e. amount of warnings that were not resolved";}
+
+ #dataTable {
+  margin: 0.25%;
+  border-collapse: collapse;
+  font-size: 90%;
+  resize:both;
+  width: 99.5%;
+  height: 97%;
+ }
+ #dataTable td,th{border: solid silver 1px;padding: 0.5%;}
+ .fa-circle-info{
+  float:right;
+  margin:1.5% 1%;
+  color:white;
+  background:#333;
+  border:solid grey thin;
+  border-radius:50%;
+  align-content:center;
+  font-size:85%;
+ }
+
+ .percBtnC{
+  margin:10px 5px;
+  background: white;
+  border-radius: 20px;
+  padding:2px 7px;
+  font-size: 90%;
+  float: left;
+  display: none;
+  cursor:pointer;
+ }
+ #percLim{width: 200px;float:left; display:none;margin:5px;}
+ .inPerc{width:50px;}
+ .percDiv{padding: 1px 0 1px 24px;}
+</style>
+<link rel="icon" type="image/x-icon" href="https://ca273b749d.clvaw-cdnwnd.com/9b5b05e7933e2403cdb2a11adab813f2/200000124-08ca908cac/scania%20logoo.jpg?ph=ca273b749d">
+<script src="https://kit.fontawesome.com/4ac7290434.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div id="page-container"><div id="content-wrap"><header>
+  <img src="https://www.scania.com/content/dam/scanianoe/market/master/homepage/scania-symbol.svg" alt="scania-logo"/>
+  <h1>Line Visualisation</h1></header>
+
+ <form id="inData">
+ <br><h4>Input data:</h4>
+  <i class="fa-solid fa-upload"></i><input type="file" id="fileIn" accept=".csv" required multiple/>
+ <br><h4>Choose time period: </h4>
+ <input type="datetime-local" id="timeStartIn"></input> to <input type="datetime-local" id="timeStopIn"></input>
+
+ <br><h4>% calculated by:</h4>
+ <div class="switch-btn" id="button-1">
+          <input type="checkbox" class="checkbox" id="ttForm"/>
+          <div class="knobs" id="knobs1">
+            <span>Selected time period</span>
+          </div>
+          <div class="layer"></div>
+        </div>
+ <h4>Show heatmap in:</h4>
+ <div class="switch-btn" id="button-2">
+          <input type="checkbox" class="checkbox" id="slideForm"/>
+          <div class="knobs" id="knobs2">
+            <span>Summarisation</span>
+          </div>
+          <div class="layer"></div>
+        </div>
+ <br> <input type="submit" name="submit" id="simBttn" value="Submit">
+ </form><br>
+
+ <div id="simVis">
+  <div class="39673 machineBox" id="mach1" title="Portal 2.5&#10;SV39673"></div><div class="hide">Portal 2.5</div>
+  <div class="38360 machineBox" id="mach2" title="Portal 2.32&#10;SV38360"></div><div class="hide">Portal 2.32</div>
+  <div class="38353 machineBox" id="mach3" title="Portal 2.31&#10;SV38353"></div><div class="hide">Portal 2.31</div>
+  <div class="39672 machineBox" id="mach4" title="Portal 2.4&#10;SV39672"></div><div class="hide">Portal 2.4</div>
+  <div class="37079 machineBox" id="mach5" title="Portal 2.6&#10;SV37079"></div><div class="hide">Portal 2.6</div>
+  <div class="39672 machineBox" id="mach6" title="Portal 2.4&#10;SV39672"></div><div class="hide">Portal 2.4</div>
+  <div class="37070 machineBox" id="mach7" title="Portal 2.2&#10;SV37070"></div><div class="hide">Portal 2.2</div>
+  <div class="37024 machineBox" id="mach8" title="Portal 2.1&#10;SV37024"></div><div class="hide">Portal 2.1</div>
+  <div class="37079 machineBox" id="mach9" title="Portal 2.6&#10;SV37079"></div><div class="hide">Portal 2.6</div>
+  <div class="94645 machineBox" id="mach10" title="Rubertsson tank V&#10;SV94645"></div><div class="hide">Rubertsson tank V</div>
+  <div class="91122 machineBox" id="mach11" title="Nederman&#10;SV91122"></div><div class="hide">Nederman</div>
+  <div class="94646 machineBox" id="mach12" title="Rubertsson Tank V#10;SV94646"></div><div class="hide">Rubertsson Tank F</div>
+  <div class="39623 machineBox" id="mach13" title="Mercatus J5 & L&#10;SV39623"></div><div class="hide">Mercatus J5 & L Flex</div>
+  <div class="37080 machineBox" id="mach14" title="Mercatus J3 & J4&#10;SV37080"></div><div class="hide">Mercatus J3 & J4</div>
+  <div class="92662 machineBox" id="mach15" title="TMC Volym&#10;SV92662"></div><div class="hide">TMC Volym</div>
+  <div class="92614 machineBox" id="mach16" title="Schenck&#10;SV92614"></div><div class="hide">Schenck</div>
+  <div class="38330 machineBox" id="mach17" title="Karl Deutech Volym&#10;SV38330"></div><div class="hide">Karl Deutech Volym</div>
+  <div class="38336 machineBox" id="mach18" title="MTM Volym&#10;SV38336"></div><div class="hide">MTM Volym</div>
+  <div class="94386 machineBox" id="mach19" title="Landis Volym&#10;SV94386"></div><div class="hide">Landis Volym</div>
+  <div class="90433 machineBox" id="mach20" title="Landis 1&#10;SV90433"></div><div class="hide">Landis 1</div>
+  <div class="39636 machineBox" id="mach21" title="Junker 5&#10;SV39636"></div><div class="hide">Junker 5</div>
+  <div class="90432 machineBox" id="mach22" title="Junker 6&#10;SV90432"></div><div class="hide">Junker 6</div>
+  <div class="91120 machineBox" id="mach23" title="Junker 7&#10;SV91120"></div><div class="hide">Junker 7</div>
+  <div class="91121 machineBox" id="mach24" title="Landis 2&#10;SV91121"></div><div class="hide">Landis 2</div>
+  <div class="90412 machineBox" id="mach25" title="Barkhausen&#10;SV90412"></div><div class="hide">Barkhausen</div>
+  <div class="36136 machineBox" id="mach26" title="Junker 2&#10;SV36136"></div><div class="hide">Junker 2</div>
+  <div class="36237 machineBox" id="mach27" title="Junker 1&#10;SV36237"></div><div class="hide">Junker 1</div>
+  <div class="94387 machineBox" id="mach28" title="Landis Flex&#10;SV94387"></div><div class="hide">Landis Flex</div>
+  <div class="37051 machineBox" id="mach29" title="Junker 4&#10;SV37051"></div><div class="hide">Junker 4</div>
+  <div class="37076 machineBox" id="mach30" title="Junker 3&#10;SV37076"></div><div class="hide">Junker 3</div>
+  <div class="37103 machineBox" id="mach31" title="Rubertsson Sluttvätt&#10;SV37103"></div><div class="hide">Rubertsson Sluttvätt</div>
+  <div class="94630 machineBox" id="mach32" title="Rubertsson 2 Flex&#10;SV94630"></div><div class="hide">Rubertsson 2 Flex</div>
+  <div class="38364 machineBox" id="mach33" title="CEMB&#10;SV38364"></div><div class="hide">CEMB</div>
+  <div class="94629 machineBox" id="mach34" title="Rubertsson 1 Flex&#10;SV94629"></div><div class="hide">Rubertsson 1 Flex</div>
+  <div class="92337 machineBox" id="mach35" title="TMC Flex&#10;SV92337"></div><div class="hide">TMC Flex</div>
+  <div class="36198 machineBox" id="mach36" title="Rotech oljehåll F&#10;SV36198"></div><div class="hide">Rotech oljehåll F</div>
+  <div class="32513 machineBox" id="mach37" title="Karl Deutech Flex&#10;SV32513"></div><div class="hide">Karl Deutech Flex</div>
+  <div class="38337 machineBox" id="mach38" title="MTM Flex&#10;SV38337"></div><div class="hide">MTM Flex</div>
+  <div class="39674 machineBox" id="mach39" title="Process Buffer Flex&#10;SV39674"></div><div class="hide">Process Buffer Flex</div>
+  <div class="39674 machineBox" id="mach40" title="Process Buffer Flex&#10;SV39674"></div>
+  <div class="94708 machineBox" id="mach41" title="Inplastningsmaskin&#10;SV94708"></div><div class="hide">Inplastningsmaskin</div>
+  <div class="94627 machineBox" id="mach42" title="Ecoclean&#10;SV94627"></div><div class="hide">Ecoclean</div>
+  <div class="94627 machineBox" id="mach43" title="Ecoclean&#10;SV94627"></div><div class="hide">Ecoclean</div>
+  <div class="94627 machineBox" id="mach44" title="Ecoclean&#10;SV94627"></div><div class="hide">Ecoclean</div>
+  <div class="94627 machineBox" id="mach45" title="Ecoclean&#10;SV94627"></div><div class="hide">Ecoclean</div>
+  <div class="94627 machineBox" id="mach46" title="Ecoclean&#10;SV94627"></div><div class="hide">Ecoclean</div>
+  <div class="39663 machineBox" id="mach47" title="Hommel Flex&#10;SV39663"></div><div class="hide">Hommel Flex</div>
+  <div class="94597 machineBox" id="mach48" title="HW cell Flex&#10;SV94597"></div><div class="hide">HW cell Flex</div>
+  <div class="39672 machineBox" id="mach49" title="Portal 2.4&#10;SV39672"></div><div class="hide">Portal 2.4</div>
+  <div class="39672 machineBox" id="mach50" title="Portal 2.4&#10;SV39672"></div><div class="hide">Portal 2.4</div>
+  <div class="92692 machineBox" id="mach51" title="Packcell&#10;SV92692"></div><div class="hide">Packcell</div>
+  <div class="92692 machineBox" id="mach52" title="Packcell&#10;SV92692"></div><div class="hide">Packcell</div>
+  <div class="92692 machineBox" id="mach53" title="Packcell&#10;SV92692"></div><div class="hide">Packcell</div>
+  <div class="92692 machineBox" id="mach54" title="Packcell&#10;SV92692"></div><div class="hide">Packcell</div>
+  <div class="94616 machineBox" id="mach55" title="HW Cell Robot Volym&#10;SV94616"></div><div class="hide">HW Cell Robot Volym</div>
+  <div class="94616 machineBox" id="mach56" title="HW Cell Robot Volym&#10;SV94616"></div><div class="hide">HW Cell Robot Volym</div>
+  <div class="94616 machineBox" id="mach57" title="HW Cell Robot Volym&#10;SV94616"></div><div class="hide">HW Cell Robot Volym</div>
+  <div class="94615 machineBox" id="mach58" title="HW cell vol&#10;SV94615"></div><div class="hide">HW cell Vol</div>
+  <div class="94628 machineBox" id="mach59" title="Rubertsson Volym&#10;SV94628"></div><div class="hide">Rubertsson Volym</div>
+  <div class="94670 machineBox" id="mach60" title="Märkmaskin Vol&#10;SV94670"></div><div class="hide">Märkmaskin Vol</div>
+  <div class="36197 machineBox" id="mach61" title="Rotech oljehåll V&#10;SV36197"></div><div class="hide">Rotech oljehåll V</div>
+  <div class="36197 machineBox" id="mach62" title="Rotech oljehåll V&#10;SV36197"></div><div class="hide">Rotech oljehåll V</div>
+  <div class="36197 machineBox" id="mach63" title="Rotech oljehåll V&#10;SV36197"></div><div class="hide">Rotech oljehåll V</div>
+  <div class="36197 machineBox" id="mach64" title="Rotech oljehåll V&#10;SV36197"></div><div class="hide">Rotech oljehåll V</div>
+  <div class="94597 machineBox" id="mach65" title="HW cell Flex&#10;SV94597"></div><div class="hide">HW cell Flex</div>
+  <div class="94597 machineBox" id="mach66" title="HW cell Flex&#10;SV94597"></div><div class="hide">HW cell Flex</div>
+  <div class="94597 machineBox" id="mach67" title="HW cell Flex&#10;SV94597"></div><div class="hide">HW cell Flex</div>
+  <div class="94597 machineBox" id="mach68" title="HW cell Flex&#10;SV94597"></div><div class="hide">HW cell Flex</div>
+  <div class="94720 machineBox" id="mach69" title="Adcole Cell Flex&#10;SV94720"></div><div class="hide">Adcole Cell Flex</div>
+  <div class="94720 machineBox" id="mach70" title="Adcole Cell Flex&#10;SV94720"></div><div class="hide">Adcole Cell Flex</div>
+  <div class="94720 machineBox" id="mach71" title="Adcole Cell Flex&#10;SV94720"></div><div class="hide">Adcole Cell Flex</div>
+  <div class="94720 machineBox" id="mach72" title="Adcole Cell Flex&#10;SV94720"></div><div class="hide">Adcole Cell Flex</div>
+  <div class="87050 machineBox" id="mach73" title="Rotech Volym&#10;SV87050"></div><div class="hide">Rotech Volym</div>
+  <div class="87050 machineBox" id="mach74" title="Rotech Volym&#10;SV87050"></div><div class="hide">Rotech Volym</div>
+  <div class="87050 machineBox" id="mach75" title="Rotech Volym&#10;SV87050"></div><div class="hide">Rotech Volym</div>
+  <div class="87050 machineBox" id="mach76" title="Rotech Volym&#10;SV87050"></div><div class="hide">Rotech Volym</div>
+  <div class="87051 machineBox" id="mach77" title="Rotech Flex&#10;SV87051"></div><div class="hide">Rotech Flex</div>
+  <div class="87051 machineBox" id="mach78" title="Rotech Flex&#10;SV87051"></div><div class="hide">Rotech Flex</div>
+  <div class="87051 machineBox" id="mach79" title="Rotech Flex&#10;SV87051"></div><div class="hide">Rotech Flex</div>
+  <div class="87051 machineBox" id="mach80" title="Rotech Flex&#10;SV87051"></div><div class="hide">Rotech Flex</div>
+  <div class="92680 machineBox" id="mach81" title="Adcole Mätmaskin Flex&#10;SV92680"></div><div class="hide">Adcole mätmaskin Flex</div>
+  <div class="94697 machineBox" id="mach82" title="Adcole Volym&#10;SV94697"></div><div class="hide">Adcole Volym</div>
+  <div class="39662 machineBox" id="mach83" title="Hommel Volym&#10;SV39662"></div><div class="hide">Hommel Volym</div>
+  <div class="94616 machineBox" id="mach84" title="HW Cell Robot Volym&#10;SV94616"></div><div class="hide">HW Cell Robot Volym</div>
+  <div class="36197 machineBox" id="mach85" title="Rotech oljehåll V&#10;SV36197"></div><div class="hide">Rotech oljehåll V</div>
+  <div class="87050 machineBox" id="mach86" title="Rotech Volym&#10;SV87050"></div><div class="hide">Rotech Volym</div>
+  <div class="94607 machineBox" id="mach87" title="Robot HW cell FLex&#10;SV94607"></div><div class="hide">Robot HW cell flex</div>
+  <div class="87051 machineBox" id="mach88" title="Rotech Flex&#10;SV87051"></div><div class="hide">Rotech Flex</div>
+  <div class="92693 machineBox" id="mach89" title="Robot Adcole Flex&#10;SV92693"></div><div class="hide">Robot Adcole Flex</div>
+  <div class="94642 machineBox" id="mach90" title="Robot tvättzon&#10;SV94642"></div><div class="hide">Robot tvättzon</div>
+  <div class="94641 machineBox" id="mach91" title="Robot kylzon&#10;SV94641"></div><div class="hide">Robot kylzon</div>
+  <div class="92694 machineBox" id="mach92" title="Robot Packcell&#10;SV92694"></div><div class="hide">Robot Packcell</div>
+ </div>
+
+<button id="percBtn" class="percBtnC" onclick="document.getElementById('percLim').style.display='block';document.getElementById('okb').style.display='block';" >Change percent limits</button>
+ <div id="percLim">
+  <div style="background:green;" class="percDiv"> ><input type="number" class="inPerc" id="color1" value="90"></div>
+  <div style="background:limegreen;" class="percDiv"><input type="number" class="inPerc" id="color2b" value="70">< & <<input type="number" class="inPerc" id="color2t" value="90"></div>
+  <div style="background:yellow;" class="percDiv"><input type="number" class="inPerc" id="color3b" value="50">< & <<input type="number" class="inPerc" id="color3t" value="70"></div>
+  <div style="background:orange;" class="percDiv"><input type="number" class="inPerc" id="color4b" value="30">< & <<input type="number" class="inPerc" id="color4t" value="50"></div>
+  <div style="background:red;"class="percDiv"><<input type="number" class="inPerc" id="color5" value="30"></div>
+ </div>
+ <button id="okb" class="percBtnC" onclick="displayHM();document.getElementById('percLim').style.display='none';document.getElementById('okb').style.display='none';">OK</button>
+
+ <br><div id="slidecontainer" style="display:none;"><input type="range" class="slider" id="myRange" min="0" value="0" step="1">
+  <div style="margin:5px;display:inline-block;width: 25%;">Time: <span id="currentTimeDemo"></span></div>
+ <div class ="frame">
+  <a href="#/" class="btn" id="back2start"><i class="fa-solid fa-backward-step"></i></a>
+  <a href="#/" class="btn" id="rewind"><i class="fas fa-backward"></i></a>
+  <a href="#/" class="btn" id="player"><i class="fas fa-play" id="play-btn"></i></a>
+  <a href="#/" class="btn" id="forward"><i class="fas fa-forward"></i></a>
+  <a href="#/" class="btn" id="skip2end"><i class="fa-solid fa-forward-step"></i></a>
+  <select id="speed">
+      <option value="1">x1</option>
+      <option value="5">x5</option>
+      <option value="10">x10</option>
+      <option value="50">x50</option>
+      <option value="100">x100</option>
+      <option value="500">x500</option>
+      <option value="1000">x1000</option>
+      <option value="5000">x5000</option>
+      <option value="10000">x10000</option>
+ </select></div></div>
+ <div id='my_file_output'><div id="selMach" style="border: silver solid 1px;top:5px;"></div>
+  <table id="selMachStats" style="display: none;">
+    <tr><th class="tblCello" style="background: white;">Working %</th><td class="tblCell" id="workPercent"></td></tr>
+    <tr><th class="tblCello" style="background: #46d446;">Idle %</th><td class="tblCell" id="idlePercent"></td></tr>
+    <tr><th class="tblCello" style="background: #ba2323;">Stopped %</th><td class="tblCell" id="stopPercent"></td></tr>
+    <tr><th class="tblCello" style="background: gainsboro;">Inactive %</th><td class="tblCell" id="inActPercent"></td></tr>
+  </table>
+  <table id="selMachStats1" style="display: none;">
+    <tr><th class="tblCello" style="background: white;">Working time</th><td class="tblCell" id="workTimeOut"></td></tr>
+    <tr><th class="tblCello" style="background: #46d446;">Idle time</th><td class="tblCell" id="idleTimeOut"></td></tr>
+    <tr><th class="tblCello" style="background: #ba2323;">Stopped time</th><td class="tblCell" id="stopTimeOut"></td></tr>
+    <tr><th class="tblCello" style="background: gainsboro;">Inactive time</th><td class="tblCell" id="inActTime"></td></tr>
+  </table>
+  <table id="selMachStats2" style="display: none;">
+    <tr><th class="tblCello" style="background: white;">Working count</th><td class="tblCell" id="workCount"></td></tr>
+    <tr><th class="tblCello" style="background: #46d446;">Idle count</th><td class="tblCell" id="idleCount"></td></tr>
+    <tr><th class="tblCello" style="background: #ba2323;">Stop count</th><td class="tblCell" id="stopCount"></td></tr>
+    <tr><th class="tblCello" style="background: #ff9029;">Warning count</th><td class="tblCell" id="warnCount"></td></tr>
+  </table>
+ </div>
+ <br>
+ <select id="selMachDrop">
+  <option>Choose machine</option>
+  <option value="overview">Overview</option>
+ </select>
+ <div id="out">
+ <table id="dataTable">
+  <tr>
+    <th>Machine</th>
+    <th>Count<label id="countI"><i class="fa-solid fa-circle-info"></i></label></th>
+    <th>Time<label id="timeI"><i class="fa-solid fa-circle-info"></i></label></th>
+    <th>Percent<label id="percI"><i class="fa-solid fa-circle-info"></i></label></th>
+    <th>Avg time<label id="avgI"><i class="fa-solid fa-circle-info"></i></label></th>
+    <th>Short times<label id="shortI"><i class="fa-solid fa-circle-info"></i></label></th>
+    <th>Long times<label id="longI"><i class="fa-solid fa-circle-info"></i></label></th> 
+    <th>Warn->stop<label id="warn2stopI"><i class="fa-solid fa-circle-info"></i></label>
+  </tr>
+  <tr>
+    <th>Working</th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <th>Idle</th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <th>Stopped</th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <th>Warning</th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+ </table></div>
+ </div>
+ <footer><a href="https://imgbb.com/"><img src="https://i.ibb.co/277fw4D/7rip7ych-logo.gif" alt="7rip7ych-logo" border="0"></a></footer></div>
+
+<script type="text/javascript">
+//var declarations
+ const player=document.getElementById("player");
+ const b2start=document.getElementById("back2start");
+ const s2end = document.getElementById("skip2end");
+ const rewind = document.getElementById("rewind");
+ const forward= document.getElementById("forward");
+ let slider = document.getElementById("myRange");
+ const outputThis = document.getElementById("currentTimeDemo");
+ const slideCont = document.getElementById("slidecontainer");
+ const percBtn = document.getElementById("percBtn");
+ let ttSwitch=document.getElementById("ttForm");
+ let heatSwitch=document.getElementById("slideForm");
+ let dataTable = document.getElementById("dataTable");
+ let tblMach = document.getElementById("selMachDrop");
+ const myForm = document.getElementById("inData");
+ let allMachs;
+ let dataArray=[];
+ let formatted;
+ let formatted2;
+ let timePeriod;
+ let jsonArr=[];
+ let machArray=[];
+ const nodeList= document.querySelectorAll('.machineBox');
+nodeList.forEach(item=>{ 
+  let firstWord = item.className.split(' ');
+  let maMach = firstWord[0];
+  if(maMach!="machineBox"){
+  let svMach = "SV"+maMach;
+  machArray.push(svMach);}
+})
+//overview vars
+ let wcount=0;let wtime=0;let wshort=0;let wlong=0;
+ let icount=0;let itime=0;let ishort=0;let ilong=0;
+ let scount=0;let stime=0;let sshort=0;let slong=0;
+ let fcount=0;let ftime=0;let fshort=0;let flong=0;
+ let w2s=0;
+ let wper=0;let iper=0;let sper=0;let fper=0;
+ let cwper=0;let ciper=0;let csper=0;let cfper=0;
+ let oact=0;
+ let arrza=[];
+
+//call function declarations
+ const getThineTime = (startThee, endThee) => { 
+   const res = [];
+   var res1 = []; 
+   for(let i = 0; i < startThee.length; i++){ 
+    const el = Math.abs((startThee[i] || 0) - (endThee[i] || 0));
+      res[i] = el/1000;
+    res1[i]={ 
+         "startTime": startThee[i], 
+         "endTime": endThee[i],
+         "sum": res[i]
+       }; 
+   };
+   return res1;}; 
+ const totSum = theChosen => {
+ let smums = theChosen.map(x=>x.sum);
+ let summer = smums.reduce((a,b)=>a+b,0);
+ return summer;};
+ const hourMinSecs = outTime => {
+    let workHour = Math.floor(Math.floor(outTime/60)/60);
+     let workMin = Math.floor(outTime/60)-workHour*60;
+      let workSec = Math.round(outTime-Math.floor(outTime/60)*60);
+    return workHour + "h " + workMin + "min " + workSec + "s ";}; 
+ const shortTime= table =>{let shawty = table.filter(x=>x.sum<300).length;return shawty;};
+ const longTime= table =>{let shawty = table.filter(x=>x.sum>=300).length;return shawty;}; 
+
+function getFiles(){
+//read file
+ const files = document.getElementById("fileIn").files;
+ for (var i = 0; i < files.length; i++) {
+   var file = files[i];
+   var reader = new FileReader();
+   reader.onload = function(e) {
+      const textString = e.target.result;
+      var arr = textString.split('\n');
+      var headers = arr[0].split(',');
+      for(var i = 1; i<arr.length; i++){
+       var data = arr[i].split(',');
+       var obj = {};
+       for(var j = 0; j < data.length; j++){obj[headers[j].trim()] = data[j].trim();}
+       jsonArr[i-1]=obj;}
+        }
+    reader.readAsText(file);
+    }  
+//convert dates
+ formatted = jsonArr.map(function(item) {
+  var formattedItem= {};
+  Object.keys(item).forEach(function(key) {
+    if(key === "startTime"){formattedItem[key] = new Date(item[key]);} 
+     else if(key=== "endTime"){formattedItem[key] = new Date(item[key]);}
+      else{formattedItem[key] = item[key];}
+  });
+  return formattedItem;});
+
+//get machines
+ const listt=jsonArr.map(x=>x.equipment);
+ allMachs = [...new Set(listt)];
+ allMachs.pop(); 
+ if(tblMach.options.length<4){
+  for(var i = 0; i < allMachs.length; i++){
+   var option = allMachs[i];
+   tblMach.options.add( new Option(option) );}};}
+
+function getTime(){
+  const timeStartIn = document.getElementById('timeStartIn').value;
+  const timeStopIn = document.getElementById('timeStopIn').value;
+  let startDate;
+  let endDate;
+  if(timeStartIn){startDate = new Date(timeStartIn);}
+    else{startDate=new Date();startDate.setFullYear(startDate.getFullYear() - 1 );}
+  if(timeStopIn){endDate=new Date(timeStopIn);}
+    else{endDate=new Date();};
+  timePeriod = (endDate - startDate)/1000;
+//limit to time period w/o overflow
+ formatted2 = formatted.filter(x => x.startTime <= endDate && x.endTime >= startDate).map(function(item) {
+  var formattedItem2 = {};
+  Object.keys(item).forEach(function(key) {
+    if(key === "startTime"){
+      var val=item[key];
+      if(val<startDate){formattedItem2[key] = startDate;}
+      else{formattedItem2[key] = item[key]}} 
+     else if(key=== "endTime"){
+      var val=item[key];
+      if(val>endDate){formattedItem2[key] = endDate;}
+      else{formattedItem2[key] = item[key]}}
+
+      else{formattedItem2[key] = item[key];}
+  });
+  return formattedItem2;});}
+
+function proCalc(){
+  dataArray=[];
+  wcount=0;wtime=0;wshort=0;wlong=0;
+  icount=0;itime=0;ishort=0;ilong=0;
+  scount=0;stime=0;sshort=0;slong=0;
+  fcount=0;ftime=0;fshort=0;flong=0;
+  w2s=0;
+  wper=0;iper=0;sper=0;fper=0;
+  cwper=0;ciper=0;csper=0;cfper=0;
+  oact=0;
+ allMachs.forEach(mach=>{
+  let formatted3 = formatted2.filter(x=>x.equipment==mach);
+
+  let workStartThee = formatted3.filter(x=>x.reasonCode==="Working").map(x=>x.startTime);
+  let workEndThee = formatted3.filter(x=>x.reasonCode==="Working").map(x=>x.endTime);
+  let idleStartThee = formatted3.filter(x=>x.reasonCode==="Idle").map(x=>x.startTime);
+  let idleEndThee = formatted3.filter(x=>x.reasonCode==="Idle").map(x=>x.endTime);
+  let stopStartThee = formatted3.filter(x=>x.reasonCode==="Stopped").map(x=>x.startTime);
+  let stopEndThee = formatted3.filter(x=>x.reasonCode==="Stopped").map(x=>x.endTime);
+  let warnStartThee = formatted3.filter(x=>x.reasonCode==="Warning").map(x=>x.startTime);
+  let warnEndThee = formatted3.filter(x=>x.reasonCode==="Warning").map(x=>x.endTime);
+
+ //make table of times and sums
+  let working_table = getThineTime(workStartThee, workEndThee);
+  let idle_table = getThineTime(idleStartThee, idleEndThee);
+  let stopped_table = getThineTime(stopStartThee, stopEndThee);
+  let warning_table = getThineTime(warnStartThee, warnEndThee);
+
+    let outWork = totSum(working_table);
+    let outIdle = totSum(idle_table);
+    let outStop = totSum(stopped_table);
+    let outWarn= totSum(warning_table);
+    let outAct = outWork+outIdle+outStop;
+    let ttDivider = (ttSwitch.checked)? outAct:timePeriod;
+    let getPerc = out=>{let a=Math.round(out*10000/ttDivider)/100;return a;};
+    let workCount = working_table.length;
+    let idleCount = idle_table.length;
+    let stopCount = stopped_table.length;
+    let warnCount = warning_table.length;
+ //warn->stop
+    let kay=formatted3.map(x=>x.reasonCode);
+    const me=kay.reduce((a, e, i) => {
+      if (e === "Warning")
+         a.push(i);
+       return a;
+    }, []);
+    let formatme=[];
+    me.forEach(function(index){formatme[index]=kay[index+1];});
+    let bishop = Object.values(formatme).filter(x=>x==="Stopped");
+ //variables
+    let tt= getPerc(outWork)+getPerc(outIdle);
+    wcount+=workCount;
+    wtime+=outWork;
+    wshort+=shortTime(working_table);
+    wlong+=longTime(working_table);
+    wper+=getPerc(outWork);
+    icount+=idleCount;
+    itime+=outIdle;
+    ishort+=shortTime(idle_table);
+    ilong+=longTime(idle_table);
+    iper+=getPerc(outIdle);
+    scount+=stopCount;
+    stime+=outStop;
+    sshort+=shortTime(stopped_table);
+    slong+=longTime(stopped_table);
+    sper+=getPerc(outStop);
+    fcount+=warnCount;
+    ftime+=outWarn;
+    fshort+=shortTime(warning_table);
+    flong+=longTime(warning_table);
+    fper+=getPerc(outWarn);
+    w2s+=bishop.length;
+    oact+=outAct;
+    let countArr=[];let timeArr=[];let percArr=[];let avgArr=[];let shortArr=[];let longArr=[];
+    countArr=[workCount, idleCount, stopCount, warnCount];
+    timeArr=[outWork, outIdle, outStop, outWarn];
+    percArr=[getPerc(outWork), getPerc(outIdle), getPerc(outStop), getPerc(outWarn)];
+    avgArr=[(Math.round(outWork/workCount)), (Math.round(outIdle/idleCount)), (Math.round(outStop/stopCount)), (Math.round(outWarn/warnCount))];
+    shortArr=[shortTime(working_table), shortTime(idle_table), shortTime(stopped_table), shortTime(warning_table)];
+    longArr=[longTime(working_table),longTime(idle_table),longTime(stopped_table),longTime(warning_table)];
+    arrza={
+      "Machine": mach,
+      "Count": countArr,
+      "Time": timeArr,
+      "Percent": percArr,
+      "Average_time": avgArr,
+      "Short_time": shortArr,
+      "Long_time": longArr,
+      "Warn2stop": bishop.length,
+      "TT": tt};
+    dataArray.push(arrza);
+	})
+
+ //calc perc overview
+ if(ttSwitch.checked){
+  const oPer=xper=>{let a=Math.round(xper*10000/oact)/100;return a;};
+  cwper=oPer(wtime);
+  ciper=oPer(itime);
+  csper=oPer(stime);
+  cfper=oPer(ftime);}
+  else{
+   const sPer=xper=>{let a=Math.round(xper*100/allMachs.length)/100;return a;};
+   cwper=sPer(wper);
+   ciper=sPer(iper);
+   csper=sPer(sper);
+   cfper=sPer(fper);}}
+
+function displayHM(){
+  document.body.style.cursor="wait";
+  //get perclimits
+    const color1=document.getElementById("color1").value;
+    const color2b=document.getElementById("color2b").value;
+    const color2t=document.getElementById("color2t").value;
+    const color3b=document.getElementById("color3b").value;
+    const color3t=document.getElementById("color3t").value;
+    const color4b=document.getElementById("color4b").value;
+    const color4t=document.getElementById("color4t").value;
+    const color5=document.getElementById("color5").value;
+  let formatted4;
+  if(heatSwitch.checked){
+    slideCont.style.display = "block";
+    percBtn.style.display = "none";
+    const secTime=timePeriod/1000;
+    slider.setAttribute("max",timePeriod);
+  function realUpd(){
+   nodeList.forEach(item => {
+   let firstWord = item.className.split(' ');
+   let maMach = firstWord[0];
+   let svMach = "SV"+maMach;
+  //real time vis
+    if(allMachs.includes(svMach)){
+    item.addEventListener("click",function(){tblMach.value=svMach;disTbl();});
+    let currentCode = formatted4.filter(x=>x.equipment===svMach);
+    let codeLength = currentCode.length;
+    if(codeLength===0){item.style.background="#A4A4A4";}
+    else if(codeLength===1){
+      let relEl = currentCode[0].reasonCode;
+      if(relEl === "Working"){item.style.background="white"}
+        else if(relEl === "Idle"){item.style.background="#46d446"}
+          else if(relEl === "Stopped"){item.style.background="#ba2323"}
+            else{item.style.background="#ff9029"}}
+      else if(codeLength===2){item.style.background="#ff9029"}}
+    else{item.style.background="repeating-linear-gradient(45deg,#DEDEDE,#DEDEDE 3px,#BEBEBE 3px,#BEBEBE 6px)"}
+  })}
+ //update slider
+  const update= value=>{
+    let t = new Date(document.getElementById('timeStartIn').value);
+    t.setSeconds(t.getSeconds()+value);
+    outputThis.innerHTML = t.toLocaleString();
+    formatted4=formatted.filter(x=>x.startTime<=t &&x.endTime>=t);
+    realUpd();
+  };
+  
+  update(slider.value);
+  slider.addEventListener("input",function(){update(slider.value);});
+  
+ //buttons
+  var clickCounter=0;
+  player.addEventListener("click",function(){
+  var element = document.getElementById("play-btn");
+  clickCounter++;
+  if(clickCounter%2===1){
+   element.classList.add('fa-pause');
+   element.classList.remove('fa-play'); 
+   player.classList.add('pause-btn');
+   }else{
+    element.classList.remove('fa-pause');
+    element.classList.add('fa-play'); 
+    player.classList.remove('pause-btn');}
+  function playInterval(){if(clickCounter%2===1){forward.click()}}
+  setInterval(playInterval,100);
+  });
+  let speedSel=0;
+  b2start.addEventListener("click",function(){slider.value=0;update(slider.value);});
+  rewind.addEventListener("click",function(){speedSel = parseInt(document.getElementById("speed").value);slider.stepDown(speedSel);update(slider.value);});
+  forward.addEventListener("click",function(){speedSel = parseInt(document.getElementById("speed").value);slider.stepUp(speedSel);update(slider.value)});
+  s2end.addEventListener("click",function(){slider.value=timePeriod/1000;update(slider.value);});
+
+  }
+  else{
+ //overview
+     slideCont.style.display = "none";
+     percBtn.style.display = "block";
+    
+  nodeList.forEach(item => {
+  let firstWord = item.className.split(' ');
+  let maMach = firstWord[0];
+  let svMach = "SV"+maMach;
+  
+ if(allMachs.includes(svMach)){
+    item.addEventListener("click",function(){tblMach.value=svMach;disTbl();});
+    let machObj = dataArray.filter(x=>x.Machine==svMach);
+    let TT = machObj[0].TT;
+  //display heatmap
+    if(TT===0){item.style.background="#A4A4A4"}
+    else if(TT>=color1){item.style.background="green"}
+    else if(TT>=color2b && TT<color2t){item.style.background="lime"}
+    else if(TT>=color3b && TT<color3t){item.style.background="yellow"}
+    else if(TT>=color4b && TT<color4t){item.style.background="orange"}
+    else if(TT<=color5){item.style.background="red"}; 
+    
+  }else{item.style.background="repeating-linear-gradient(45deg,#DEDEDE,#DEDEDE 3px,#BEBEBE 3px,#BEBEBE 6px)"}
+  })}
+  document.body.style.cursor="default";}
+
+function disTbl(){
+  if(allMachs.includes(tblMach.value)){ 
+    let count;let time;let per; let avg; let short;let long; let bis;
+    let machArr=dataArray.filter(x=>x.Machine===tblMach.value);
+    count=machArr[0].Count;
+    time=machArr[0].Time;
+    per=machArr[0].Percent;
+    avg=machArr[0].Average_time;
+    short=machArr[0].Short_time;
+    long=machArr[0].Long_time;
+    bis=machArr[0].Warn2stop;
+ //display in table 
+    dataTable.rows[1].cells[1].innerHTML = count[0];
+    dataTable.rows[2].cells[1].innerHTML = count[1];
+    dataTable.rows[3].cells[1].innerHTML = count[2];
+    dataTable.rows[4].cells[1].innerHTML = count[3];
+    dataTable.rows[1].cells[2].innerHTML = hourMinSecs(time[0]);
+    dataTable.rows[2].cells[2].innerHTML = hourMinSecs(time[1]);
+    dataTable.rows[3].cells[2].innerHTML = hourMinSecs(time[2]);
+    dataTable.rows[4].cells[2].innerHTML = hourMinSecs(time[3]);
+    dataTable.rows[1].cells[3].innerHTML = per[0];
+    dataTable.rows[2].cells[3].innerHTML = per[1];
+    dataTable.rows[3].cells[3].innerHTML = per[2];
+    dataTable.rows[4].cells[3].innerHTML = per[3];
+    if(avg[0]){dataTable.rows[1].cells[4].innerHTML = hourMinSecs(avg[0]);};
+    if(avg[1]){dataTable.rows[2].cells[4].innerHTML = hourMinSecs(avg[1]);};
+    if(avg[2]){dataTable.rows[3].cells[4].innerHTML = hourMinSecs(avg[2]);};
+    if(avg[3]){dataTable.rows[4].cells[4].innerHTML = hourMinSecs(avg[3]);};
+    dataTable.rows[3].cells[7].innerHTML = bis;
+    dataTable.rows[1].cells[5].innerHTML = short[0];
+    dataTable.rows[2].cells[5].innerHTML = short[1];
+    dataTable.rows[3].cells[5].innerHTML = short[2];
+    dataTable.rows[4].cells[5].innerHTML = short[3];
+    dataTable.rows[1].cells[6].innerHTML = long[0];
+    dataTable.rows[2].cells[6].innerHTML = long[1];
+    dataTable.rows[3].cells[6].innerHTML = long[2];
+    dataTable.rows[4].cells[6].innerHTML = long[3];
+  }
+   else if(tblMach.value="overview"){  
+  //display in table 
+    dataTable.rows[1].cells[1].innerHTML = wcount;
+    dataTable.rows[2].cells[1].innerHTML = icount;
+    dataTable.rows[3].cells[1].innerHTML = scount;
+    dataTable.rows[4].cells[1].innerHTML = fcount;
+    dataTable.rows[1].cells[2].innerHTML = hourMinSecs(wtime);
+    dataTable.rows[2].cells[2].innerHTML = hourMinSecs(itime);
+    dataTable.rows[3].cells[2].innerHTML = hourMinSecs(stime);
+    dataTable.rows[4].cells[2].innerHTML = hourMinSecs(ftime);
+    dataTable.rows[1].cells[3].innerHTML = cwper;
+    dataTable.rows[2].cells[3].innerHTML = ciper;
+    dataTable.rows[3].cells[3].innerHTML = csper;
+    dataTable.rows[4].cells[3].innerHTML = cfper;
+    if(wtime/wcount){dataTable.rows[1].cells[4].innerHTML = hourMinSecs(Math.round(wtime/wcount));};
+    if(itime/icount){dataTable.rows[2].cells[4].innerHTML = hourMinSecs(Math.round(itime/icount));};
+    if(stime/scount){dataTable.rows[3].cells[4].innerHTML = hourMinSecs(Math.round(stime/scount));};
+    if(ftime/fcount){dataTable.rows[4].cells[4].innerHTML = hourMinSecs(Math.round(ftime/fcount));};
+    dataTable.rows[3].cells[7].innerHTML = w2s;
+    dataTable.rows[1].cells[5].innerHTML = wshort;
+    dataTable.rows[2].cells[5].innerHTML = ishort;
+    dataTable.rows[3].cells[5].innerHTML = sshort;
+    dataTable.rows[4].cells[5].innerHTML = fshort;
+    dataTable.rows[1].cells[6].innerHTML = wlong;
+    dataTable.rows[2].cells[6].innerHTML = ilong;
+    dataTable.rows[3].cells[6].innerHTML = slong;
+    dataTable.rows[4].cells[6].innerHTML = flong;
+   }}
+
+document.getElementById("fileIn").addEventListener("input", getFiles);
+
+myForm.addEventListener("submit", function (e) {
+ e.preventDefault();
+ getFiles();
+ getTime();
+ proCalc();
+ displayHM();
+ disTbl();
+ ttSwitch.addEventListener("click", function(){
+  proCalc();
+  disTbl();
+  if(!heatSwitch.checked){displayHM();}
+});
+heatSwitch.addEventListener("click", displayHM);
+})
+tblMach.addEventListener("change",disTbl);
+</script>
+</body>
+</html>
