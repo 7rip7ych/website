@@ -236,7 +236,7 @@ function proCalc() {
         let outStop = totSum(stopped_table)
         let outWarn = totSum(warning_table)
         let outAct = outWork + outIdle + outStop
-        let ttDivider = (ttSwitch.checked) ? outAct : timePeriod
+        let ttDivider = (ttSwitch.checked) ? timePeriod : outAct
         let getPerc = out => {
             let a = Math.round(out * 10000 / ttDivider) / 100
             return a

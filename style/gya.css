@@ -170,7 +170,7 @@ input[type="datetime-local"] {
 }
 
 #knobs1::after {
-  content: "Running time of machine";
+  content: "Selected time period";
   right: 3px;
   color: #333;
 }
