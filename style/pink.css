@@ -48,7 +48,7 @@ html {
     max-width: 100%;
     font-size: 20px;
     font-weight: 700;
-    font-family: 'Roboto', Verdana, Arial, sans-serif;
+    font-family: Roboto, Verdana, Arial, sans-serif;
     color: #9e3c62;
 }
 
@@ -68,7 +68,7 @@ html {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-family: "Bytesized", "Tiny5", arial, sans-serif;
+    font-family: Bytesized, "Tiny5", arial, sans-serif;
     font-size: 2rem;
 }
 
@@ -217,7 +217,7 @@ body.retropink {
 
 .search.retropink p {
     margin: 0;
-    font-family: "Bytesized", "tiny5", arial, sans-serif;
+    font-family: Bytesized, "tiny5", arial, sans-serif;
     font-size: 2rem;
 }
 
@@ -235,7 +235,7 @@ body.retropink {
     color: #e07c9e;
     border: 3px solid;
     border-color: #fff4fe #ffadc5 #ffadc5 #fff4fe;
-    font-family: "Bytesized", "Tiny5", arial, sans-serif;
+    font-family: Bytesized, "Tiny5", arial, sans-serif;
     font-weight: bold;
     font-size: 2rem;
     line-height: 0.5;
@@ -269,7 +269,7 @@ body.retropink {
 
 .popup.results > div,
 .popup.routes > div {
-    font-family: "Courier New", Arial, Monospace, sans-serif;
+    font-family: "Courier New", Arial, monospace, sans-serif;
     margin: 1rem;
     height: calc(100% - 4rem);
     width: calc(100% - 2rem);
@@ -307,9 +307,6 @@ body.retropink {
     display: block;
     position: relative;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     flex-grow: 1;
 }
@@ -348,7 +345,7 @@ body.retropink {
     border-radius: 0 1.3em 1.3em 0;
 }
 
-@media (max-width: 850px) {
+@media (width <= 850px) {
     .radio-container {
         flex-direction: column;
         justify-content: flex-start;
@@ -362,7 +359,7 @@ body.retropink {
 
 .home div {
     padding: 0 4rem;
-    font-family: segoe ui, arial, monospace, sans-serif;
+    font-family: "segoe ui", arial, monospace, sans-serif;
     font-size: 1.2rem;
     line-height: 1.6;
     letter-spacing: 1px;
@@ -384,7 +381,7 @@ body.retropink {
 }
 
 
-@media screen and (max-width: 1160px) {
+@media screen and (width <= 1160px) {
     .routes,
     .tip {
         display: none;
@@ -458,7 +455,7 @@ body.retropink {
   width: 8px;
   background-color: var(--color14);
   background-image: linear-gradient(
-    #0000 0px,
+    #0000 0,
     #0000 calc(50% - 40px),
     #f698bcf0 calc(50% - 20px),
     #9e3c62a8 calc(50% - 19px),
@@ -475,10 +472,12 @@ body.retropink {
     #9e3c6201 calc(50% + 45px),
     #0000 100%
   );
+
 /*   background-size: 12px; */
   background-repeat: no-repeat;
   background-position: center;
   border: 2px outset var(--color15);
+
 /*   outline: 2px solid var(--color17); */
 }
 
