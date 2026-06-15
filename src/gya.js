@@ -398,21 +398,12 @@ function proCalc() {
 function displayHM() {
     document.body.style.cursor = "wait"
     let playerInterval
-    //get perclimits
-    const color1 = document.getElementById("color1").value
-    const color2b = document.getElementById("color2b").value
-    const color2t = document.getElementById("color2t").value
-    const color3b = document.getElementById("color3b").value
-    const color3t = document.getElementById("color3t").value
-    const color4b = document.getElementById("color4b").value
-    const color4t = document.getElementById("color4t").value
-    const color5 = document.getElementById("color5").value
     let formatted4
     if (heatSwitch.checked) {
         slideCont.style.display = "block"
         percBtn.style.display = "none"
         // const secTime=timePeriod/1000
-        slider.setAttribute("max", timePeriod)
+        slider.setAttribute("max", Math.round(timePeriod))
 
         function realUpd() {
             nodeList.forEach(item => {
@@ -450,12 +441,12 @@ function displayHM() {
         }
         // update slider
         const update = value => {
-            let t = startDate
-            console.log("update", startDate, t)
-            let newSeconds = t.getSeconds() + value
+            let t = new Date(startDate)
+            let newSeconds = t.getSeconds() + parseInt(value)
+            // console.log("update", t, value, newSeconds)
+
             if (newSeconds <= timePeriod) {
                 t.setSeconds(newSeconds)
-                console.log(t)
             } else {
                 slider.value = timePeriod
                 if (playerInterval){
@@ -463,14 +454,14 @@ function displayHM() {
                 }
                 return
             }
-            
+
             outputThis.innerHTML = t.toLocaleString()
             formatted4 = formatted.filter(x => x.startTime <= t && x.endTime >= t)
             realUpd()
         }
         update(slider.value)
         slider.addEventListener("input", function() {
-            console.log(slider.value)
+            // console.log(slider.value)
             update(slider.value)
         })
         //buttons
@@ -511,11 +502,21 @@ function displayHM() {
             update(slider.value)
         })
         s2end.addEventListener("click", function() {
-            slider.value = timePeriod / 1000
+            slider.value = timePeriod// / 1000
             update(slider.value)
         })
     } else {
         //overview
+        //get perclimits
+        const color1 = document.getElementById("color1").value
+        const color2b = document.getElementById("color2b").value
+        const color2t = document.getElementById("color2t").value
+        const color3b = document.getElementById("color3b").value
+        const color3t = document.getElementById("color3t").value
+        const color4b = document.getElementById("color4b").value
+        const color4t = document.getElementById("color4t").value
+        const color5 = document.getElementById("color5").value
+
         slideCont.style.display = "none"
         percBtn.style.display = "block"
         nodeList.forEach(item => {
@@ -648,6 +649,7 @@ myForm.addEventListener("submit", function(e) {
     e.preventDefault()
     getFiles()
     getTime()
+    console.log(timePeriod)
     proCalc()
     displayHM()
     disTbl()
