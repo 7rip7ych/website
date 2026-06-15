@@ -310,17 +310,7 @@ function proCalc() {
         let idleCount = idle_table.length
         let stopCount = stopped_table.length
         let warnCount = warning_table.length
-        //warn->stop
-        let kay = formatted3.map(x => x.reasonCode)
-        const me = kay.reduce((a, e, i) => {
-            if (e === "Warning") a.push(i)
-            return a
-        }, [])
-        let formatme = []
-        me.forEach(function(index) {
-            formatme[index] = kay[index + 1]
-        })
-        let bishop = Object.values(formatme).filter(x => x === "Stopped")
+
         //variables
         let tt = getPerc(outWork) + getPerc(outIdle)
         wcount += workCount
@@ -343,7 +333,7 @@ function proCalc() {
         fshort += shortTime(warning_table)
         flong += longTime(warning_table)
         fper += getPerc(outWarn)
-        w2s += bishop.length
+        w2s += calcWarnToStop(formatted3)
         oact += outAct
         let countArr = []
         let timeArr = []
@@ -365,7 +355,7 @@ function proCalc() {
             "Average_time": avgArr,
             "Short_time": shortArr,
             "Long_time": longArr,
-            "Warn2stop": bishop.length,
+            "Warn2stop": w2s,
             "TT": tt
         }
         dataArray.push(arrza)
@@ -390,6 +380,29 @@ function proCalc() {
         csper = sPer(sper)
         cfper = sPer(fper)
     }
+}
+
+/**
+ * Calculate the number of alarms that go from warning to stop.
+ * @param {Array} data 
+ * @returns {Number} The total.
+ */
+function calcWarnToStop(data) {
+    //warn->stop
+    data = data.sort((a, b) => a.startTime - b.startTime)
+    // console.log(data)
+    let kay = data.map(x => x.reasonCode)
+    const me = kay.reduce((a, e, i) => {
+        if (e === "Warning") a.push(i)
+        return a
+    }, [])
+    let formatme = []
+    me.forEach(function(index) {
+        formatme.push(kay[index + 1])
+    })
+    let res = Object.values(formatme).filter(x => x === "Stopped")
+    // console.log(me, formatme, res)
+    return res.length
 }
 
 /**
