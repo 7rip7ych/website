@@ -29,6 +29,8 @@ nodeList.forEach(item => {
         machArray.push(svMach)
     }
 })
+let startDate
+let endDate
 //overview vars
 let wcount = 0
 let wtime = 0
@@ -59,6 +61,12 @@ let oact = 0
 let arrza = []
 
 //call function declarations
+/**
+ * Calculate durations or differences.
+ * @param {*} startThee 
+ * @param {*} endThee 
+ * @returns {Array} An array of objects with startTime, endTime and sum.
+ */
 const getThineTime = (startThee, endThee) => {
     const res = []
     var res1 = []
@@ -74,12 +82,22 @@ const getThineTime = (startThee, endThee) => {
     return res1
 }
 
+/**
+ * Calculates the sum of the sum properties.
+ * @param {Array} theChosen 
+ * @returns {Number} The total sum.
+ */
 const totSum = theChosen => {
     let smums = theChosen.map(x => x.sum)
     let summer = smums.reduce((a, b) => a + b, 0)
     return summer
 }
 
+/**
+ * Format time duration to hh mm ss format.
+ * @param {Number} outTime 
+ * @returns {String} Formatted time.
+ */
 const hourMinSecs = outTime => {
     let workHour = Math.floor(Math.floor(outTime / 60) / 60)
     let workMin = Math.floor(outTime / 60) - workHour * 60
@@ -87,16 +105,29 @@ const hourMinSecs = outTime => {
     return workHour + "h " + workMin + "min " + workSec + "s "
 }
 
+/**
+ * Get rows with duration < 300.
+ * @param {Array} table The Array to filter.
+ * @returns {Array} The filtered Array.
+ */
 const shortTime = table => {
     let shawty = table.filter(x => x.sum < 300).length
     return shawty
 }
 
+/**
+ * Get rows with duration > 300.
+ * @param {Array} table The Array to filter.
+ * @returns {Array} The filtered Array.
+ */
 const longTime = table => {
     let shawty = table.filter(x => x.sum >= 300).length
     return shawty
 }
 
+/**
+ * Read the inputted files.
+ */
 function getFiles() {
     //read file
     const files = document.getElementById("fileIn").files
@@ -142,25 +173,40 @@ function getFiles() {
             tblMach.options.add(new Option(option))
         }
     };
+    console.log(formatted)
 }
 
+/**
+ * Filter data by timeframe.
+ * Results stored in formatted2.
+ * @returns 
+ */
 function getTime() {
     const timeStartIn = document.getElementById('timeStartIn').value
     const timeStopIn = document.getElementById('timeStopIn').value
-    let startDate
-    let endDate
+    // let startDate
+    // let endDate
+    let timeframe
+    if (!timeStartIn | !timeStopIn) {
+        timeframe = getTimeframe(formatted)
+        console.log(timeframe)
+    }
     if (timeStartIn) {
         startDate = new Date(timeStartIn)
     } else {
-        startDate = new Date()
-        startDate.setFullYear(startDate.getFullYear() - 1)
+        startDate = timeframe[0]
     }
     if (timeStopIn) {
         endDate = new Date(timeStopIn)
     } else {
-        endDate = new Date()
+        endDate = timeframe[1]
     };
     timePeriod = (endDate - startDate) / 1000
+    
+    if (!timeStartIn & !timeStopIn) {
+        formatted2 = formatted
+        return
+    }
     //limit to time period w/o overflow
     formatted2 = formatted.filter(x => x.startTime <= endDate && x.endTime >= startDate).map(function(item) {
         var formattedItem2 = {}
@@ -188,6 +234,25 @@ function getTime() {
     })
 }
 
+/**
+ * Get the min startDate and max endDate of the data.
+ * @param {*} data 
+ * @returns {Array} The timeframe start and end.
+ */
+function getTimeframe(data) {
+    // Get min and max dates by sorting starttimes and endtimes.
+    const starts = data.map(x => x.startTime)
+    const ends = data.map(x => x.endTime)
+    let sorted_starts = starts.sort((a, b) => a - b) // sort asc
+    let sorted_ends = ends.sort((a, b) => b - a) // sort desc
+    let start = sorted_starts[0]
+    let end = sorted_ends[0]
+    return [start, end]
+}
+
+/**
+ * Calculate the percentages.
+ */
 function proCalc() {
     dataArray = []
     wcount = 0
@@ -327,8 +392,12 @@ function proCalc() {
     }
 }
 
+/**
+ * Draw the heatmap.
+ */
 function displayHM() {
     document.body.style.cursor = "wait"
+    let playerInterval
     //get perclimits
     const color1 = document.getElementById("color1").value
     const color2b = document.getElementById("color2b").value
@@ -379,16 +448,29 @@ function displayHM() {
                 }
             })
         }
-        //update slider
+        // update slider
         const update = value => {
-            let t = new Date(document.getElementById('timeStartIn').value)
-            t.setSeconds(t.getSeconds() + value)
+            let t = startDate
+            console.log("update", startDate, t)
+            let newSeconds = t.getSeconds() + value
+            if (newSeconds <= timePeriod) {
+                t.setSeconds(newSeconds)
+                console.log(t)
+            } else {
+                slider.value = timePeriod
+                if (playerInterval){
+                    clearInterval(playerInterval)
+                }
+                return
+            }
+            
             outputThis.innerHTML = t.toLocaleString()
             formatted4 = formatted.filter(x => x.startTime <= t && x.endTime >= t)
             realUpd()
         }
         update(slider.value)
         slider.addEventListener("input", function() {
+            console.log(slider.value)
             update(slider.value)
         })
         //buttons
@@ -411,7 +493,7 @@ function displayHM() {
                     forward.click()
                 }
             }
-            setInterval(playInterval, 100)
+            playerInterval = setInterval(playInterval, 100)
         })
         let speedSel = 0
         b2start.addEventListener("click", function() {
@@ -469,6 +551,9 @@ function displayHM() {
     document.body.style.cursor = "default"
 }
 
+/**
+ * Generate table.
+ */
 function disTbl() {
     if (allMachs.includes(tblMach.value)) {
         let count
