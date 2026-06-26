@@ -116,10 +116,22 @@
 
         </section>
 
-        <section id="newGameForm" class="hidden">
-            <form>
-                <input type="number" min="1" value="2">
-                
+        <section id="new" class="hidden">
+            <form id="newGameForm">
+                <label for="players">Antal spelare:</label>
+                <input type="number" min="1" max="1000" value="2" id="playerCount" name="players">
+                <br>
+                <label for="holes">Antal hål:</label>
+                <input type="number" min="1" max="18" value="18" id="holeCount" name="holes">
+
+                <!-- <label for="">Speltyp</label> -->
+                <select id="gameType">
+                    <option selected disabled>Välj speltyp</option>
+                </select>
+
+                <select id="golfCourse">
+                    <option selected disabled>Välj bana (optionellt)</option>
+                </select>
             </form>
         </section>
 

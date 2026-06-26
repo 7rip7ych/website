@@ -593,3 +593,7 @@ p.col {
   font-family: var(--font);
   cursor: pointer;
 }
+
+.hidden {
+  display: none;
+}
