@@ -1,0 +1,86 @@
+[
+    {
+        "name": "Matchspel",
+        "desc": "Till skillnad från slagspel och poängbogey har matchspel mycket mer spänning i sig. Varje hål är en tävling där din motspelare kan vinna, förlora eller dela hålet med dig. När den som vunnit fler hål än vad som återstår hål att spela är matchen vunnen, vilket oftast innebär att man inte hinner spela alla 18. Matchspel brukar kallas för hjärnornas spel eftersom det hela tiden gäller att anpassa sig till motspelarens slag. Allt kan hända under spelets gång så kom därför ihåg att inte ta något för givet. Den här varianten är går snabbt att spela. Vet du med dig att du inte har en chans att vinna hålet kan du skänka bort det och gå vidare."
+    },
+    {
+        "name": "Poängbogey",
+        "desc": "I poängbogey beräknas poäng efter det uppnådda resultatet på varje hål. Tävlarens resultat i poängbogey är summan av poängen på varje hål. Poängbogey spelas normalt netto, d.v.s. tävlarna erhåller slag motsvarande sitt exakta hcp enligt banas slopetabell. Poängen beräknas på följande sätt: För ett resultat, netto, som är lika med hålets par erhåller tävlaren två poäng. För varje slag lägre än par, får tävlaren ytterligare ett poäng. För varje slag högre än par får tävlaren avstå ett poäng. Kan man inte få någon poäng så bör man ta upp bollen och gå vidare för att vinna tid."
+    },
+    {
+        "name": "Slagtävling",
+        "desc": "Slagtävling är en speltyp, där det gäller att spela det fastställda antalet hål på minsta antal slag, brutto eller netto, d.v.s. avdrag av spelhcp. Vilket innebär att du måste håla ut."
+    },
+    {
+        "name": "Slaggolf",
+        "desc": "Slaggolf är en typ av slagspel med några specialregler och kan sägas vara ett mellanting mellan poängbogey och slagtävling. Räkningen sker i antal slag där dock antalet slag per hål är begränsat. Alla spelare får spela maximalt fem slag över par på varje hål. Har spelaren inte hålat ut efter dessa slag plockas bollen upp och resultatet noteras till PAR+5 slag. På ett par 3 hål blir det maximala antalet slag alltså 8, på ett par 4 hål 9 och på ett par 5 hål 10. Vinnare är den som har lägst resultat. Slagspel kan spelas med eller utan handicap. Spelformen innebär att man måste vara lite mer ‘rädd om slagen’ än i poängbogey."
+    },
+    {
+        "name": "Foursome",
+        "desc": "Denna spelform bygger på att två spelare bildar ett par och spelar på gemensam boll. Spelarna slår vartannat slag och före spelets start bestämmer de vem som skall slå ut från udda- respektive jämna hålnummer. Efter att ha studerat banan blir denna spelfördelning upphov till taktiska diskussioner vilket resulterar i att den som har normalt har flest greenträffar på korthålen, självfallet väljer den variant med flest korthål."
+    },
+    {
+        "name": "Greensome",
+        "desc": "Detta är en variant på foursome med den skillnad att bägge spelarna slår ut på varje hål. Därefter väljer man den boll som man skall spela vidare på. Efter detta val slår man sedan vartannat slag precis som i foursome."
+    },
+    {
+        "name": "Irish Greensome",
+        "desc": "Fungerar som vanlig greensome med den skillnaden att på par 4 och par 5 hålen slår båda spelarna efter sitt utslag ytterligare vars ett slag och då på sin medspelares boll. Därefter väljer man den boll som man med vartannat slag skall spela vidare på. På par 3 hål slår bägge spelarna ut och därefter väljer man den boll som man skall spela vidare på."
+    },
+    {
+        "name": "Running Eclectic",
+        "desc": "Den här spelformen går ut på att under en förutbestämd tid välja ut och föra de bästa resultaten för varje hål och rapportera detta för tävlingsledningen. Vinner gör den som har det lägsta totalresultatet. Tiden för en Running Eclectic är olika men ofta sträcker den sig över en hel golfsäsong. Det innebär att du har många chanser på dig att få bästa resultat på respektive hål. Har du en gång under säsongen fört in resultatet för ett hål, kan inte detta ändras även om du skulle råka spela bättre på detta hål vid ett senare tillfälle. Det förutsätter att du väl känner till vad du kan prestera som golfspelare."
+    },
+    {
+        "name": "Scramble",
+        "desc": "Laget kan bestå av två, tre eller fyra spelare. Under spelet väljer laget ut den bäst placerade bollen och alla slår därefter på var sin boll från denna plats tills bollen slutligen är i hål. Alla är med och drar sitt ‘strå till stacken’, någon eller några gånger. En trevlig spelform som ger även de något mindre erfarna spelarna chansen att få vara med om något stort i resultatväg. Scorerna blir oftast låga."
+    },
+    {
+        "name": "Drop-out Scramble",
+        "desc": "Laget består avfyra spelare.Samtliga slår ut. Därefter väljer laget den bäst placerade bollen och markerar den. Den spelare vars boll man valt, står över (drop-out) nästa slag. Övriga spelare placerar i valfri ordning sin boll och spelar sina slag. Spelet fortsätter på samma sätt (med drop-out). Så fort någon hålat ut noteras scoren och laget fotrsätter till nästa hål. Tävlingen spelas scratch. Lagen lottas så att sammanlagd hcp är så lika som möjligt. Om laget består av endast tre spelare, spelar alla utan drop-out."
+    },
+    {
+        "name": "Texas Scramble",
+        "desc": "Spelas som scramble men under tävlingsronden skall ett fyrmannalag välja varje spelares UTSLAG minst fyra gånger och ett tremannalag minst fem gånger."
+    },
+    {
+        "name": "Rumble",
+        "desc": "Är ytterligare en variant av scramble. Laget består av tre spelare. Spelas som scramble men med följande resultatberäkning: Hål 1 till 6: Bästa resultatet (poängen eller slagen) räknas för endast en spelare räknas. Hål 7 till 12: De två bästa resultaten adderas och räknas. Hål 13 till 18: Alla tre resultaten adderas och räknas. Skulle laget bestå av fyra spelare beräknas resultaten enligt ovan men på hål 13 till 18 adderas de tre bästa resultaten."
+    },
+    {
+        "name": "Nassau",
+        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten."
+    },
+    {
+        "name": "Tryall",
+        "desc": "I denna spelform är man två spelare i laget. var och en slår ut med sin egen boll från tee. Inför andraslaget skiftar man boll. A slår på B:s boll och vice versa. Därefter spelar man hålet som foursome tills bollen är i koppen. Sedan börjar man om igen med varsin boll från nästa tee osv. Om man t ex spelar ett par 3 hål och båda spelarna missar sina puttar, väljer laget vems boll som skall spelas. Väljer laget spelare B:s boll från tee, är det denne som också skall putta tredje slaget. Tryall är en omväxlande och rolig spelform som ger spelarna bollägen som de normalt inte är vana vid."
+    },
+    {
+        "name": "Fyrboll",
+        "desc": "Här bildar två spelare sida (lag). Det bästa resultatet på varje hål är sidans (lagets) resultat på hålet. Man kan spela fyrboll bästboll som matchspel, slagtävlig eller poängbogey allt efter önskemål. I tävlingssammanhang reduceras spelarnas spelhandicap med 10%. I sällskapsspel kan man välja att spela med full handicap."
+    },
+    {
+        "name": "Fyrboll bästboll och sämstboll",
+        "desc": "Man spelar om två poäng per hål och endast som matchspel. Spelas som bästboll med tillägget att även de två övriga (‘sämsta’) bollarna jämförs. Det lag vars bästa boll har bäst resultat vinner en poäng, det lag vars ‘sämsta’ boll har bäst resultat vinner en poäng. Matchen slutar när endera laget vunnit så många poäng mer än det andra laget än vad som återstår att spela om. Om det ena laget efter 17 spelade hål leder med 3 poäng har de alltså också vunnit matchen."
+    },
+    {
+        "name": "Fyrboll bästboll och sammanlagt",
+        "desc": "Spelas som fyrboll bästboll och sämstboll med den skillnaden att man i stället för sämstbollen jämför lagens sammanlagda resultat."
+    },
+    {
+        "name": "Köpenhamnare",
+        "desc": "En spelform som bäst och helst spelas mellan tre spelare. Köpenhamnare spelas enligt reglerna för poängbogey. Spelarna delar 6 poäng per hål på följande sätt: den bäste får 4 poäng, den näst bäste 2 och den sämste 0 poäng. Om en spelare är bäst och de andra lika, blir poängställningen 4-1-1. Om två är bäst och den tredje sämst fördelas poängen 3-3-0. Då alla tre är lika fördelas poängen 2-2-2. Med lite egen matematik kan man spela även med fyra spelare."
+    },
+    {
+        "name": "Snörtävling",
+        "desc": "Spelas som slaggolf men varje spelare får lika många meter rep som sitt handikapp med sig i bagen. Snöret kan användas för att sänka puttar eller ta sig ur svårigheter. Man klipper av lika mycket på snöret som man flyttar bollen. Detta innebär att om man vill sänka sin enmetersputt klipper man av en meter snöre. Snörklippet räknas inte i scoren."
+    },
+    {
+        "name": "Flaggtävling",
+        "desc": "Varje spelare får en flagga med sitt namn och antalet erhållna slag på med sig i bagen. När man slagit lika många slag som det står på flaggan sätter man ner den i backen. Den spelare som kommit längst vinner."
+    },
+    {
+        "name": "Kicker",
+        "desc": "Spelas som slaggolf men spelaren får på varje hål slå om ett slag om han/hon vill. Dock inte en putt."
+    }
+]
