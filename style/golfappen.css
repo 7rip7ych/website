@@ -50,6 +50,7 @@
 /* Basic normalization */
 * {
   box-sizing: border-box;
+  font-size: 18px;
 }
 
 
@@ -596,4 +597,28 @@ p.col {
 
 .hidden {
   display: none;
+}
+
+.form, .form fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+input, select, button {
+  background-color: var(--text-color-light);
+  color: var(--text-color-dark);
+  padding: 0.5em;
+  font-size: 1.1rem;
+  border-radius: 1000px;
+  border: 1px solid #6b6b6b;
+}
+
+input[type=text], input[type=number], select {
+  box-shadow: -2px -1px 4px #00000036 inset, 2px 2px 5px #000000d6 inset;
+}
+
+label {
+  display: block;
 }

@@ -91,7 +91,7 @@
     </header>
 
     <div class="wrapper">
-        <section id="hem" class="transparent">
+        <section id="startView" class="transparent visible">
 
             <div class="row cols-1 no-padding">
                 <div class="col centered-rows">
@@ -111,35 +111,51 @@
                     <button class="row centered main-button" id="newGame">Nytt spel</button>
 
                     <button class="row centered main-button" id="continueGame">Fortsätt senaste spel</button>
+                    <button class="row centered main-button" id="showHistory">Historik</button>
                 </div>
             </div>
 
         </section>
 
-        <section id="new" class="hidden">
-            <form id="newGameForm">
-                <label for="players">Antal spelare:</label>
-                <input type="number" min="1" max="1000" value="2" id="playerCount" name="players">
-                <br>
-                <label for="holes">Antal hål:</label>
-                <input type="number" min="1" max="18" value="18" id="holeCount" name="holes">
+        <section id="newView" class="hidden">
+            <h2>Nytt spel</h2>
+            <form id="newGameForm" class="form">
+                <label>Antal spelare:
+                <input type="number" min="1" max="1000" value="2" id="playerCount" name="players" required>
+                </label>
 
-                <!-- <label for="">Speltyp</label> -->
-                <select id="gameType">
-                    <option selected disabled>Välj speltyp</option>
+                <label>Antal hål:
+                <input type="number" min="1" max="18" value="18" id="holeCount" name="holes" required>
+                </label>
+                
+                <select id="gameType" name="type" required>
+                    <option value="" selected disabled>Välj speltyp</option>
                 </select>
 
-                <select id="golfCourse">
+                <!-- <select id="golfCourse" name="course">
                     <option selected disabled>Välj bana (optionellt)</option>
-                </select>
+                </select> -->
+
+                <input type="submit" name="submit">
             </form>
         </section>
 
+        <section id="playView" class="hidden">
+            <p>play</p>
+        </section>
+
+        <section id="scoreView" class="hidden">
+            <p>score</p>
+        </section>
+
+        <section id="historyView" class="hidden">
+            <p>history</p>
+        </section>
     </div>
 
 
     <footer class="sitefooter">
-        <div class="footer-triptych row cols-3">
+        <!-- <div class="footer-triptych row cols-3">
             <div class="footer-column col1">
                 <h3>Om oss</h3>
 
@@ -150,12 +166,13 @@
             <div class="footer-column col3">
                 <h3>Kontakta oss</h3>
             </div>
-        </div>
+        </div> -->
         <div class="footer-bottom">
             <p>&copy; 7rip7ych</p>
         </div>
     </footer>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
+    <script src="src/modules/responsive.js" type="module"></script>
     <script src="src/golfappen.js" type="module"></script>
 </body>
 
