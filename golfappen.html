@@ -6,6 +6,8 @@
     <meta name="viewport"
         content="fullscreen, width=device-width, height=device-height, initial-scale=1.0, interactive-widget=resizes-content">
     <!-- <link rel="stylesheet" href="style/style.css"> -->
+    <link rel="preconnect" href="assets/golf_ball.glb">
+    <link rel="preconnect" href="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js">
     <link rel="stylesheet" href="style/golfappen.css">
     <link rel="shortcut icon" href="favicon.ico">
     <title>Golfappen | 7rip7ych</title>
@@ -13,59 +15,6 @@
 </head>
 
 <body>
-    <!-- <header class="siteheader">
-      <div class="logo round">
-        <a href="index.html">
-          <img src="img/7rip7ych.gif" alt="Logo">
-        </a>
-      </div>
-
-      <nav class="navbar">
-        <button class="menu-toggle" id="menu-toggle">&#9776;</button>
-        <ul class="nav-links" id="nav-links">
-          <li><a href="index.html">Start</a></li>
-          <li><a href="duckhunt.html">Duckhunt 2</a></li>
-          <li><a href="gya.html">GYA</a></li>
-          <li><a href="pink.html">Cute Retro</a></li>
-          <li><a href="vision.html">Vision</a></li>
-          <li class="active"><a href="golfappen.html">Golfappen</a></li>
-          <li><a href="links.html">External links</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <div class="wrapper">
-
-      <section id="start" class="color1">
-        <div class="row cols-1">
-          <div class="col">
-            <h1>Golfappen</h1>
-          </div>
-        </div>
-      </section>
-
-    </div>
-    <footer class="sitefooter">
-      <div class="footer-triptych row cols-2">
-        <div class="footer-column col1">
-          <h3>Creator</h3>
-          <img src="img/7rip7ych.gif" alt="7rip7ych">
-          <p>
-            This is a site that presents some of my projects and designs.
-          </p>
-        </div>
-
-        <div class="footer-column col2">
-          <h3>Contact</h3>
-          <p>@7rip7ych on <a href="https://github.com/7rip7ych">GitHub</a></p>
-          <p>@7rip7ych on <a href="https://codepen.io/7rip7ych">Codepen</a></p>
-          <p>Mail: <a href="mailto:dev.7ryp7ych@gmail.com">dev.7ryp7ych@gmail.com</a></p>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 7rip7ych, Copyright 2026 </p>
-      </div>
-    </footer> -->
     <header class="siteheader">
         <div class="logo">
             <a href="#hem">
@@ -94,16 +43,18 @@
         <section id="startView" class="transparent visible">
             <div class="row cols-1 no-padding">
                 <div class="col centered-rows">
-                    <model-viewer
-                    src="assets/golf_ball.glb"
-                    alt="golf ball"
-                    shadow_intensity="1"
-                    auto-rotate
-                    rotation-per-second="0.1rad"
-                    camera-orbit="0deg 120deg 105%"
-                    auto-rotate-delay="10"
-                    class="row"
-                    ></model-viewer>
+                    <div class="row">
+                        <model-viewer
+                        src="assets/golf_ball.glb"
+                        alt="golf ball"
+                        shadow_intensity="1"
+                        auto-rotate
+                        rotation-per-second="0.1rad"
+                        camera-orbit="0deg 120deg 105%"
+                        auto-rotate-delay="10"
+                        ></model-viewer>
+                    </div>
+                    
 
                     <h3 class="row centered">Golfappen</h3>
 
