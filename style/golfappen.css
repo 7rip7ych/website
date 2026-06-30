@@ -360,15 +360,14 @@ p.col {
   .sitefooter .cols-3 .col3 { flex: 1 1 100%; }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 400px) {
   .wrapper .cols-2 { flex-wrap: wrap; }
   .wrapper .cols-2 .col  { flex: 1 1 100%; }
 }
 
 @media (max-width: 600px) {
   .wrapper .row { flex-wrap: wrap; }
-  .wrapper .row .col { flex: 1 1 100%; }
-  
+  /* .wrapper .row .col { flex: 1 1 100%; }*/
   .sitefooter .cols-3 .footer-column { flex: 1 1 100%; }
 }
 
@@ -679,7 +678,7 @@ label {
   display: none;
 }
 
-.step-scroll .col {
+.step-scroll > .col {
   flex: 1 1 100%;
   box-shadow: 0 0 10px var(--green-shadow);
   min-width: 100%;

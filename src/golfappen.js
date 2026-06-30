@@ -39,7 +39,7 @@ function createListeners() {
     buttons["new"].addEventListener("click", () => switchView("new"))
     buttons["continue"].addEventListener("click", () => switchView("play"))
     buttons["history"].addEventListener("click", () => switchView("history"))
-    buttons["partRes"].addEventListener("click", showPartResults)
+    buttons["partRes"].addEventListener("click", () => gameObject.showPartResults())
 
     // back buttons
     buttons["backFromNew"].addEventListener("click", () => switchView("start"))
@@ -50,7 +50,7 @@ function createListeners() {
     // form submits
     forms["newGame"].addEventListener("submit", (e) => gameObject.create(e))
     forms["players"].addEventListener("submit", (e) => gameObject.setUpPlayers(e))
-
+    forms["keeper"].addEventListener("submit", (e) => gameObject.showResults(e))
 }
 
 
@@ -97,16 +97,6 @@ function switchView(newView) {
 
     views[newView].classList.replace("hidden", "visible")
 }
-
-
-// function createGame(e) {
-//     e.preventDefault()
-//     console.log(e)
-//     const data = new FormData(e.target)
-//     console.log([...data.entries()])
-//     gameObject.create(parseInt(data.get("players")),
-//         parseInt(data.get("holes")), data.get("type"))
-// }
 
 const gameObject = {
     view: views["play"],
@@ -172,15 +162,54 @@ const gameObject = {
             `
         }
         this.keeper.innerHTML += `<div class="col white">
-            <input type="submit" value="submit">
+            <input type="submit" value="Räkna ut resultat">
+            <div class="results row cols-2"></div>
         </div>`
 
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
         this.ruleset.print()
     },
     showPartResults: function() {
-        console.log("hello")
         views["partRes"].classList.toggle("collapsed")
+        if (views["partRes"].classList.contains("collapsed")) {
+            return
+        }
+        gameObject.readInputs()
+        let res = gameObject.ruleset.calculateScores()
+        let container = views["partRes"].querySelector(".collapsing")
+        container.innerHTML = ""
+        Object.keys(res).forEach(player => {
+            container.innerHTML += `<div class="player"><h4>${player}</h4>`
+            for (const [key, val] of Object.entries(res[player])) {
+                container.innerHTML += `<p><span>${key}</span> <span>${val}</span></p>\n`
+            }
+            container.innerHTML += "</div>"
+        })
+    },
+    showResults: function(e) {
+        e.preventDefault()
+
+        gameObject.readInputs()
+        let points = gameObject.ruleset.calculateScores()
+        let container = forms["keeper"].querySelector(".results")
+        let rank = Object.entries(points).sort((a, b) => a[1]["total"] - b[1]["total"])
+        let content = `<div class="col left"><h3>Rankning</h3>`
+        rank.forEach(rank => {
+            content += `<p>${rank[0]}</p>`
+        })
+        content += `</div>
+        <div class="col right">
+        <h3>Poäng</h3>`
+        Object.keys(points).forEach(player => {
+            content += `<div class="player"><h4>${player}</h4>`
+            for (const [key, val] of Object.entries(points[player])) {
+                content += `<p><span>${key}</span> <span>${val}</span></p>\n`
+            }
+            content += "</div>"
+        })
+        content += `</div>`
+        
+        container.innerHTML = content
     },
     readInputs: function() {
         let formData = new FormData(this.keeper)
@@ -196,25 +225,7 @@ const gameObject = {
         this.ruleset.setPoints(points)
     }
 }
-function showPartResults() {
-    views["partRes"].classList.toggle("collapsed")
-    if (views["partRes"].classList.contains("collapsed")) {
-        return
-    }
-    console.log("hello")
-    gameObject.readInputs()
-    let res = gameObject.ruleset.calculateScores()
-    let container = views["partRes"].querySelector(".collapsing")
-    container.innerHTML = ""
-    Object.keys(res).forEach(player => {
-        container.innerHTML += `<div class="player"><h4>${player}</h4>`
-        for (const [key, val] of Object.entries(res[player])) {
-            container.innerHTML += `<p><span>${key}</span> <span>${val}</span></p>\n`
-        }
-        container.innerHTML += "</div>"
-    })
-    
-}
+
 
 class GameRules {
     constructor(players, holes) {
