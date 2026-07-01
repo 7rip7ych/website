@@ -3,6 +3,7 @@
  */
 
 import { getFile } from "./modules/files.js"
+import { webReader } from "./modules/webreader.js"
 
 // declare variables
 const main = document.querySelector(".wrapper")
@@ -62,19 +63,29 @@ async function loadPlayTypes() {
     return plays
 }
 
-function loadGolfCourses() {
-    console.log(1)
-    return []
+async function loadGolfClubs() {
+    const courses = await getFile("assets/golfbanor.json")
+    // storage.setItem("courses", JSON.stringify(plays))
+    return courses
 }
 
 
-async function populateNewGameForm(playTypes, golfCourses) {
+async function populateNewGameForm(playTypes, golfClubs) {
     // console.log(playTypes)
     const gameSelect = document.getElementById("gameType")
-    // const courseSelect = document.getElementById("golfCourse")
+    const clubSelect = document.getElementById("golfClub")
+    const courseSelect = document.getElementById("golfCourse")
     for (const play in playTypes) {
         gameSelect.add(new Option(playTypes[play]["name"], playTypes[play]["id"]))
     }
+    for (const course in golfClubs) {
+        clubSelect.add(new Option(golfClubs[course]["name"], golfClubs[course]["id"]))
+    }
+    clubSelect.addEventListener("change", (e) => {
+        clubs.getClubData(e.target.value)
+        courseSelect.setAttribute("disabled", false)
+
+    })
 }
 
 async function populateHistory() {}
@@ -82,7 +93,7 @@ async function populateHistory() {}
 async function setup() {
     createListeners()
     const plays =  await loadPlayTypes()
-    const courses = loadGolfCourses()
+    const courses = await loadGolfClubs()
     populateNewGameForm(plays, courses)
     populateHistory()
 }
@@ -96,6 +107,18 @@ function switchView(newView) {
     currView.classList.replace("visible", "hidden")
 
     views[newView].classList.replace("hidden", "visible")
+}
+
+const clubs = {
+    list: [],
+    baseurl: "https://www.caddee.se/klubb/",
+    getClubData: async function(club) {
+        const page = await webReader.fetchAsText(this.baseurl + club)
+        let data = webReader.getContentByHtmlId("__NEXT_DATA__", await page)
+        data = JSON.parse(data)
+        console.log(JSON.stringify(data))
+        return data
+    }
 }
 
 const gameObject = {
@@ -123,7 +146,7 @@ const gameObject = {
             <fieldset>
                 <legend>Player ${i}</legend>
                 <label>Namn: <input type="text" name="p${i}name" id="p${i}name"></label>
-                <label>Handicap: <input type="number" name="p${i}handicap" id="p${i}handicap"></label>
+                <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap"></label>
             </fieldset>
             `
         }
