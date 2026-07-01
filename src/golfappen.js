@@ -3,7 +3,7 @@
  */
 
 import { getFile } from "./modules/files.js"
-import { webReader } from "./modules/webreader.js"
+import { webReader } from "./modules/webreader.cjs"
 
 // declare variables
 const main = document.querySelector(".wrapper")
