@@ -153,11 +153,20 @@ const gameObject = {
         this.players = parseInt(data.get("players"))
         this.holes = parseInt(data.get("holes"))
         this.gameType = data.get("type")
+        this.club = data.get("club")
+        this.course = data.get("course")
+        if (this.course) {
+            this.loadCourseData()
+        }
         switchView("players")
         this.openPlayerSetup(this.players)
     },
+    loadCourseData: async function() {
+        this.clubData = await data.getClubData(this.club)
+        this.courseData = this.clubData.courseArray.find(x => x.name == this.course)
+        console.log(this.courseData)
+    },
     openPlayerSetup: function(count) {
-        
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
         for (let i = 1; i<=count; i++) {
@@ -195,10 +204,17 @@ const gameObject = {
             const inputFields = this.players.map(player => {
                 return `<label>${player.name}: <input type="number" name="${player.name}-${i}" min="0" max="999"></label>`
             })
+            let parVal = ""
+            let indVal = ""
+            if (this.courseData) {
+                parVal = ` value="${this.courseData.holes[i-1].par}"`
+                indVal = ` value="${this.courseData.holes[i-1].index}"`
+            }
             this.keeper.innerHTML += `
             <div class="col white hole" id="hole${i}">
                 <h3>Hål ${i}</h3>
-                <label class="separate">Par: <input type="number" name="par-${i}" min="1" max="99"></label>
+                <label class="separate">Par: <input type="number" name="par-${i}" min="1" max="99"${parVal}></label>
+                <label class="separate">Index: <input type="number" name="index-${i}" min="1" max="99"${indVal}></label>
                 ${inputFields.join("\n")}
             </div>
             `
