@@ -3,7 +3,6 @@
  */
 
 import { getFile } from "./modules/files.js"
-import { webReader } from "./modules/webreader.cjs"
 
 // declare variables
 const main = document.querySelector(".wrapper")
@@ -55,20 +54,37 @@ function createListeners() {
 }
 
 
-// Setup functions executed once
-async function loadPlayTypes() {
-    // if (storage.getItem("playForms")) { return JSON.parse(storage.getItem("playForms")) }
-    const plays = await getFile("assets/golf_spelformer.json")
-    storage.setItem("playForms", JSON.stringify(plays))
-    return plays
+const data = {
+    clubs: [],
+    playtypes: [],
+    clubdata: {},
+    loadPlayTypes: async function loadPlayTypes() {
+        // if (storage.getItem("playForms")) { return JSON.parse(storage.getItem("playForms")) }
+        const plays = await getFile("assets/golf_spelformer.json")
+        storage.setItem("playForms", JSON.stringify(plays))
+        return plays
+    },
+    loadGolfClubs: async function loadGolfClubs() {
+        const courses = await getFile("assets/golfbanor.json")
+        // storage.setItem("courses", JSON.stringify(plays))
+        return courses
+    },
+    loadClubData: async function() {
+        this.clubdata = await getFile("assets/caddee-data.json")
+        // storage.setItem("courses", JSON.stringify(plays))
+    },
+    getClubData: async function(club) {
+        console.log(club)
+        let data = this.clubdata || await getFile("assets/caddee-data.json")
+        console.log(await Object.keys(data))
+        // if (!this.clubdata) {
+        //     this.clubdata = await getFile("assets/caddee-data.json")
+        // }
+        if (!await data[club]) { return }
+        console.log(data[club])
+        return await data[club]["props"]["pageProps"]
+    }
 }
-
-async function loadGolfClubs() {
-    const courses = await getFile("assets/golfbanor.json")
-    // storage.setItem("courses", JSON.stringify(plays))
-    return courses
-}
-
 
 async function populateNewGameForm(playTypes, golfClubs) {
     // console.log(playTypes)
@@ -81,9 +97,21 @@ async function populateNewGameForm(playTypes, golfClubs) {
     for (const course in golfClubs) {
         clubSelect.add(new Option(golfClubs[course]["name"], golfClubs[course]["id"]))
     }
-    clubSelect.addEventListener("change", (e) => {
-        clubs.getClubData(e.target.value)
-        courseSelect.setAttribute("disabled", false)
+    clubSelect.addEventListener("change", async(e) => {
+        const clubData = await data.getClubData(e.target.value)
+        courseSelect.innerHTML = `<option selected disabled>Välj golfbana</option>`
+        if (!clubData || !clubData?.club?.courses) {
+            courseSelect.disabled = true
+            return
+        }
+        console.log(clubData)
+        const courses = clubData?.club?.courses
+        console.log(courses)
+        courses.map(course => {
+            courseSelect.add(new Option(course.name))
+        })
+
+        courseSelect.disabled = false
 
     })
 }
@@ -92,8 +120,9 @@ async function populateHistory() {}
 
 async function setup() {
     createListeners()
-    const plays =  await loadPlayTypes()
-    const courses = await loadGolfClubs()
+    const plays =  await data.loadPlayTypes()
+    const courses = await data.loadGolfClubs()
+    await data.loadClubData()
     populateNewGameForm(plays, courses)
     populateHistory()
 }
@@ -109,17 +138,7 @@ function switchView(newView) {
     views[newView].classList.replace("hidden", "visible")
 }
 
-const clubs = {
-    list: [],
-    baseurl: "https://www.caddee.se/klubb/",
-    getClubData: async function(club) {
-        const page = await webReader.fetchAsText(this.baseurl + club)
-        let data = webReader.getContentByHtmlId("__NEXT_DATA__", await page)
-        data = JSON.parse(data)
-        console.log(JSON.stringify(data))
-        return data
-    }
-}
+
 
 const gameObject = {
     view: views["play"],

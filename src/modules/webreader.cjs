@@ -2,8 +2,7 @@
  * @module webreader
  */
 
-let fs = require('fs')
-const { getFile } = require("./files.js")
+const fs = require('fs/promises')
 
 const webReader = {
     fetchAsJson: async function fetchURLAsJSON (url) {
@@ -23,46 +22,92 @@ const webReader = {
     },
 
     getContentByHtmlId: function getContentByHtmlId(id, htmlContent) {
-        let re = new RegExp(String.raw`<[^>]*id="${id}"[^>]*>(?<content>[^<]*)</[^>]*>`, "gm")
+        // console.log(htmlContent.length)
+        let re = new RegExp(String.raw`<[^>]*id="${id}"[^>]*>(?<content>[^<]*)<\/[^>]*>`, "gm")
         let match = re.exec(htmlContent)
-        // console.log(match)
-        let content = match.groups.content
-        // console.log(content)
-        return content
+        try {
+            let content = match.groups.content
+            // console.log(content)
+            return content
+        } catch (e) {
+            console.log(e)
+            return "{}"
+        }
+
     }
 }
 
 
-
+let blockingInterval
 const clubs = {
     list: [],
     data: {},
+    cluburl: "https://www.caddee.se/anslutna-klubbar",
     baseurl: "https://www.caddee.se/klubb/",
+    getClubs: async function() {
+        const page = await webReader.fetchAsText(this.cluburl)
+        const re = new RegExp(String.raw`<a [^>]*class="ClubItem__GoToLink-sc-655ca86b-6 dnaAPa"[^>]*href="\/klubb\/(?<id>[^"]*)"[^>]*>(?<name>[^<]*)<\/a>`, 'gm')
+        let matches = [...page.matchAll(re)]
+        let clublist = []
+        matches.forEach((match)=> {
+            clublist.push({
+                id: match.groups.id,
+                name: match.groups.name
+            })
+        })
+        console.log("Antal klubbar:", clublist.length)
+        await fs.writeFile('../../assets/golfbanor.json', JSON.stringify(clublist, null, 2))
+    },
     getClubData: async function(club) {
         const page = await webReader.fetchAsText(this.baseurl + club)
-        console.log(page)
-        let data = webReader.getContentByHtmlId("__NEXT_DATA__", await page)
-        data = JSON.parse(data)
-        console.log(JSON.stringify(data))
-        return data
+        let data = await webReader.getContentByHtmlId("__NEXT_DATA__", page)
+        data = await JSON.parse(await data)
+        return await data || {}
     },
-    saveToFile: function() {
-        fs.writeFile('caddee-data.json', JSON.stringify(clubs.data), 'utf8', (err, data) => {
-            if (err) throw err
-            console.log(data)
-        })
+    saveToFile: async function() {
+        await fs.writeFile('../../assets/caddee-data.json', JSON.stringify(clubs.data, null, 2))
+        clearInterval(blockingInterval)
     }
-};
+}
 
-(async function() {
+async function main() {
+    const courses = await fs.readFile('../../assets/golfbanor.json', 'utf8')
     
-    const courses = await fs.readFileSync('./golfbanor.json', 'utf8')// getFile("/home/u7rip7ych/website7/src/modules/golfbanor.json")
-    console.log(courses)
     clubs.list = await JSON.parse(courses).map(x => x.id)
-    clubs.list.forEach(async(club) => {
-        clubs.data[club] = await clubs.getClubData(club)
+    console.log(courses, clubs.list)
+    let data = {}
+    let prom = new Promise((resolve, reject) => {
+        clubs.list.forEach(async(club, index) => {
+            data[club] = await clubs.getClubData(club)
+            // console.log(73, data[club])
+            if (index == clubs.list.length -1) {
+                if (Object.keys(data).length < clubs.list.length) {
+                    let lastCount = Object.keys(data).length
+                    let iterations = 0
+                    while (Object.keys(data).length < clubs.list.length) {
+                        if (iterations > 5) {break}
+                        clubs.list.forEach(async(club) => {
+                            if (!data[club]) {
+                                data[club] = await clubs.getClubData(club)
+                            }
+                        })
+                        lastCount = Object.keys(data).length
+                        iterations++
+                    }
+                    console.log(iterations, lastCount)
+                }
+                resolve()
+            } 
+        })
     })
-    clubs.saveToFile()
-})()
+    prom.then(()=> {
+        clubs.data = data
+        blockingInterval = setInterval(()=> undefined, 100)
+        clubs.saveToFile()
+    })
+}
 
-// export { webReader }
+// clubs.getClubs()
+main()
+
+exports = {webReader}
