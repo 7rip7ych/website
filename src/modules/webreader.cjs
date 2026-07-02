@@ -77,28 +77,31 @@ async function main() {
     console.log(courses, clubs.list)
     let data = {}
     let prom = new Promise((resolve, reject) => {
-        clubs.list.forEach(async(club, index) => {
-            data[club] = await clubs.getClubData(club)
-            // console.log(73, data[club])
-            if (index == clubs.list.length -1) {
-                if (Object.keys(data).length < clubs.list.length) {
-                    let lastCount = Object.keys(data).length
-                    let iterations = 0
-                    while (Object.keys(data).length < clubs.list.length) {
-                        if (iterations > 5) {break}
-                        clubs.list.forEach(async(club) => {
-                            if (!data[club]) {
-                                data[club] = await clubs.getClubData(club)
-                            }
-                        })
-                        lastCount = Object.keys(data).length
-                        iterations++
+        try {
+            clubs.list.forEach(async(club, index) => {
+                data[club] = await clubs.getClubData(club)
+                // console.log(73, data[club])
+                if (index == clubs.list.length -1) {
+                    if (Object.keys(data).length < clubs.list.length) {
+                        let lastCount = Object.keys(data).length
+                        let iterations = 0
+                        while (Object.keys(data).length < clubs.list.length) {
+                            if (iterations > 5) {break}
+                            clubs.list.forEach(async(club) => {
+                                if (!data[club]) {
+                                    data[club] = await clubs.getClubData(club)
+                                }
+                            })
+                            lastCount = Object.keys(data).length
+                            iterations++
+                        }
+                        console.log(iterations, lastCount)
                     }
-                    console.log(iterations, lastCount)
+                    resolve()
                 }
-                resolve()
-            } 
-        })
+            })
+        } catch {reject()}
+        
     })
     prom.then(()=> {
         clubs.data = data
