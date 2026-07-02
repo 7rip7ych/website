@@ -3,6 +3,7 @@
  */
 
 const fs = require('fs/promises')
+const { getFile } = require('./files.js')
 
 const webReader = {
     fetchAsJson: async function fetchURLAsJSON (url) {
@@ -67,9 +68,15 @@ const clubs = {
     saveToFile: async function() {
         await fs.writeFile('../../assets/caddee-data.json', JSON.stringify(clubs.data, null, 2))
         clearInterval(blockingInterval)
+    },
+    getMissing: function(courses, clubdata) {
+        const clublist = Object.keys(clubdata)
+        const missing = courses.filter(x => !clublist.includes(x))
+        return missing
     }
 }
 
+// get data
 async function main() {
     const courses = await fs.readFile('../../assets/golfbanor.json', 'utf8')
     
@@ -110,7 +117,40 @@ async function main() {
     })
 }
 
+// complete missing data
+async function second() {
+    let courses = await fs.readFile('../../assets/golfbanor.json', 'utf8')
+    
+    let clubdata = await fs.readFile('../../assets/caddee-data.json', 'utf8')
+
+    courses = await JSON.parse(courses).map(x => x.id)
+    let data = await JSON.parse(clubdata)
+    console.log(courses, data)
+    let missing = clubs.getMissing(courses, data)
+    console.log(missing.length)
+
+
+    let prom = new Promise((resolve, reject) => {
+
+        missing.forEach(async(club, index) => {
+            data[club] = await clubs.getClubData(club)
+            // console.log(73, data[club])
+            if (index == missing.length -1) {
+                resolve()
+            }
+        })
+        
+    })
+    prom.then(()=> {
+        clubs.data = data
+        blockingInterval = setInterval(()=> undefined, 100)
+        clubs.saveToFile()
+        let newMissing = clubs.getMissing(courses, data)
+        console.log(newMissing)
+    })
+}
 // clubs.getClubs()
-main()
+// main()
+second()
 
 exports = {webReader}
