@@ -260,7 +260,12 @@ const gameObject = {
         gameObject.readInputs()
         let points = gameObject.ruleset.calculateScores()
         let container = forms["keeper"].querySelector(".results")
-        let rank = Object.entries(points).sort((a, b) => a[1]["total"] - b[1]["total"])
+        let rank
+        if (this.ruleset.order == "desc") {
+            rank = Object.entries(points).sort((a, b) => b[1]["points"] - a[1]["points"])
+        } else {
+            rank = Object.entries(points).sort((a, b) => a[1]["points"] - b[1]["points"])
+        }
         let content = `<div class="col left"><h3>Rankning</h3>`
         rank.forEach(rank => {
             content += `<p>${rank[0]}</p>`
@@ -284,7 +289,8 @@ const gameObject = {
         let points = {}
         for (let i = 1; i<=this.holes; i++) {
             points[i] = {
-                "par": parseInt(formData.get(`par-${i}`)) || 0
+                "par": parseInt(formData.get(`par-${i}`)) || 0,
+                "index": parseInt(formData.get(`index-${i}`)) || 0,
             }
             this.players.forEach(p => {
                 points[i][p.name] = parseInt(formData.get(`${p.name}-${i}`)) || 0
@@ -300,6 +306,7 @@ class GameRules {
         this.players = players
         this.holes = holes
         this._points = {}
+        this.order = "asc"
         let playernames = players.map(x => x.name)
         for (let i=1; i<=holes; i++) {
             this._points[i] = {
@@ -337,14 +344,14 @@ class GameRules {
         let total = {}
         this.players.map((player) => {
             let score = {
-                total: 0,
+                points: 0,
                 par: 0,
                 handicap: 0
             }
             Object.keys(this._points).forEach(key => {
                 let par = this._points[key]["par"]
                 let point = this._points[key][player.name]
-                score.total += point
+                score.points += point
                 score.par += point - par
                 score.handicap += point - player.handicap/18
             })
@@ -366,6 +373,45 @@ const rules = {
     pointbogey: class PointBogey extends GameRules {
         constructor(players, holes) {
             super(players, holes)
+            this.order = "desc"
+        }
+
+        calculateScores() {
+            let total = {}
+            this.players.map((player) => {
+                let score = {
+                    par: 0,
+                    player_par: 0,
+                    hits: 0,
+                    points: 0
+                }
+                Object.keys(this._points).forEach(key => {
+                    let par = this._points[key]["par"]
+                    let index = this._points[key]["index"]
+                    let player_par = par 
+                    let hits = this._points[key][player.name]
+                    if (hits <= 0) {return}
+                    if (index <= player.handicap) {
+                        // index shit
+                        player_par += Math.floor(player.handicap/18)
+                        if (index <= player.handicap % 18) {
+                            player_par++
+                        }
+                    }
+                    score.par += par
+                    score.player_par += player_par
+                    score.hits += hits
+                    
+                    let points = 2 - (hits - player_par)
+                    if (points < 0) {
+                        points = 0
+                    }
+                    score.points += points
+                })
+                total[player.name] = score
+            })
+            console.log(total)
+            return total
         }
     },
     shotcomp: class ShotCompetition extends GameRules {
@@ -377,15 +423,14 @@ const rules = {
             let total = {}
             this.players.map((player) => {
                 let score = {
-                    total: 0,
+                    points: 0,
                     par: 0,
                     handicap: 0
                 }
                 Object.keys(this._points).forEach(key => {
-                    let par = this._points[key]["par"]
+                    score.par += this._points[key]["par"]
                     let point = this._points[key][player.name]
-                    score.total += point
-                    score.par += point - par
+                    score.points += point
                     score.handicap += point - player.handicap/18
                 })
                 total[player.name] = score
