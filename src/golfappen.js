@@ -3,6 +3,7 @@
  */
 
 import { getFile } from "./modules/files.js"
+import { elements } from "./modules/elements.js"
 
 // declare variables
 const main = document.querySelector(".wrapper")
@@ -24,7 +25,9 @@ const buttons = {
     "backFromHis": document.querySelector("#historyView .back-button"),
     "backFromPla": document.querySelector("#playersView .back-button"),
     "backFromPlay": document.querySelector("#playView .back-button"),
-    "partRes": document.querySelector("#partialResults .always-visible")
+    "partRes": document.querySelector("#partialResults .always-visible"),
+    "nextHole": document.querySelector("#keeper-nav .right"),
+    "prevHole": document.querySelector("#keeper-nav .left")
 }
 const forms = {
     "newGame": document.getElementById("newGameForm"),
@@ -41,18 +44,25 @@ function createListeners() {
     buttons["history"].addEventListener("click", () => switchView("history"))
     buttons["partRes"].addEventListener("click", () => gameObject.showPartResults())
 
-    // back buttons
+    // navigation
     buttons["backFromNew"].addEventListener("click", () => switchView("start"))
     buttons["backFromHis"].addEventListener("click", () => switchView("start"))
     buttons["backFromPla"].addEventListener("click", () => switchView("new"))
     buttons["backFromPlay"].addEventListener("click", () => switchView("players"))
+    buttons["prevHole"].addEventListener("click", () => {
+        const width = elements.getWidth("#scoreKeeper .hole")
+        elements.scrollElement("left", width, "#scoreKeeper")
+    })
+    buttons["nextHole"].addEventListener("click", () => {
+        const width = elements.getWidth("#scoreKeeper .hole")
+        elements.scrollElement("right", width, "#scoreKeeper")
+    })
 
     // form submits
     forms["newGame"].addEventListener("submit", (e) => gameObject.create(e))
     forms["players"].addEventListener("submit", (e) => gameObject.setUpPlayers(e))
     forms["keeper"].addEventListener("submit", (e) => gameObject.showResults(e))
 }
-
 
 const data = {
     clubs: [],
