@@ -101,9 +101,23 @@ async function populateNewGameForm(playTypes, golfClubs) {
     const gameSelect = document.getElementById("gameType")
     const clubSelect = document.getElementById("golfClub")
     const courseSelect = document.getElementById("golfCourse")
+    const playerCount = document.getElementById("playerCount")
+    
     for (const play in playTypes) {
         gameSelect.add(new Option(playTypes[play]["name"], playTypes[play]["id"]))
     }
+
+    playerCount.addEventListener("change", (e) => {
+        let num = parseInt(e.target.value)
+        let unavailable = playTypes.filter(x => x.minPlayers > num).map(x => x.id)
+        console.log(unavailable)
+        gameSelect.querySelectorAll("option").forEach(opt => {
+            opt.disabled = unavailable.includes(opt.value)
+            if (!opt.value) {
+                opt.disabled = true
+            }
+        })
+    })
     for (const course in golfClubs) {
         clubSelect.add(new Option(golfClubs[course]["name"], golfClubs[course]["id"]))
     }
