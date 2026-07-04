@@ -705,6 +705,7 @@ model-viewer::before {
 
 .col.hole {
   gap: 1rem;
+  padding: 1rem;
 }
 
 .hole h3 {
@@ -732,10 +733,14 @@ label.separate {
 .bottom-container {
   background-color: var(--white);
   color: var(--text-color-dark);
-  border-radius: 15px;
+  border-radius: 15px 15px 0 0;
   display: block;
   height: fit-content;
   padding: 0.7rem 1rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .expandable.collapsed .collapsing {
@@ -754,15 +759,15 @@ label.separate {
   display: block;
   width: 0;
   height: 0;
-  border-top: 0;
+  border-bottom: 0;
   border-left: 0.75rem solid transparent;
   border-right: 0.75rem solid transparent;
-  border-bottom: 0.8rem solid var(--text-color-dark);
+  border-top: 0.8rem solid var(--text-color-dark);
 }
 
 .collapsed .dropdown-triangle {
-  border-bottom: 0;
-  border-top: 0.8rem solid var(--text-color-dark);
+  border-top: 0;
+  border-bottom: 0.8rem solid var(--text-color-dark);
 }
 
 .top-row .dropdown-name {
@@ -775,4 +780,37 @@ label.separate {
     max-width: 500px;
     min-width: 350px;
   }
+}
+
+
+.horizontal-radio-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1em;
+  background: #c9c9c9;
+  border-radius: 15px;
+  max-width: 100%;
+  padding: 3px;
+  box-shadow: inset 1px 1px 4px #fff4, inset -1px -1px 6px #00000057, 0 4px 12px #0000002e;
+}
+
+.horizontal-radio-buttons label {
+  display: block;
+  width: fit-content;
+  line-height: 1.1;
+  padding: 0.2em 0.5em;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.horizontal-radio-buttons input {
+  display: none;
+}
+
+.horizontal-radio-buttons input:checked + label {
+  background: linear-gradient(135deg, #c3c3c3, #ffffff, #c7c7c7);
+  box-shadow: 0px 0 7px #00000069, 0 0 10px #fff7 inset;
+  color: var(--text-color-dark);
 }

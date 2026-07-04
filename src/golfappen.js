@@ -107,10 +107,10 @@ async function populateNewGameForm(playTypes, golfClubs) {
         gameSelect.add(new Option(playTypes[play]["name"], playTypes[play]["id"]))
     }
 
+    // Limit options after players
     playerCount.addEventListener("change", (e) => {
         let num = parseInt(e.target.value)
         let unavailable = playTypes.filter(x => x.minPlayers > num).map(x => x.id)
-        console.log(unavailable)
         gameSelect.querySelectorAll("option").forEach(opt => {
             opt.disabled = unavailable.includes(opt.value)
             if (!opt.value) {
@@ -128,15 +128,19 @@ async function populateNewGameForm(playTypes, golfClubs) {
             courseSelect.disabled = true
             return
         }
-        console.log(clubData)
+        // console.log(clubData)
         const courses = clubData?.club?.courses
-        console.log(courses)
+        // console.log(courses)
         courses.map(course => {
             courseSelect.add(new Option(course.name))
         })
 
-        courseSelect.disabled = false
+        if (courses.length == 1) {
+            courseSelect.value = courses[0].name
+        }
 
+        courseSelect.disabled = false
+        
     })
 }
 
@@ -208,7 +212,7 @@ const gameObject = {
     setUpPlayers: function(e) {
         e.preventDefault()
         const data = new FormData(e.target)
-        console.log([...data.entries()])
+        // console.log([...data.entries()])
         let players = []
         for (let i = 1; i<=this.players; i++) {
             players.push({
@@ -230,9 +234,20 @@ const gameObject = {
             })
             let parVal = ""
             let indVal = ""
+            let extraContent = ""
             if (this.courseData) {
                 parVal = ` value="${this.courseData.holes[i-1].par}"`
                 indVal = ` value="${this.courseData.holes[i-1].index}"`
+            }
+            if (this.gameType == "matchgame") {
+                extraContent = `
+                <label>Vinnare:</label>
+                <div class="horizontal-radio-buttons" id="winnerRadios">`
+                extraContent += this.players.map(player => {
+                    return `<span><input type="radio" name="winner-${i}" value="${player.name}" id="winner-${i}-${player.name.replace(" ", "-")}">
+                    <label for="winner-${i}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
+                }).join("\n")
+                extraContent += `</div>`
             }
             this.keeper.innerHTML += `
             <div class="col white hole" id="hole${i}">
@@ -240,6 +255,7 @@ const gameObject = {
                 <label class="separate">Par: <input type="number" name="par-${i}" min="1" max="99"${parVal}></label>
                 <label class="separate">Index: <input type="number" name="index-${i}" min="1" max="99"${indVal}></label>
                 ${inputFields.join("\n")}
+                ${extraContent}
             </div>
             `
         }
@@ -249,17 +265,18 @@ const gameObject = {
         </div>`
 
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
-        this.ruleset.print()
+        this.ruleset.additionalListeners()
     },
     showPartResults: function() {
         views["partRes"].classList.toggle("collapsed")
         if (views["partRes"].classList.contains("collapsed")) {
             return
         }
-        gameObject.readInputs()
+        gameObject.ruleset.readInputs()
         let res = gameObject.ruleset.calculateScores()
         let container = views["partRes"].querySelector(".collapsing")
         container.innerHTML = ""
+        if (!res) { return }
         Object.keys(res).forEach(player => {
             container.innerHTML += `<div class="player"><h4>${player}</h4>`
             for (const [key, val] of Object.entries(res[player])) {
@@ -271,7 +288,7 @@ const gameObject = {
     showResults: function(e) {
         e.preventDefault()
 
-        gameObject.readInputs()
+        gameObject.ruleset.readInputs()
         let points = gameObject.ruleset.calculateScores()
         let container = forms["keeper"].querySelector(".results")
         let rank
@@ -351,7 +368,18 @@ class GameRules {
     }
 
     readInputs() {
-        let formData = new FormData()
+        let formData = new FormData(forms["keeper"])
+        let points = {}
+        for (let i = 1; i<=this.holes; i++) {
+            points[i] = {
+                "par": parseInt(formData.get(`par-${i}`)) || 0,
+                "index": parseInt(formData.get(`index-${i}`)) || 0,
+            }
+            this.players.forEach(p => {
+                points[i][p.name] = parseInt(formData.get(`${p.name}-${i}`)) || 0
+            })
+        }
+        this.setPoints(points)
     }
 
     calculateScores() {
@@ -374,6 +402,10 @@ class GameRules {
         console.log(total)
         return total
     }
+
+    additionalListeners() {
+        return
+    }
 }
 
 
@@ -382,6 +414,112 @@ const rules = {
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes)
+            this.order = "desc"
+        }
+
+        readInputs() {
+            let formData = new FormData(forms["keeper"])
+            let points = {}
+            for (let i = 1; i<=this.holes; i++) {
+                points[i] = {
+                    "par": parseInt(formData.get(`par-${i}`)) || 0,
+                    "index": parseInt(formData.get(`index-${i}`)) || 0,
+                    "winner": formData.get(`winner-${i}`) || null
+                }
+                this.players.forEach(p => {
+                    points[i][p.name] = parseInt(formData.get(`${p.name}-${i}`)) || 0
+                })
+            }
+            this.setPoints(points)
+            console.log(points)
+        }
+
+        additionalListeners() {
+            for (let i = 1; i<= this.holes; i++) {
+                this.players.forEach(p => {
+                    document.getElementsByName(`${p.name}-${i}`)[0].addEventListener("change", () => this.calculateWinner(i))
+                })
+            }
+        }
+
+        calculateWinner(hole) {
+            const formData = new FormData(forms["keeper"])
+            let holePoints = {}
+            let index = parseInt(formData.get(`index-${hole}`)) || 0
+            let minHcp = Math.min(...this.players.map(p => p.handicap))
+            this.players.forEach(p => {
+                const hcp = p.handicap - minHcp
+                // console.log(hcp)
+                let extra_par = 0
+                if (index <= hcp) {
+                    extra_par = Math.floor(hcp/18)
+                    if (index <= hcp % 18) {
+                        extra_par++
+                    }
+                }
+                holePoints[p.name] = (formData.get(`${p.name}-${hole}`) || 999) - extra_par
+            })
+            let lowest = Math.min(...Object.values(holePoints))
+            let winners = []
+            for (const [player, score] of Object.entries(holePoints)) {
+                if (score == lowest) {
+                    winners.push(player)
+                }
+            }
+            // console.log(lowest, holePoints, winners)
+            if (winners.length == 1) {
+                document.getElementById(`winner-${hole}-${winners[0].replace(" ", "-")}`).click()
+            }
+        }
+
+        calculateScores() {
+            let total = {}
+            this.players.map((player) => {
+                total[player.name] = {
+                    par: 0,
+                    player_par: 0,
+                    hits: 0,
+                    points: 0
+                }
+            })
+            let minHcp = Math.min(...this.players.map(p => p.handicap))
+            Object.keys(this._points).forEach(key => {
+                let holePoints = []
+                this.players.map((player) => {
+                    let par = this._points[key]["par"]
+                    let index = this._points[key]["index"]
+                    let extra_par = 0
+                    let hits = this._points[key][player.name]
+                    const hcp = player.handicap - minHcp
+                    if (hits <= 0) {return}
+                    if (index <= hcp) {
+                        // index shit
+                        extra_par = Math.floor(hcp/18)
+                        if (index <= hcp % 18) {
+                            extra_par++
+                        }
+                    }
+                    total[player.name].par += par
+                    total[player.name].player_par += par + extra_par
+                    total[player.name].hits += hits
+                    
+                    let points = hits - extra_par
+                    holePoints.push([points, player.name])
+                    // total[player].points += points
+                })
+                if (!holePoints) {return}
+                let lowest = Math.min(...holePoints.map(x => x[0]))
+                // console.log(lowest, holePoints)
+                holePoints.forEach(x => {
+                    console.log(x[0])
+                    if (x[0] == lowest) {
+                        total[x[1]].points += 1
+                    }
+                })
+            })
+            
+            console.log(total)
+            return total
         }
     },
     pointbogey: class PointBogey extends GameRules {
@@ -544,57 +682,57 @@ const rules = {
         }
     }
 }
-let pla = [
-    {name: "bertil", handicap: 5},
-    {name: "pertil", handicap: 20}
-]
-const test = new rules["shotcomp"](pla, 9)
-test.points = {
-    1: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    2: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    3: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    4: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    5: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    6: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    7: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    8: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    },
-    9: {
-        "par": 4,
-        "bertil": 5,
-        "pertil": 10
-    }
-}
-test.print()
-test.calculateScores()
+// let pla = [
+//     {name: "bertil", handicap: 5},
+//     {name: "pertil", handicap: 20}
+// ]
+// const test = new rules["shotcomp"](pla, 9)
+// test.points = {
+//     1: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     2: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     3: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     4: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     5: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     6: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     7: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     8: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     },
+//     9: {
+//         "par": 4,
+//         "bertil": 5,
+//         "pertil": 10
+//     }
+// }
+// test.print()
+// test.calculateScores()
