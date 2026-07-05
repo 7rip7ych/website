@@ -107,11 +107,12 @@ async function populateNewGameForm(playTypes, golfClubs) {
         // let opt = new Option(playTypes[play]["name"], playTypes[play]["id"])
         let opt = document.createElement("option")
         opt.value = playTypes[play]["id"]
-        opt.innerText = playTypes[play]["name"]
+        opt.innerText = '*' + playTypes[play]["name"]
         console.log(rules.implemented)
         if (rules.implemented.includes(opt.value)) {
             console.log(true)
             opt.classList.add("implemented")
+            opt.innerText = playTypes[play]["name"]
         }
         gameSelect.add(opt)
     }
@@ -476,9 +477,11 @@ const rules = {
                     winners.push(player)
                 }
             }
-            // console.log(lowest, holePoints, winners)
+            console.log(lowest, holePoints, winners)
             if (winners.length == 1) {
                 document.getElementById(`winner-${hole}-${winners[0].replace(" ", "-")}`).click()
+            } else {
+                document.getElementsByName(`winner-${hole}`).forEach(ele => {ele.checked = false})
             }
         }
 
@@ -527,14 +530,20 @@ const rules = {
                 if (!holePoints) {return}
                 let lowest = Math.min(...holePoints.map(x => x[0]))
                 // console.log(lowest, holePoints)
+                let winners = []
                 holePoints.forEach(x => {
                     // console.log(x[0])
                     if (x[0] && x[0] == lowest) {
-                        total[x[1]].points += 1
+                        // total[x[1]].points += 1
+                        winners.push(x[1])
                     }
                 })
+
+                if (winners.length == 1) {
+                    total[winners[0]].points += 1
+                }
             })
-            
+
             console.log(total)
             return total
         }
@@ -597,10 +606,22 @@ const rules = {
                     handicap: 0
                 }
                 Object.keys(this._points).forEach(key => {
-                    score.par += this._points[key]["par"]
                     let point = this._points[key][player.name]
+                    if (!point) {return}
+                    score.par += this._points[key]["par"]
+                    
                     score.points += point
-                    score.handicap += point - player.handicap/18
+                    
+                    let index = this._points[key]["index"]
+                    let player_par = 0
+                    if (index <= player.handicap) {
+                        // index shit
+                        player_par += Math.floor(player.handicap/18)
+                        if (index <= player.handicap % 18) {
+                            player_par++
+                        }
+                    }
+                    score.handicap += point - player_par
                 })
                 total[player.name] = score
             })
