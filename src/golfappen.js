@@ -104,7 +104,16 @@ async function populateNewGameForm(playTypes, golfClubs) {
     const playerCount = document.getElementById("playerCount")
     
     for (const play in playTypes) {
-        gameSelect.add(new Option(playTypes[play]["name"], playTypes[play]["id"]))
+        // let opt = new Option(playTypes[play]["name"], playTypes[play]["id"])
+        let opt = document.createElement("option")
+        opt.value = playTypes[play]["id"]
+        opt.innerText = playTypes[play]["name"]
+        console.log(rules.implemented)
+        if (rules.implemented.includes(opt.value)) {
+            console.log(true)
+            opt.classList.add("implemented")
+        }
+        gameSelect.add(opt)
     }
 
     // Limit options after players
@@ -411,6 +420,7 @@ class GameRules {
 
 const rules = {
     forms: [],
+    implemented: ["shotcomp","pointbogey","matchgame"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -491,7 +501,14 @@ const rules = {
                     let extra_par = 0
                     let hits = this._points[key][player.name]
                     const hcp = player.handicap - minHcp
-                    if (hits <= 0) {return}
+                    if (hits <= 0 || !hits) {
+                        let points = 0
+                        if (this._points[key]["winner"] == player.name){
+                            total[player.name].points += 1
+                        }
+                        holePoints.push([points, player.name])
+                        return
+                    }
                     if (index <= hcp) {
                         // index shit
                         extra_par = Math.floor(hcp/18)
@@ -511,8 +528,8 @@ const rules = {
                 let lowest = Math.min(...holePoints.map(x => x[0]))
                 // console.log(lowest, holePoints)
                 holePoints.forEach(x => {
-                    console.log(x[0])
-                    if (x[0] == lowest) {
+                    // console.log(x[0])
+                    if (x[0] && x[0] == lowest) {
                         total[x[1]].points += 1
                     }
                 })

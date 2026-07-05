@@ -814,3 +814,8 @@ label.separate {
   box-shadow: 0px 0 7px #00000069, 0 0 10px #fff7 inset;
   color: var(--text-color-dark);
 }
+
+option.implemented {
+  background: linear-gradient(90deg, var(--g4), #fff, var(--g4));
+  color: green;
+}
