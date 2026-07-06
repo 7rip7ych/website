@@ -37,6 +37,36 @@ const elements = {
                 break
         }
         ele.scrollBy(x, y)
+    },
+    getChildWidth: function (parent, index=0) {
+        let child = parent.children[index]
+        const cssObj = window.getComputedStyle(child, null)
+        const gap = cssObj.getPropertyValue('gap')
+        return child.offsetWidth + parseFloat(gap)
+    },
+    scrollToNext: function (parent) {
+        // console.log(parent)
+        let fullWidth = parent.scrollWidth
+        let pos = parent.scrollLeft
+        // let childCount = parent.children.length
+        let childWidth = this.getChildWidth(parent)//fullWidth/childCount
+        let newPos = (Math.floor(pos / childWidth) + 1) * childWidth
+
+        parent.scrollTo(newPos <= fullWidth-childWidth? newPos : fullWidth-childWidth, 0)
+
+        // parent.children[(Math.floor(pos / childWidth) + 1)]?.scrollIntoView()
+    },
+    scrollToPrev: function (parent) {
+        // console.log(parent)
+        // let fullWidth = parent.scrollWidth
+        let pos = parent.scrollLeft
+        // let childCount = parent.children.length
+        let childWidth = this.getChildWidth(parent)//fullWidth/childCount
+        let newPos = (Math.floor(pos / childWidth) - 1) * childWidth
+
+        parent.scrollTo(newPos >= 0 ? newPos : 0, 0)
+
+        // parent.children[(Math.floor(pos / childWidth) - 1)]?.scrollIntoView()
     }
 }
 

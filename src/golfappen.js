@@ -51,12 +51,10 @@ function createListeners() {
     buttons["backFromPla"].addEventListener("click", () => switchView("new"))
     buttons["backFromPlay"].addEventListener("click", () => switchView("players"))
     buttons["prevHole"].addEventListener("click", () => {
-        const width = elements.getWidth("#scoreKeeper .hole")
-        elements.scrollElement("left", width, "#scoreKeeper")
+        elements.scrollToPrev(forms["keeper"])
     })
     buttons["nextHole"].addEventListener("click", () => {
-        const width = elements.getWidth("#scoreKeeper .hole")
-        elements.scrollElement("right", width, "#scoreKeeper")
+        elements.scrollToNext(forms["keeper"])
     })
 
     // form submits
