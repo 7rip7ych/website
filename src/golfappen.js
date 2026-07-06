@@ -114,6 +114,9 @@ async function populateNewGameForm(playTypes, golfClubs) {
             opt.classList.add("implemented")
             opt.innerText = playTypes[play]["name"]
         }
+        if (playTypes[play].minPlayers > parseInt(playerCount.value)) {
+            opt.disabled = true
+        }
         gameSelect.add(opt)
     }
 

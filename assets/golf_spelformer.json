@@ -28,6 +28,21 @@
         "team": false
     },
     {
+        "name": "Köpenhamnare",
+        "id": "copenhagener",
+        "desc": "En spelform som bäst och helst spelas mellan tre spelare. Köpenhamnare spelas enligt reglerna för poängbogey. Spelarna delar 6 poäng per hål på följande sätt: den bäste får 4 poäng, den näst bäste 2 och den sämste 0 poäng. Om en spelare är bäst och de andra lika, blir poängställningen 4-1-1. Om två är bäst och den tredje sämst fördelas poängen 3-3-0. Då alla tre är lika fördelas poängen 2-2-2. Med lite egen matematik kan man spela även med fyra spelare.",
+        "minPlayers": 3,
+        "team": false
+    },
+    {
+        "name": "Nassau",
+        "id": "nassau",
+        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
+        "minPlayers": 2,
+        "team": false,
+        "forms": ["shotgolf", "shotcomp", "pointbogey"]
+    },
+    {
         "name": "Foursome",
         "id": "foursome",
         "desc": "Denna spelform bygger på att två spelare bildar ett par och spelar på gemensam boll. Spelarna slår vartannat slag och före spelets start bestämmer de vem som skall slå ut från udda- respektive jämna hålnummer. Efter att ha studerat banan blir denna spelfördelning upphov till taktiska diskussioner vilket resulterar i att den som har normalt har flest greenträffar på korthålen, självfallet väljer den variant med flest korthål.",
@@ -47,13 +62,6 @@
         "desc": "Fungerar som vanlig greensome med den skillnaden att på par 4 och par 5 hålen slår båda spelarna efter sitt utslag ytterligare vars ett slag och då på sin medspelares boll. Därefter väljer man den boll som man med vartannat slag skall spela vidare på. På par 3 hål slår bägge spelarna ut och därefter väljer man den boll som man skall spela vidare på.",
         "minPlayers": 2,
         "team": true
-    },
-    {
-        "name": "Running Eclectic",
-        "id": "runecl",
-        "desc": "Den här spelformen går ut på att under en förutbestämd tid välja ut och föra de bästa resultaten för varje hål och rapportera detta för tävlingsledningen. Vinner gör den som har det lägsta totalresultatet. Tiden för en Running Eclectic är olika men ofta sträcker den sig över en hel golfsäsong. Det innebär att du har många chanser på dig att få bästa resultat på respektive hål. Har du en gång under säsongen fört in resultatet för ett hål, kan inte detta ändras även om du skulle råka spela bättre på detta hål vid ett senare tillfälle. Det förutsätter att du väl känner till vad du kan prestera som golfspelare.",
-        "minPlayers": 1,
-        "team": false
     },
     {
         "name": "Scramble",
@@ -82,14 +90,6 @@
         "desc": "Är ytterligare en variant av scramble. Laget består av tre spelare. Spelas som scramble men med följande resultatberäkning: Hål 1 till 6: Bästa resultatet (poängen eller slagen) räknas för endast en spelare räknas. Hål 7 till 12: De två bästa resultaten adderas och räknas. Hål 13 till 18: Alla tre resultaten adderas och räknas. Skulle laget bestå av fyra spelare beräknas resultaten enligt ovan men på hål 13 till 18 adderas de tre bästa resultaten.",
         "minPlayers": 3,
         "team": true
-    },
-    {
-        "name": "Nassau",
-        "id": "nassau",
-        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
-        "minPlayers": 2,
-        "team": false,
-        "forms": ["shotgolf", "shotcomp", "pointbogey"]
     },
     {
         "name": "Tryall",
@@ -121,13 +121,6 @@
         "team": true
     },
     {
-        "name": "Köpenhamnare",
-        "id": "copenhagener",
-        "desc": "En spelform som bäst och helst spelas mellan tre spelare. Köpenhamnare spelas enligt reglerna för poängbogey. Spelarna delar 6 poäng per hål på följande sätt: den bäste får 4 poäng, den näst bäste 2 och den sämste 0 poäng. Om en spelare är bäst och de andra lika, blir poängställningen 4-1-1. Om två är bäst och den tredje sämst fördelas poängen 3-3-0. Då alla tre är lika fördelas poängen 2-2-2. Med lite egen matematik kan man spela även med fyra spelare.",
-        "minPlayers": 3,
-        "team": false
-    },
-    {
         "name": "Snörtävling",
         "id": "threadcomp",
         "desc": "Spelas som slaggolf men varje spelare får lika många meter rep som sitt handikapp med sig i bagen. Snöret kan användas för att sänka puttar eller ta sig ur svårigheter. Man klipper av lika mycket på snöret som man flyttar bollen. Detta innebär att om man vill sänka sin enmetersputt klipper man av en meter snöre. Snörklippet räknas inte i scoren.",
@@ -145,6 +138,13 @@
         "name": "Kicker",
         "id": "kicker",
         "desc": "Spelas som slaggolf men spelaren får på varje hål slå om ett slag om han/hon vill. Dock inte en putt.",
+        "minPlayers": 1,
+        "team": false
+    },
+    {
+        "name": "Running Eclectic",
+        "id": "runecl",
+        "desc": "Den här spelformen går ut på att under en förutbestämd tid välja ut och föra de bästa resultaten för varje hål och rapportera detta för tävlingsledningen. Vinner gör den som har det lägsta totalresultatet. Tiden för en Running Eclectic är olika men ofta sträcker den sig över en hel golfsäsong. Det innebär att du har många chanser på dig att få bästa resultat på respektive hål. Har du en gång under säsongen fört in resultatet för ett hål, kan inte detta ändras även om du skulle råka spela bättre på detta hål vid ett senare tillfälle. Det förutsätter att du väl känner till vad du kan prestera som golfspelare.",
         "minPlayers": 1,
         "team": false
     }
