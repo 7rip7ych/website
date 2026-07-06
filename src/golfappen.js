@@ -469,12 +469,23 @@ class GameRules {
         tbl += `</table></div>`
         return tbl
     }
+
+    calculatePlayerPar(hcp, index) {
+        let extra_par = 0
+        if (index <= hcp) {
+            extra_par = Math.floor(hcp/18)
+            if (index <= hcp % 18) {
+                extra_par++
+            }
+        }
+        return extra_par
+    }
 }
 
 
 const rules = {
     forms: [],
-    implemented: ["shotcomp","pointbogey","matchgame"],
+    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -514,13 +525,7 @@ const rules = {
             this.players.forEach(p => {
                 const hcp = p.handicap - minHcp
                 // console.log(hcp)
-                let extra_par = 0
-                if (index <= hcp) {
-                    extra_par = Math.floor(hcp/18)
-                    if (index <= hcp % 18) {
-                        extra_par++
-                    }
-                }
+                let extra_par = this.calculatePlayerPar(hcp, index)
                 holePoints[p.name] = (formData.get(`${p.name}-${hole}`) || 999) - extra_par
             })
             let lowest = Math.min(...Object.values(holePoints))
@@ -554,7 +559,7 @@ const rules = {
                 this.players.map((player) => {
                     let par = this._points[key]["par"]
                     let index = this._points[key]["index"]
-                    let extra_par = 0
+                    let extra_par = this.calculatePlayerPar(hcp, index)
                     let hits = this._points[key][player.name]
                     const hcp = player.handicap - minHcp
                     if (hits <= 0 || !hits) {
@@ -565,13 +570,7 @@ const rules = {
                         holePoints.push([points, player.name])
                         return
                     }
-                    if (index <= hcp) {
-                        // index shit
-                        extra_par = Math.floor(hcp/18)
-                        if (index <= hcp % 18) {
-                            extra_par++
-                        }
-                    }
+
                     total[player.name].par += par
                     total[player.name].player_par += par + extra_par
                     total[player.name].hits += hits
@@ -624,16 +623,9 @@ const rules = {
                 Object.keys(this._points).forEach(key => {
                     let par = this._points[key]["par"]
                     let index = this._points[key]["index"]
-                    let player_par = par 
+                    let player_par = par + this.calculatePlayerPar(player.handicap, index)
                     let hits = this._points[key][player.name]
                     if (hits <= 0) {return}
-                    if (index <= player.handicap) {
-                        // index shit
-                        player_par += Math.floor(player.handicap/18)
-                        if (index <= player.handicap % 18) {
-                            player_par++
-                        }
-                    }
                     score.par += par
                     score.player_par += player_par
                     score.hits += hits
@@ -666,19 +658,14 @@ const rules = {
                 Object.keys(this._points).forEach(key => {
                     let point = this._points[key][player.name]
                     if (!point) {return}
-                    score.par += this._points[key]["par"]
-                    
-                    score.points += point
-                    
+                    let par = this._points[key]["par"]
                     let index = this._points[key]["index"]
-                    let player_par = 0
-                    if (index <= player.handicap) {
-                        // index shit
-                        player_par += Math.floor(player.handicap/18)
-                        if (index <= player.handicap % 18) {
-                            player_par++
-                        }
-                    }
+                    let player_par = this.calculatePlayerPar(player.handicap, index)
+
+                    score.par += par
+
+                    score.points += point
+
                     score.handicap += point - player_par
                 })
                 total[player.name] = score
@@ -690,6 +677,32 @@ const rules = {
     shotgolf: class ShotGolf extends GameRules {
         constructor(players, holes) {
             super(players, holes)
+        }
+
+        calculateScores() {
+            let total = {}
+            this.players.map((player) => {
+                let score = {
+                    points: 0,
+                    par: 0,
+                    handicap: 0
+                }
+                Object.keys(this._points).forEach(key => {
+                    let point = this._points[key][player.name]
+                    if (!point) {return}
+                    let par = this._points[key]["par"]
+                    let index = this._points[key]["index"]
+                    let extra_par = this.calculatePlayerPar(player.handicap, index)
+                    let hcpPoint = point - extra_par
+                    let max = par + 5
+                    score.par += par
+                    score.points += point > max ? max : point
+                    score.handicap += hcpPoint > max ? max : hcpPoint
+                })
+                total[player.name] = score
+            })
+            console.log(total)
+            return total
         }
     },
     foursome: class Foursome extends GameRules {
