@@ -288,13 +288,17 @@ const gameObject = {
         let container = views["partRes"].querySelector(".collapsing")
         container.innerHTML = ""
         if (!res) { return }
+        let content = ""
         Object.keys(res).forEach(player => {
-            container.innerHTML += `<div class="player"><h4>${player}</h4>`
+            content += `<div class="player"><h4>${player}</h4>`
             for (const [key, val] of Object.entries(res[player])) {
-                container.innerHTML += `<p><span>${key}</span> <span>${val}</span></p>\n`
+                content += `<p><span>${key}</span> <span>${val}</span></p>\n`
             }
-            container.innerHTML += "</div>"
+            content += "</div>"
         })
+        content += this.ruleset.generateScoreCard("h")
+        content += this.ruleset.generateScoreCard("v")
+        container.innerHTML = content
     },
     showResults: function(e) {
         e.preventDefault()
@@ -323,7 +327,7 @@ const gameObject = {
             content += "</div>"
         })
         content += `</div>`
-        
+        content += this.ruleset.generateScoreCard("h")
         container.innerHTML = content
     },
     readInputs: function() {
@@ -349,12 +353,12 @@ class GameRules {
         this.holes = holes
         this._points = {}
         this.order = "asc"
-        let playernames = players.map(x => x.name)
+        this.playernames = players.map(x => x.name)
         for (let i=1; i<=holes; i++) {
             this._points[i] = {
                 "par": 0
             }
-            playernames.forEach(name => this._points[i][name] = 0)
+            this.playernames.forEach(name => this._points[i][name] = 0)
         }
     }
 
@@ -416,6 +420,54 @@ class GameRules {
 
     additionalListeners() {
         return
+    }
+
+    generateScoreCard(dir="h") {
+        let tbl = `<div class="horizontal-scroll">`
+        console.log(this._points)
+        if (dir == "h" || dir.includes("h")) {
+            tbl += `<table class="scorecard horizontal">
+            <tr>
+                <th>Hole</th>`
+            for (let i=1; i<=this.holes; i++) {
+                tbl += `<td>${i}</td>`
+            }
+            tbl += `</tr>
+            <tr>
+                <th>Par</th>
+                ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
+            </tr>
+            <tr>
+                <th>Index</th>
+                ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
+            </tr>`
+            tbl += this.playernames.map(player => `<tr>
+                <th>${player}</th>
+                ${Object.values(this._points).map(hole => `<td>${hole[player]}</td>`).join("\n")}
+            </tr>`).join("\n")
+
+        } else {
+            tbl += `<table class="scorecard vertical">
+            <tr>
+                <th>Hole</th>
+                <th>Par</th>
+                <th>Index</th>
+            `
+            tbl += this.playernames.map(player => `<th>${player}</th>`).join("\n")
+            tbl += `</tr>`
+            for (let i=1; i<=this.holes; i++) {
+                tbl += `
+                <tr>
+                    <td>${i}</td>
+                    <td>${this._points[i].par}</td>
+                    <td>${this._points[i].index}</td>
+                    ${this.playernames.map(player => `<td>${this._points[i][player]}</td>`).join("\n")}
+                </tr>
+                `
+            }
+        }
+        tbl += `</table></div>`
+        return tbl
     }
 }
 
@@ -547,6 +599,11 @@ const rules = {
 
             console.log(total)
             return total
+        }
+
+        generateScoreCard(dir="h") {
+            let tbl = super.generateScoreCard(dir)
+            return tbl
         }
     },
     pointbogey: class PointBogey extends GameRules {
