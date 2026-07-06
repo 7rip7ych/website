@@ -45,6 +45,7 @@ function createListeners() {
     buttons["partRes"].addEventListener("click", () => gameObject.showPartResults())
 
     // navigation
+    document.querySelector(".siteheader .logo").onclick = () => switchView("start")
     buttons["backFromNew"].addEventListener("click", () => switchView("start"))
     buttons["backFromHis"].addEventListener("click", () => switchView("start"))
     buttons["backFromPla"].addEventListener("click", () => switchView("new"))
@@ -108,9 +109,8 @@ async function populateNewGameForm(playTypes, golfClubs) {
         let opt = document.createElement("option")
         opt.value = playTypes[play]["id"]
         opt.innerText = '*' + playTypes[play]["name"]
-        console.log(rules.implemented)
+        // console.log(rules.implemented)
         if (rules.implemented.includes(opt.value)) {
-            console.log(true)
             opt.classList.add("implemented")
             opt.innerText = playTypes[play]["name"]
         }
@@ -182,13 +182,14 @@ const gameObject = {
     view: views["play"],
     keeper: forms["keeper"],
     ruleset: null,
+    playerCount: 0,
+    players: [],
     create: function(e) {
         e.preventDefault()
-        console.log(e)
         const data = new FormData(e.target)
-        console.log([...data.entries()])
+        // console.log([...data.entries()])
 
-        this.players = parseInt(data.get("players"))
+        this.playerCount = parseInt(data.get("players"))
         this.holes = parseInt(data.get("holes"))
         this.gameType = data.get("type")
         this.club = data.get("club")
@@ -197,7 +198,7 @@ const gameObject = {
             this.loadCourseData()
         }
         switchView("players")
-        this.openPlayerSetup(this.players)
+        this.openPlayerSetup(this.playerCount)
     },
     loadCourseData: async function() {
         this.clubData = await data.getClubData(this.club)
@@ -224,7 +225,7 @@ const gameObject = {
         const data = new FormData(e.target)
         // console.log([...data.entries()])
         let players = []
-        for (let i = 1; i<=this.players; i++) {
+        for (let i = 1; i<=this.playerCount; i++) {
             players.push({
                 "name": data.get(`p${i}name`) || `Spelare ${i}`,
                 "handicap": parseFloat(data.get(`p${i}handicap`)) || 0
@@ -235,7 +236,7 @@ const gameObject = {
     },
     openScoreKeeper: function() {
         switchView("play")
-        console.log(this.gameType)
+        console.log(this.gameType, this.players)
         this.keeper.innerHTML = ""
         
         for (let i = 1; i<=this.holes; i++) {
