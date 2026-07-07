@@ -513,7 +513,7 @@ class GameRules {
 
 const rules = {
     forms: [],
-    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf"],
+    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", "copenhagener"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -733,6 +733,166 @@ const rules = {
             return total
         }
     },
+    copenhagener: class Copenhagener extends GameRules {
+        constructor(players, holes) {
+            super(players, holes)
+            this.order = "desc"
+            this.distributed_points = {}
+        }
+
+        calculateHolePoints (score) {
+            let res = {}
+            let adjHits = []
+            this.players.forEach(player => {
+                if (!score[player.name]) {
+                    this.playernames.map(name => res[name] = 0)
+                    return res
+                }
+                let extra = this.calculatePlayerPar(player.handicap, score.index)
+                adjHits.push([score[player.name]-extra, player.name])
+            })
+            adjHits.sort((a,b) => a[0] - b[0])
+            const first = adjHits.filter(x => x[0] === adjHits[0][0])
+            const second = adjHits.filter(x => x[0] === adjHits[1][0])
+            const third = adjHits.filter(x => x[0] === adjHits[2][0])
+            if (adjHits.length == 3) {
+                if (first.length === 3) {
+                    first.forEach(score => {
+                        res[score[1]] = 2
+                    })
+                } else if (first.length === 2) {
+                    res[adjHits[0][1]] = 3
+                    res[adjHits[1][1]] = 3
+                    res[adjHits[2][1]] = 0
+                } else {
+                    res[adjHits[0][1]] = 4
+                    if (second.length === 2) {
+                        res[adjHits[1][1]] = 1
+                        res[adjHits[2][1]] = 1
+                    } else {
+                        res[adjHits[1][1]] = 2
+                        res[adjHits[2][1]] = 0
+                    }
+                    
+                }
+            } else if (adjHits.length == 4) {
+                if (first.length === 4) {
+                    first.forEach(score => {
+                        res[score[1]] = 3
+                    })
+                } else if (first.length === 3) {
+                    res[adjHits[0][1]] = 4
+                    res[adjHits[1][1]] = 4
+                    res[adjHits[2][1]] = 4
+                    res[adjHits[3][1]] = 0
+                } else if (first.length === 2) {
+                    if (second.length === 2) {
+                        res[adjHits[0][1]] = 5
+                        res[adjHits[1][1]] = 5
+                        res[adjHits[2][1]] = 1
+                        res[adjHits[3][1]] = 1
+                    } else {
+                        res[adjHits[0][1]] = 5
+                        res[adjHits[1][1]] = 5
+                        res[adjHits[2][1]] = 2
+                        res[adjHits[3][1]] = 0
+                    }
+                } else {
+                    res[adjHits[0][1]] = 6
+                    if (second.length === 3) {
+                        res[adjHits[1][1]] = 2
+                        res[adjHits[2][1]] = 2
+                        res[adjHits[3][1]] = 2
+                    } else if (second.length === 2) {
+                        res[adjHits[1][1]] = 2
+                        res[adjHits[2][1]] = 2
+                        res[adjHits[3][1]] = 0
+                    } else {
+                        res[adjHits[1][1]] = 4
+                        if (third.length == 2) {
+                            res[adjHits[2][1]] = 1
+                            res[adjHits[3][1]] = 1
+                        } else {
+                            res[adjHits[2][1]] = 2
+                            res[adjHits[3][1]] = 0
+                        }
+                    }
+                }
+            } else {
+                for (let i=0; i<adjHits.length; i++) {
+                    if (i > 1) {
+                        res[adjHits[i][1]] = 0
+                        continue
+                    }
+                    res[adjHits[i][1]] = 4 - 2*i
+                }
+            }
+            return res
+        }
+
+        calculateScores() {
+            let total = {}
+            this.players.map((player) => {
+                total[player.name] = {
+                    par: 0,
+                    player_par: 0,
+                    hits: 0,
+                    points: 0
+                }
+            })
+            // let minHcp = Math.min(...this.players.map(p => p.handicap))
+            Object.keys(this._points).forEach(key => {
+                let holePoints = this.calculateHolePoints(this._points[key])
+                this.players.map((player) => {
+                    let par = this._points[key]["par"]
+                    let index = this._points[key]["index"]
+                    let hits = this._points[key][player.name]
+                    const hcp = player.handicap// - minHcp
+                    let extra_par = this.calculatePlayerPar(hcp, index)
+                    // if (hits <= 0 || !hits) {
+                    //     let points = 0
+                    //     if (this._points[key]["winner"] == player.name){
+                    //         total[player.name].points += 1
+                    //     }
+                    //     holePoints.push([points, player.name])
+                    //     return
+                    // }
+
+                    total[player.name].par += par
+                    total[player.name].player_par += par + extra_par
+                    total[player.name].hits += hits
+                    total[player.name].points += holePoints[player.name]
+                    
+                    // let points = hits - extra_par
+                    // holePoints.push([points, player.name])
+                    // total[player].points += points
+                })
+                // if (!holePoints) {return}
+                // let lowest = Math.min(...holePoints.map(x => x[0]))
+                // // console.log(lowest, holePoints)
+                // let winners = []
+                // holePoints.forEach(x => {
+                //     // console.log(x[0])
+                //     if (x[0] && x[0] == lowest) {
+                //         // total[x[1]].points += 1
+                //         winners.push(x[1])
+                //     }
+                // })
+
+                // if (winners.length == 1) {
+                //     total[winners[0]].points += 1
+                // }
+            })
+
+            console.log(total)
+            return total
+        }
+    },
+    nassau: class Nassau extends GameRules {
+        constructor(players, holes) {
+            super(players, holes)
+        }
+    },
     foursome: class Foursome extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -773,11 +933,6 @@ const rules = {
             super(players, holes)
         }
     },
-    nassau: class Nassau extends GameRules {
-        constructor(players, holes) {
-            super(players, holes)
-        }
-    },
     tryall: class TryAll extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -794,11 +949,6 @@ const rules = {
         }
     },
     fourballbeto: class FourballBeTo extends GameRules {
-        constructor(players, holes) {
-            super(players, holes)
-        }
-    },
-    copenhagener: class Copenhagener extends GameRules {
         constructor(players, holes) {
             super(players, holes)
         }

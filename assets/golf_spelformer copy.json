@@ -140,5 +140,12 @@
         "desc": "Spelas som slaggolf men spelaren får på varje hål slå om ett slag om han/hon vill. Dock inte en putt.",
         "minPlayers": 1,
         "team": false
+    },
+    {
+        "name": "Running Eclectic",
+        "id": "runecl",
+        "desc": "Den här spelformen går ut på att under en förutbestämd tid välja ut och föra de bästa resultaten för varje hål och rapportera detta för tävlingsledningen. Vinner gör den som har det lägsta totalresultatet. Tiden för en Running Eclectic är olika men ofta sträcker den sig över en hel golfsäsong. Det innebär att du har många chanser på dig att få bästa resultat på respektive hål. Har du en gång under säsongen fört in resultatet för ett hål, kan inte detta ändras även om du skulle råka spela bättre på detta hål vid ett senare tillfälle. Det förutsätter att du väl känner till vad du kan prestera som golfspelare.",
+        "minPlayers": 1,
+        "team": false
     }
 ]
