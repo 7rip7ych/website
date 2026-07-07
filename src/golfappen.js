@@ -34,6 +34,10 @@ const forms = {
     "players": document.getElementById("playerForm"),
     "keeper": document.getElementById("scoreKeeper")
 }
+const pos = {
+    "partResExpanded": parseFloat(document.querySelector(".siteheader").offsetHeight),
+    "partResCollapsed": (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top'))
+}
 
 const storage = window.sessionStorage
 
@@ -42,7 +46,7 @@ function createListeners() {
     buttons["new"].addEventListener("click", () => switchView("new"))
     buttons["continue"].addEventListener("click", () => switchView("play"))
     buttons["history"].addEventListener("click", () => switchView("history"))
-    buttons["partRes"].addEventListener("click", () => gameObject.showPartResults())
+    buttons["partRes"].addEventListener("click", () => gameObject.toggleOverlay())
 
     // navigation
     document.querySelector(".siteheader .logo").onclick = () => switchView("start")
@@ -61,6 +65,17 @@ function createListeners() {
     forms["newGame"].addEventListener("submit", (e) => gameObject.create(e))
     forms["players"].addEventListener("submit", (e) => gameObject.setUpPlayers(e))
     forms["keeper"].addEventListener("submit", (e) => gameObject.showResults(e))
+
+    // swipe
+    // views["partRes"].addEventListener("touchstart", (e) => elements.processTouchStart(e, views["partRes"], 
+    //     views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
+    // views["partRes"].addEventListener("touchmove", (e) => elements.processTouchMove(e, views["partRes"], 
+    //     views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
+    // views["partRes"].addEventListener("touchcancel", (e) => elements.processTouchCancel(e, views["partRes"], 
+    //     views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
+    views["partRes"].addEventListener("touchend", (e) => elements.processTouchEnd(e, views["partRes"], 
+        views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
+
 }
 
 const data = {
@@ -166,7 +181,7 @@ async function setup() {
     populateHistory()
 }
 
-setup() // run setup
+
 
 // repeatable functions
 function switchView(newView) {
@@ -275,15 +290,27 @@ const gameObject = {
             <input type="submit" value="Räkna ut resultat">
             <div class="results row cols-2"></div>
         </div>`
-
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
         this.ruleset.additionalListeners()
     },
-    showPartResults: function() {
+    toggleOverlay: function () {
         views["partRes"].classList.toggle("collapsed")
-        if (views["partRes"].classList.contains("collapsed")) {
-            return
+        if (!views["partRes"].classList.contains("collapsed")) {
+            console.log(document.querySelector(".siteheader").offsetHeight + "px")
+            views["partRes"].style.top = parseFloat(document.querySelector(".siteheader").offsetHeight) + "px"
+            views["partRes"].scrollTop = 0
+            this.showPartResults()
+        } else {
+            console.log((window.innerHeight - buttons["partRes"].offsetHeight - elements.getProperty(views["partRes"], 'padding-top')) + "px",elements.getProperty(views["partRes"], 'padding-top'))
+            views["partRes"].style.top = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top')) + "px"
+            views["partRes"].scrollTop = 0
         }
+    },
+    showPartResults: function() {
+        // views["partRes"].classList.toggle("collapsed")
+        // if (views["partRes"].classList.contains("collapsed")) {
+        //     return
+        // }
         gameObject.ruleset.readInputs()
         let res = gameObject.ruleset.calculateScores()
         let container = views["partRes"].querySelector(".collapsing")
@@ -560,9 +587,9 @@ const rules = {
                 this.players.map((player) => {
                     let par = this._points[key]["par"]
                     let index = this._points[key]["index"]
-                    let extra_par = this.calculatePlayerPar(hcp, index)
                     let hits = this._points[key][player.name]
                     const hcp = player.handicap - minHcp
+                    let extra_par = this.calculatePlayerPar(hcp, index)
                     if (hits <= 0 || !hits) {
                         let points = 0
                         if (this._points[key]["winner"] == player.name){
@@ -721,11 +748,11 @@ const rules = {
             super(players, holes)
         }
     },
-    runecl: class RunningEclectic extends GameRules {
-        constructor(players, holes) {
-            super(players, holes)
-        }
-    },
+    // runecl: class RunningEclectic extends GameRules {
+    //     constructor(players, holes) {
+    //         super(players, holes)
+    //     }
+    // },
     scramble: class Scramble extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -776,22 +803,17 @@ const rules = {
             super(players, holes)
         }
     },
-    threadcomp: class ThreadComp extends GameRules {
-        constructor(players, holes) {
-            super(players, holes)
-        }
-    },
     flagcomp: class FlagComp extends GameRules {
         constructor(players, holes) {
             super(players, holes)
         }
     },
-    kicker: class Kicker extends GameRules {
-        constructor(players, holes) {
-            super(players, holes)
-        }
-    }
+    threadcomp: null,
+    kicker: null
 }
+
+rules.threadcomp = rules.shotgolf
+rules.kicker = rules.shotgolf
 // let pla = [
 //     {name: "bertil", handicap: 5},
 //     {name: "pertil", handicap: 20}
@@ -846,3 +868,5 @@ const rules = {
 // }
 // test.print()
 // test.calculateScores()
+
+setup() // run setup
