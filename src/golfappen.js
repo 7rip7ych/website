@@ -296,12 +296,12 @@ const gameObject = {
     toggleOverlay: function () {
         views["partRes"].classList.toggle("collapsed")
         if (!views["partRes"].classList.contains("collapsed")) {
-            console.log(document.querySelector(".siteheader").offsetHeight + "px")
+            // console.log(document.querySelector(".siteheader").offsetHeight + "px")
             views["partRes"].style.top = parseFloat(document.querySelector(".siteheader").offsetHeight) + "px"
             views["partRes"].scrollTop = 0
             this.showPartResults()
         } else {
-            console.log((window.innerHeight - buttons["partRes"].offsetHeight - elements.getProperty(views["partRes"], 'padding-top')) + "px",elements.getProperty(views["partRes"], 'padding-top'))
+            // console.log((window.innerHeight - buttons["partRes"].offsetHeight - elements.getProperty(views["partRes"], 'padding-top')) + "px",elements.getProperty(views["partRes"], 'padding-top'))
             views["partRes"].style.top = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top')) + "px"
             views["partRes"].scrollTop = 0
         }
@@ -380,6 +380,7 @@ class GameRules {
         this.players = players
         this.holes = holes
         this._points = {}
+        this.calculatedPoints = {}
         this.order = "asc"
         this.playernames = players.map(x => x.name)
         for (let i=1; i<=holes; i++) {
@@ -425,20 +426,35 @@ class GameRules {
         this.setPoints(points)
     }
 
+    calculatePoints () {
+        let points = {}
+        for (let i=1; i<=this.holes; i++) {
+            points[i] = {}
+            this.players.forEach(player => {
+                points[i][player.name] = 0
+                if (!this._points[i][player.name]) { return }
+                let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
+                points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
+            })
+        }
+        this.calculatedPoints = points
+        return points
+    }
+
     calculateScores() {
+        this.calculatePoints()
         let total = {}
         this.players.map((player) => {
             let score = {
+                shots: 0,
                 points: 0,
-                par: 0,
-                handicap: 0
+                par: 0
             }
             Object.keys(this._points).forEach(key => {
-                let par = this._points[key]["par"]
-                let point = this._points[key][player.name]
-                score.points += point
-                score.par += point - par
-                score.handicap += point - player.handicap/18
+                if (!this._points[key][player.name]) { return }
+                score.par += this._points[key]["par"]
+                score.shots += this._points[key][player.name]
+                score.points += this.calculatedPoints[key][player.name]
             })
             total[player.name] = score
         })
@@ -456,32 +472,38 @@ class GameRules {
         if (dir == "h" || dir.includes("h")) {
             tbl += `<table class="scorecard horizontal">
             <tr>
-                <th>Hole</th>`
+                <th colspan="2">Hole</th>`
             for (let i=1; i<=this.holes; i++) {
                 tbl += `<td>${i}</td>`
             }
             tbl += `</tr>
             <tr>
-                <th>Par</th>
+                <th colspan="2">Par</th>
                 ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
             </tr>
             <tr>
-                <th>Index</th>
+                <th colspan="2">Index</th>
                 ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
             </tr>`
             tbl += this.playernames.map(player => `<tr>
-                <th>${player}</th>
+                <th colspan="2">${player}</th>
                 ${Object.values(this._points).map(hole => `<td>${hole[player]}</td>`).join("\n")}
-            </tr>`).join("\n")
+                </tr>
+                <tr><th>Slag</th><th>Poäng</th>
+                ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[player]}</td>`).join("\n")}
+                </tr>
+                `).join("\n")
 
         } else {
             tbl += `<table class="scorecard vertical">
             <tr>
-                <th>Hole</th>
-                <th>Par</th>
-                <th>Index</th>
+                <th rowspan="2">Hole</th>
+                <th rowspan="2">Par</th>
+                <th rowspan="2">Index</th>
             `
-            tbl += this.playernames.map(player => `<th>${player}</th>`).join("\n")
+            tbl += this.playernames.map(player => `<th colspan="2">${player}</th>`).join("\n")
+            tbl += `</tr><tr>`
+            tbl += `<th>Slag</th><th>Poäng</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
             for (let i=1; i<=this.holes; i++) {
                 tbl += `
@@ -489,7 +511,7 @@ class GameRules {
                     <td>${i}</td>
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
-                    ${this.playernames.map(player => `<td>${this._points[i][player]}</td>`).join("\n")}
+                    ${this.playernames.map(player => `<td>${this._points[i][player]}</td><td>${this.calculatedPoints[i][player]}</td>`).join("\n")}
                 </tr>
                 `
             }
@@ -571,45 +593,32 @@ const rules = {
             }
         }
 
-        calculateScores() {
-            let total = {}
-            this.players.map((player) => {
-                total[player.name] = {
-                    par: 0,
-                    player_par: 0,
-                    hits: 0,
-                    points: 0
-                }
-            })
+        calculatePoints () {
+            let points = {}
+            
             let minHcp = Math.min(...this.players.map(p => p.handicap))
-            Object.keys(this._points).forEach(key => {
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = {}
                 let holePoints = []
                 this.players.map((player) => {
-                    let par = this._points[key]["par"]
-                    let index = this._points[key]["index"]
-                    let hits = this._points[key][player.name]
+                    points[i][player.name] = 0
+                    let index = this._points[i]["index"]
+                    let hits = this._points[i][player.name]
                     const hcp = player.handicap - minHcp
                     let extra_par = this.calculatePlayerPar(hcp, index)
                     if (hits <= 0 || !hits) {
-                        let points = 0
-                        if (this._points[key]["winner"] == player.name){
-                            total[player.name].points += 1
+                        if (this._points[i]["winner"] == player.name){
+                            points[i][player.name] = 1
                         }
-                        holePoints.push([points, player.name])
                         return
                     }
 
-                    total[player.name].par += par
-                    total[player.name].player_par += par + extra_par
-                    total[player.name].hits += hits
-                    
-                    let points = hits - extra_par
-                    holePoints.push([points, player.name])
-                    // total[player].points += points
+                    holePoints.push([hits-extra_par, player.name])
                 })
-                if (!holePoints) {return}
+                if (!holePoints) {continue}
                 let lowest = Math.min(...holePoints.map(x => x[0]))
                 // console.log(lowest, holePoints)
+                if (lowest >= 998) {continue}
                 let winners = []
                 holePoints.forEach(x => {
                     // console.log(x[0])
@@ -620,17 +629,12 @@ const rules = {
                 })
 
                 if (winners.length == 1) {
-                    total[winners[0]].points += 1
+                    points[i][winners[0]] = 1
                 }
-            })
-
-            console.log(total)
-            return total
-        }
-
-        generateScoreCard(dir="h") {
-            let tbl = super.generateScoreCard(dir)
-            return tbl
+            }
+            this.calculatedPoints = points
+            console.log(points)
+            return points
         }
     },
     pointbogey: class PointBogey extends GameRules {
@@ -638,99 +642,68 @@ const rules = {
             super(players, holes)
             this.order = "desc"
         }
-
-        calculateScores() {
-            let total = {}
-            this.players.map((player) => {
-                let score = {
-                    par: 0,
-                    player_par: 0,
-                    hits: 0,
-                    points: 0
-                }
-                Object.keys(this._points).forEach(key => {
-                    let par = this._points[key]["par"]
-                    let index = this._points[key]["index"]
+        calculatePoints () {
+            let points = {}
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = {}
+                this.players.forEach(player => {
+                    points[i][player.name] = 0
+                    let hits = this._points[i][player.name]
+                    if (!hits) { return }
+                    let par = this._points[i]["par"]
+                    let index = this._points[i]["index"]
                     let player_par = par + this.calculatePlayerPar(player.handicap, index)
-                    let hits = this._points[key][player.name]
-                    if (hits <= 0) {return}
-                    score.par += par
-                    score.player_par += player_par
-                    score.hits += hits
-                    
-                    let points = 2 - (hits - player_par)
-                    if (points < 0) {
-                        points = 0
+                    let point = 2 - (hits - player_par)
+                    if (point < 0) {
+                        point = 0
                     }
-                    score.points += points
+                    points[i][player.name] = point
                 })
-                total[player.name] = score
-            })
-            console.log(total)
-            return total
+            }
+            this.calculatedPoints = points
+            return points
         }
     },
     shotcomp: class ShotCompetition extends GameRules {
         constructor(players, holes) {
             super(players, holes)
         }
-
-        calculateScores() {
-            let total = {}
-            this.players.map((player) => {
-                let score = {
-                    points: 0,
-                    par: 0,
-                    handicap: 0
-                }
-                Object.keys(this._points).forEach(key => {
-                    let point = this._points[key][player.name]
-                    if (!point) {return}
-                    let par = this._points[key]["par"]
-                    let index = this._points[key]["index"]
-                    let player_par = this.calculatePlayerPar(player.handicap, index)
-
-                    score.par += par
-
-                    score.points += point
-
-                    score.handicap += point - player_par
-                })
-                total[player.name] = score
-            })
-            console.log(total)
-            return total
-        }
     },
     shotgolf: class ShotGolf extends GameRules {
         constructor(players, holes) {
             super(players, holes)
         }
+        calculatePoints () {
+            let points = {}
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = {}
+                this.players.forEach(player => {
+                    points[i][player.name] = 0
+                    let point = this._points[i][player.name]
+                    if (!this._points[i][player.name]) { return }
+                    let par = this._points[i]["par"]
+                    let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
+                    let hcpPoint = point - extra
+                    let max = par + 5
+                    points[i][player.name] += hcpPoint > max ? max : hcpPoint
+                })
+            }
+            this.calculatedPoints = points
+            return points
+        }
 
         calculateScores() {
-            let total = {}
+            // Set max shots
             this.players.map((player) => {
-                let score = {
-                    points: 0,
-                    par: 0,
-                    handicap: 0
-                }
                 Object.keys(this._points).forEach(key => {
                     let point = this._points[key][player.name]
-                    if (!point) {return}
+                    if (!point) { return }
                     let par = this._points[key]["par"]
-                    let index = this._points[key]["index"]
-                    let extra_par = this.calculatePlayerPar(player.handicap, index)
-                    let hcpPoint = point - extra_par
                     let max = par + 5
-                    score.par += par
-                    score.points += point > max ? max : point
-                    score.handicap += hcpPoint > max ? max : hcpPoint
+                    this._points[key][player.name] = point < max ? point : max
                 })
-                total[player.name] = score
             })
-            console.log(total)
-            return total
+            return super.calculateScores()
         }
     },
     copenhagener: class Copenhagener extends GameRules {
@@ -830,62 +803,13 @@ const rules = {
             return res
         }
 
-        calculateScores() {
-            let total = {}
-            this.players.map((player) => {
-                total[player.name] = {
-                    par: 0,
-                    player_par: 0,
-                    hits: 0,
-                    points: 0
-                }
-            })
-            // let minHcp = Math.min(...this.players.map(p => p.handicap))
-            Object.keys(this._points).forEach(key => {
-                let holePoints = this.calculateHolePoints(this._points[key])
-                this.players.map((player) => {
-                    let par = this._points[key]["par"]
-                    let index = this._points[key]["index"]
-                    let hits = this._points[key][player.name]
-                    const hcp = player.handicap// - minHcp
-                    let extra_par = this.calculatePlayerPar(hcp, index)
-                    // if (hits <= 0 || !hits) {
-                    //     let points = 0
-                    //     if (this._points[key]["winner"] == player.name){
-                    //         total[player.name].points += 1
-                    //     }
-                    //     holePoints.push([points, player.name])
-                    //     return
-                    // }
-
-                    total[player.name].par += par
-                    total[player.name].player_par += par + extra_par
-                    total[player.name].hits += hits
-                    total[player.name].points += holePoints[player.name]
-                    
-                    // let points = hits - extra_par
-                    // holePoints.push([points, player.name])
-                    // total[player].points += points
-                })
-                // if (!holePoints) {return}
-                // let lowest = Math.min(...holePoints.map(x => x[0]))
-                // // console.log(lowest, holePoints)
-                // let winners = []
-                // holePoints.forEach(x => {
-                //     // console.log(x[0])
-                //     if (x[0] && x[0] == lowest) {
-                //         // total[x[1]].points += 1
-                //         winners.push(x[1])
-                //     }
-                // })
-
-                // if (winners.length == 1) {
-                //     total[winners[0]].points += 1
-                // }
-            })
-
-            console.log(total)
-            return total
+        calculatePoints() {
+            let points = {}
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = this.calculateHolePoints(this._points[i])
+            }
+            this.calculatedPoints = points
+            return points
         }
     },
     nassau: class Nassau extends GameRules {
@@ -964,59 +888,5 @@ const rules = {
 
 rules.threadcomp = rules.shotgolf
 rules.kicker = rules.shotgolf
-// let pla = [
-//     {name: "bertil", handicap: 5},
-//     {name: "pertil", handicap: 20}
-// ]
-// const test = new rules["shotcomp"](pla, 9)
-// test.points = {
-//     1: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     2: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     3: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     4: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     5: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     6: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     7: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     8: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     },
-//     9: {
-//         "par": 4,
-//         "bertil": 5,
-//         "pertil": 10
-//     }
-// }
-// test.print()
-// test.calculateScores()
 
 setup() // run setup
