@@ -175,6 +175,7 @@ async function populateHistory() {}
 async function setup() {
     createListeners()
     const plays =  await data.loadPlayTypes()
+    gameObject.playTypes = plays
     const courses = await data.loadGolfClubs()
     await data.loadClubData()
     populateNewGameForm(plays, courses)
@@ -200,6 +201,7 @@ const gameObject = {
     ruleset: null,
     playerCount: 0,
     players: [],
+    playTypes: [],
     create: function(e) {
         e.preventDefault()
         const data = new FormData(e.target)
@@ -224,12 +226,18 @@ const gameObject = {
     openPlayerSetup: function(count) {
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
+
         for (let i = 1; i<=count; i++) {
+            let extraField = ``
+            if (this.playTypes.find(x=>x["id"] == this.gameType)["team"]) {
+                extraField = `<label>Lag: <input type="number" name="p${i}team" id="p${i}team" min="1" max="${Math.ceil(count/2)}"></label>`
+            }
             playerForm.innerHTML += `
             <fieldset>
                 <legend>Player ${i}</legend>
                 <label>Namn: <input type="text" name="p${i}name" id="p${i}name"></label>
                 <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap"></label>
+                ${extraField}
             </fieldset>
             `
         }
@@ -821,22 +829,32 @@ const rules = {
         constructor(players, holes) {
             super(players, holes)
         }
+        calculateHcp (hcps) {
+            let res = 0
+            hcps.map(h=>res += h*0.5)
+            return Math.round(res)
+        }
     },
     greensome: class Greensome extends GameRules {
         constructor(players, holes) {
             super(players, holes)
+        }
+        calculateHcp (hcps) {
+            let res = Math.min(...hcps)*0.6 + Math.max(...hcps)*0.4
+
+            return Math.round(res)
         }
     },
     irishgreen: class IrishGreensome extends GameRules {
         constructor(players, holes) {
             super(players, holes)
         }
+        calculateHcp (hcps) {
+            let res = Math.min(...hcps)*0.6 + Math.max(...hcps)*0.4
+
+            return Math.round(res)
+        }
     },
-    // runecl: class RunningEclectic extends GameRules {
-    //     constructor(players, holes) {
-    //         super(players, holes)
-    //     }
-    // },
     scramble: class Scramble extends GameRules {
         constructor(players, holes) {
             super(players, holes)
