@@ -127,7 +127,9 @@ async function populateNewGameForm(playTypes, golfClubs) {
             opt.classList.add("implemented")
             opt.innerText = playTypes[play]["name"]
         }
-        if (playTypes[play].minPlayers > parseInt(playerCount.value)) {
+        const divisible = Array.isArray(playTypes[play].teamSize) ? playTypes[play].teamSize.find(x => parseInt(playerCount.value) % x === 0) : parseInt(playerCount.value) % playTypes[play].teamSize === 0
+        if (playTypes[play].minPlayers > parseInt(playerCount.value) 
+            || !divisible) {
             opt.disabled = true
         }
         gameSelect.add(opt)
@@ -136,7 +138,10 @@ async function populateNewGameForm(playTypes, golfClubs) {
     // Limit options after players
     playerCount.addEventListener("change", (e) => {
         let num = parseInt(e.target.value)
-        let unavailable = playTypes.filter(x => x.minPlayers > num).map(x => x.id)
+        let unavailable = playTypes.filter(x => {
+            const divisible = Array.isArray(x.teamSize) ? x.teamSize.find(x => num % x === 0) : num % x.teamSize === 0
+            return x.minPlayers > num || !divisible
+        }).map(x => x.id)
         gameSelect.querySelectorAll("option").forEach(opt => {
             opt.disabled = unavailable.includes(opt.value)
             if (!opt.value) {
