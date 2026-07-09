@@ -363,7 +363,7 @@ const gameObject = {
             content += "</div>"
         })
         content += `</div>`
-        content += this.ruleset.generateScoreCard("h")
+        content += this.ruleset.generateScoreCard("v")
         container.innerHTML = content
     },
     readInputs: function() {
@@ -530,7 +530,7 @@ class GameRules {
 
     calculatePlayerPar(hcp, index) {
         let extra_par = 0
-        if (index <= hcp) {
+        if (hcp && index <= hcp) {
             extra_par = Math.floor(hcp/18)
             if (index <= hcp % 18) {
                 extra_par++
@@ -540,10 +540,99 @@ class GameRules {
     }
 }
 
+class Nassau extends GameRules {
+    constructor(players, holes) {
+        super(players, holes)
+        this.winners = {}
+        this.sumPoints = {}
+    }
 
+    calculateScores() {
+        this.calculatePoints()
+        let total = {}
+        let half = Math.round(this.holes / 2)
+        let points = this.calculatedPoints
+        this.players.map((player) => {
+            let score = {
+                firstHalf: 0,
+                secondHalf: 0,
+                total: 0
+            }
+            Object.keys(points).forEach(key => {
+                if (!points[key][player.name]) { return }
+                let pts = points[key][player.name]
+                score.total += pts
+                if (key <= half) {
+                    score.firstHalf += pts
+                } else {
+                    score.secondHalf += pts
+                }
+            })
+            total[player.name] = score
+        })
+        console.log(total)
+        this.sumPoints = total
+        this.calculateWinners()
+        return total
+    }
+
+    calculateWinners() {
+        const res = this.sumPoints
+        this.winners = {
+            firstHalf: null,
+            secondHalf: null,
+            total: null
+        }
+
+        let firstSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].firstHalf - b[1].firstHalf: b[1].firstHalf - a[1].firstHalf)
+        let secondSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].secondHalf - b[1].secondHalf: b[1].secondHalf - a[1].secondHalf)
+        let totalSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].total - b[1].total: b[1].total - a[1].total)
+        let firstWin = firstSorted.filter(x => x[1].firstHalf == firstSorted[0][1].firstHalf).map(x => x[0])
+        let secondWin = secondSorted.filter(x => x[1].secondHalf == secondSorted[0][1].secondHalf).map(x => x[0])
+        let totalWin = totalSorted.filter(x => x[1].total == totalSorted[0][1].total).map(x => x[0])
+        if (firstSorted[0][1].firstHalf > 0) {
+            this.winners.firstHalf = firstWin.length == 1 ? firstWin[0] : firstWin
+        }
+        if (secondSorted[0][1].secondHalf > 0) {
+            this.winners.secondHalf = secondWin.length == 1 ? secondWin[0] : secondWin
+        }
+
+        if (totalSorted[0][1].total > 0) {
+            this.winners.total = totalWin.length == 1 ? totalWin[0] : totalWin
+        }
+
+        return this.winners
+    }
+
+    generateScoreCard(dir="h") {
+        let tbl = super.generateScoreCard(dir)
+        if (!this.winners) {this.calculateScores()}
+        const w = this.winners
+        let resStr = `
+        <table class="scorecard">
+            <tr>
+                <th>Del</th>
+                <th>Vinnare</th>
+            </tr>
+            <tr>
+                <td>Första halvan</td>
+                <td>${Array.isArray(w.firstHalf) ? w.firstHalf.join(", "): w.firstHalf}</td>
+            </tr>
+            <tr>
+                <td>Andra halvan</td>
+                <td>${Array.isArray(w.secondHalf) ? w.secondHalf.join(", "): w.secondHalf}</td>
+            </tr>
+            <tr>
+                <td>Totalt</td>
+                <td>${Array.isArray(w.total) ? w.total.join(", ") : w.total}</td>
+            </tr>
+        </table>`
+        return tbl + resStr
+    }
+}
 const rules = {
     forms: [],
-    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", "copenhagener"],
+    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", "copenhagener", "nassauShotgolf", "nassauShotcomp", "nassauPointbogey"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -820,9 +909,73 @@ const rules = {
             return points
         }
     },
-    nassau: class Nassau extends GameRules {
+    nassauShotgolf: class NassauShotgolf extends Nassau {
         constructor(players, holes) {
             super(players, holes)
+        }
+        calculatePoints () {
+            let points = {}
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = {}
+                this.players.forEach(player => {
+                    points[i][player.name] = 0
+                    let point = this._points[i][player.name]
+                    if (!this._points[i][player.name]) { return }
+                    let par = this._points[i]["par"]
+                    let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
+                    let hcpPoint = point - extra
+                    let max = par + 5
+                    points[i][player.name] += hcpPoint > max ? max : hcpPoint
+                })
+            }
+            this.calculatedPoints = points
+            return points
+        }
+
+        calculateScores() {
+            // Set max shots
+            this.players.map((player) => {
+                Object.keys(this._points).forEach(key => {
+                    let point = this._points[key][player.name]
+                    if (!point) { return }
+                    let par = this._points[key]["par"]
+                    let max = par + 5
+                    this._points[key][player.name] = point < max ? point : max
+                })
+            })
+            return super.calculateScores()
+        }
+    },
+    nassauShotcomp: class NassauShotcomp extends Nassau {
+        constructor(players, holes) {
+            super(players, holes)
+        }
+    },
+    nassauPointbogey: class NassauPointbogey extends Nassau {
+        constructor(players, holes) {
+            super(players, holes)
+            this.order = "desc"
+        }
+        calculatePoints () {
+            let points = {}
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = {}
+                this.players.forEach(player => {
+                    points[i][player.name] = 0
+                    let hits = this._points[i][player.name]
+                    if (!hits) { return }
+                    let par = this._points[i]["par"]
+                    let index = this._points[i]["index"]
+                    let player_par = par + this.calculatePlayerPar(player.handicap, index)
+                    let point = 2 - (hits - player_par)
+                    if (point < 0) {
+                        point = 0
+                    }
+                    points[i][player.name] = point
+                })
+            }
+            this.calculatedPoints = points
+            return points
         }
     },
     foursome: class Foursome extends GameRules {

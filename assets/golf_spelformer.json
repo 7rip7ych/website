@@ -32,13 +32,33 @@
         "id": "copenhagener",
         "desc": "En spelform som bäst och helst spelas mellan tre spelare. Köpenhamnare spelas enligt reglerna för poängbogey. Spelarna delar 6 poäng per hål på följande sätt: den bäste får 4 poäng, den näst bäste 2 och den sämste 0 poäng. Om en spelare är bäst och de andra lika, blir poängställningen 4-1-1. Om två är bäst och den tredje sämst fördelas poängen 3-3-0. Då alla tre är lika fördelas poängen 2-2-2. Med lite egen matematik kan man spela även med fyra spelare.",
         "minPlayers": 3,
+        "maxPlayers": 4,
         "team": false
     },
     {
-        "name": "Nassau",
-        "id": "nassau",
+        "name": "Nassau: slaggolf",
+        "id": "nassauShotgolf",
         "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
         "minPlayers": 2,
+        "maxPlayers": 4,
+        "team": false,
+        "forms": ["shotgolf", "shotcomp", "pointbogey"]
+    },
+    {
+        "name": "Nassau: slagtävling",
+        "id": "nassauShotcomp",
+        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
+        "minPlayers": 2,
+        "maxPlayers": 4,
+        "team": false,
+        "forms": ["shotgolf", "shotcomp", "pointbogey"]
+    },
+    {
+        "name": "Nassau: poängbogey",
+        "id": "nassauPointbogey",
+        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
+        "minPlayers": 2,
+        "maxPlayers": 4,
         "team": false,
         "forms": ["shotgolf", "shotcomp", "pointbogey"]
     },
