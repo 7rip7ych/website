@@ -127,7 +127,11 @@ async function populateNewGameForm(playTypes, golfClubs) {
             opt.classList.add("implemented")
             opt.innerText = playTypes[play]["name"]
         }
-        const divisible = Array.isArray(playTypes[play].teamSize) ? playTypes[play].teamSize.find(x => parseInt(playerCount.value) % x === 0) : parseInt(playerCount.value) % playTypes[play].teamSize === 0
+        let divisible = true
+        if (playTypes[play].team) {
+            divisible = Array.isArray(playTypes[play].teamSize) ? playTypes[play].teamSize.find(x => parseInt(playerCount.value) % x === 0) : parseInt(playerCount.value) % playTypes[play].teamSize === 0
+        }
+
         if (playTypes[play].minPlayers > parseInt(playerCount.value) 
             || !divisible) {
             opt.disabled = true
@@ -139,7 +143,10 @@ async function populateNewGameForm(playTypes, golfClubs) {
     playerCount.addEventListener("change", (e) => {
         let num = parseInt(e.target.value)
         let unavailable = playTypes.filter(x => {
-            const divisible = Array.isArray(x.teamSize) ? x.teamSize.find(x => num % x === 0) : num % x.teamSize === 0
+            let divisible = true
+            if (x.team) {
+                divisible = Array.isArray(x.teamSize) ? x.teamSize.find(x => num % x === 0) : num % x.teamSize === 0
+            }
             return x.minPlayers > num || !divisible
         }).map(x => x.id)
         gameSelect.querySelectorAll("option").forEach(opt => {
@@ -148,6 +155,9 @@ async function populateNewGameForm(playTypes, golfClubs) {
                 opt.disabled = true
             }
         })
+        if (unavailable.includes(gameSelect.value)) {
+            gameSelect.selectedIndex = 0
+        }
     })
     for (const course in golfClubs) {
         clubSelect.add(new Option(golfClubs[course]["name"], golfClubs[course]["id"]))
@@ -231,22 +241,54 @@ const gameObject = {
     openPlayerSetup: function(count) {
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
-
-        for (let i = 1; i<=count; i++) {
-            let extraField = ``
-            if (this.playTypes.find(x=>x["id"] == this.gameType)["team"]) {
-                extraField = `<label>Lag: <input type="number" name="p${i}team" id="p${i}team" min="1" max="${Math.ceil(count/2)}"></label>`
+        const play = this.playTypes.find(x => x.id === this.gameType)
+        if (!play.team) {
+            for (let i = 1; i<=count; i++) {
+                let extraField = ``
+                if (this.playTypes.find(x=>x["id"] == this.gameType)["team"]) {
+                    extraField = `<label>Lag: <input type="number" name="p${i}team" id="p${i}team" min="1" max="${Math.ceil(count/2)}"></label>`
+                }
+                playerForm.innerHTML += `
+                <fieldset>
+                    <legend>Player ${i}</legend>
+                    <label>Namn: <input type="text" name="p${i}name" id="p${i}name"></label>
+                    <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap"></label>
+                    ${extraField}
+                </fieldset>
+                `
             }
-            playerForm.innerHTML += `
-            <fieldset>
-                <legend>Player ${i}</legend>
-                <label>Namn: <input type="text" name="p${i}name" id="p${i}name"></label>
-                <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap"></label>
-                ${extraField}
-            </fieldset>
-            `
+            playerForm.innerHTML += `<input type="submit" name="submit" value="Klar">`
+        } else {
+            let teamSize = play.teamSize
+            if (Array.isArray(teamSize)) {
+                teamSize = Math.max(...teamSize.filter(x => count % x === 0))
+            }
+            // const teamCount = count / teamSize
+            let content = ``
+            for (let i = 1; i<=count; i++) {
+                let membNum = i % teamSize
+                let teamNum = Math.floor(i/teamSize) + 1
+                // if (this.playTypes.find(x=>x["id"] == this.gameType)["team"]) {
+                //     extraField = `<label>Lag: <input type="number" name="p${i}team" id="p${i}team" min="1" max="${Math.ceil(count/2)}"></label>`
+                // }
+                if (membNum === 1) {
+                    content += `<fieldset><legend>Lag ${teamNum}</legend>`
+                }
+                content += `
+                <fieldset>
+                    <legend>Player ${i}</legend>
+                    <label>Namn: <input type="text" name="p${i}name" id="p${i}name"></label>
+                    <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap"></label>
+                </fieldset>
+                `
+                if (membNum === 0) {
+                    content += `</fieldset>`
+                }
+            }
+            content += `<input type="submit" name="submit" value="Klar">`
+            playerForm.innerHTML = content
         }
-        playerForm.innerHTML += `<input type="submit" name="submit" value="Klar">`
+        
 
     },
     setUpPlayers: function(e) {

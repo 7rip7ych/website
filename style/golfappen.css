@@ -608,6 +608,7 @@ p.col {
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
+  border-radius: 32px;
 }
 
 input, select, button {
