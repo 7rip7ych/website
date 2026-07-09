@@ -325,6 +325,8 @@ const gameObject = {
         container.innerHTML = ""
         if (!res) { return }
         let content = ""
+        content += this.ruleset.generateScoreCard("v")
+        content += this.ruleset.generateScoreCard("h")
         Object.keys(res).forEach(player => {
             content += `<div class="player"><h4>${player}</h4>`
             for (const [key, val] of Object.entries(res[player])) {
@@ -332,8 +334,6 @@ const gameObject = {
             }
             content += "</div>"
         })
-        content += this.ruleset.generateScoreCard("h")
-        content += this.ruleset.generateScoreCard("v")
         container.innerHTML = content
     },
     showResults: function(e) {
@@ -513,15 +513,35 @@ class GameRules {
             tbl += `</tr><tr>`
             tbl += `<th>Slag</th><th>Poäng</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
+            let sum = {
+                par: 0,
+                index: 0
+            }
+            this.playernames.map(player => sum[player] = [0, 0])
             for (let i=1; i<=this.holes; i++) {
+                sum.par += this._points[i].par
+                sum.index += this._points[i].index
+                this.playernames.map(player => {
+                    sum[player][0] += this._points[i][player]
+                    sum[player][1] += this.calculatedPoints[i][player]
+                })
                 tbl += `
-                <tr>
+                <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
                     <td>${i}</td>
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
                     ${this.playernames.map(player => `<td>${this._points[i][player]}</td><td>${this.calculatedPoints[i][player]}</td>`).join("\n")}
                 </tr>
                 `
+                if (i == 9 || i == this.holes) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Summa</th>
+                        <td>${sum.par}</td>
+                        <td>${sum.index}</td>
+                        ${this.playernames.map(player => `<td>${sum[player][0]}</td><td>${sum[player][1]}</td>`).join("\n")}
+                    </tr>`
+                }
             }
         }
         tbl += `</table></div>`
