@@ -21,7 +21,7 @@
  <br><h4>Input data:</h4>
   <i class="fa-solid fa-upload"></i><input type="file" id="fileIn" accept=".csv" required multiple/>
  <br><h4>Choose time period: </h4>
- <input type="datetime-local" id="timeStartIn"></input> to <input type="datetime-local" id="timeStopIn"></input>
+ <input type="datetime-local" id="timeStartIn"> to <input type="datetime-local" id="timeStopIn">
 
  <br><h4>% calculated by:</h4>
  <div class="switch-btn" id="button-1">
@@ -139,11 +139,11 @@
 
 <button id="percBtn" class="percBtnC" onclick="document.getElementById('percLim').style.display='block';document.getElementById('okb').style.display='block';" >Change percent limits</button>
  <div id="percLim">
-  <div style="background:green;" class="percDiv"> ><input type="number" class="inPerc" id="color1" value="90"></div>
-  <div style="background:limegreen;" class="percDiv"><input type="number" class="inPerc" id="color2b" value="70">< & <<input type="number" class="inPerc" id="color2t" value="90"></div>
-  <div style="background:yellow;" class="percDiv"><input type="number" class="inPerc" id="color3b" value="50">< & <<input type="number" class="inPerc" id="color3t" value="70"></div>
-  <div style="background:orange;" class="percDiv"><input type="number" class="inPerc" id="color4b" value="30">< & <<input type="number" class="inPerc" id="color4t" value="50"></div>
-  <div style="background:red;"class="percDiv"><<input type="number" class="inPerc" id="color5" value="30"></div>
+  <div style="background:green;" class="percDiv"> &gt;<input type="number" class="inPerc" id="color1" value="90"></div>
+  <div style="background:limegreen;" class="percDiv"><input type="number" class="inPerc" id="color2b" value="70">&lt; & &lt;<input type="number" class="inPerc" id="color2t" value="90"></div>
+  <div style="background:yellow;" class="percDiv"><input type="number" class="inPerc" id="color3b" value="50">&lt; & &lt;<input type="number" class="inPerc" id="color3t" value="70"></div>
+  <div style="background:orange;" class="percDiv"><input type="number" class="inPerc" id="color4b" value="30">&lt; & &lt;<input type="number" class="inPerc" id="color4t" value="50"></div>
+  <div style="background:red;" class="percDiv">&lt;<input type="number" class="inPerc" id="color5" value="30"></div>
  </div>
  <button id="okb" class="percBtnC" onclick="displayHM();document.getElementById('percLim').style.display='none';document.getElementById('okb').style.display='none';">OK</button>
 
@@ -166,7 +166,7 @@
       <option value="5000">x5000</option>
       <option value="10000">x10000</option>
  </select></div></div>
- <div id='my_file_output'><div id="selMach" style="border: silver solid 1px;top:5px;"></div>
+ <div id="my_file_output"><div id="selMach" style="border: silver solid 1px;top:5px;"></div>
   <table id="selMachStats" style="display: none;">
     <tr><th class="tblCello" style="background: white;">Working %</th><td class="tblCell" id="workPercent"></td></tr>
     <tr><th class="tblCello" style="background: #46d446;">Idle %</th><td class="tblCell" id="idlePercent"></td></tr>
@@ -201,7 +201,7 @@
     <th>Avg time<label id="avgI"><i class="fa-solid fa-circle-info"></i></label></th>
     <th>Short times<label id="shortI"><i class="fa-solid fa-circle-info"></i></label></th>
     <th>Long times<label id="longI"><i class="fa-solid fa-circle-info"></i></label></th> 
-    <th>Warn->stop<label id="warn2stopI"><i class="fa-solid fa-circle-info"></i></label>
+    <th>Warn-&gt;stop<label id="warn2stopI"><i class="fa-solid fa-circle-info"></i></label></th>
   </tr>
   <tr>
     <th>Working</th>

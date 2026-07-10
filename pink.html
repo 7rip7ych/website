@@ -62,14 +62,14 @@
                     <input type="submit" name="doit" value="Enter" class="button retropink"/>
                   </form>
                 </div>
-                <% if (data) { %>
+                <!-- <% if (data) { %>
                   <div class="popup retropink results center bottom">
                     <h2>RESULTS</h2>
                     <div>
                       <pre><%= JSON.stringify(data, undefined, 2) %></pre>
                     </div>
                   </div>
-                <% }; %>
+                <% }; %> -->
             </article>
 
             <article class="article retropink" id="search">
@@ -81,7 +81,7 @@
                     <input type="submit" name="doit" value="Enter" class="button retropink"/>
                   </form>
                 </div>
-                <% if (data) { %>
+                <!-- <% if (data) { %> -->
                   <div class="popup retropink results right">
                     <h2>RESULTS</h2>
                     <div>
@@ -117,24 +117,24 @@
                       </div>
                       
                       <div id="results" data-full="<%= JSON.stringify(data); %>">
-                      <% let counter = 1; %>
+                      <!-- <% let counter = 1; %>
                       <% for (const row of data.all) { %>
-                        <% if (counter > 100) { %>
+                        <% if (counter > 100) { %> -->
                         <button class="button retropink" onclick="loadMore()">Load more</button>
-                        <% break; %>
-                        <% }; %>
-                        <div class="row">
+                        <!-- <% break; %>
+                        <% }; %> -->
+                        <!-- <div class="row">
                           <h4><%= row.ip %></h4>
                           <p><a href="<%= row.url %>" target="_blank"><%= row.url %></a></p>
                           <p><%= row.day %> <%= row.month %> <%= row.year %> <%= row.time %></p>
-                        </div>
+                        </div> -->
                         
-                        <% counter++ %>
-                      <% }; %>
+                        <!-- <% counter++ %>
+                      <% }; %> -->
                       </div>
                     </div>
                   </div>
-                <% }; %>
+                <!-- <% }; %> -->
             </article>
             <script>
                 document.querySelectorAll('input[name="filter"]').forEach(opt => opt.addEventListener("change", (e) => {
