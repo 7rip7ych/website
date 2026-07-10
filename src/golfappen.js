@@ -217,6 +217,9 @@ const gameObject = {
     playerCount: 0,
     players: [],
     playTypes: [],
+    play: null,
+    teamCount: null,
+    teamSize: 1,
     create: function(e) {
         e.preventDefault()
         const data = new FormData(e.target)
@@ -241,8 +244,8 @@ const gameObject = {
     openPlayerSetup: function(count) {
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
-        const play = this.playTypes.find(x => x.id === this.gameType)
-        if (!play.team) {
+        this.play = this.playTypes.find(x => x.id === this.gameType)
+        if (!this.play.team) {
             for (let i = 1; i<=count; i++) {
                 let extraField = ``
                 if (this.playTypes.find(x=>x["id"] == this.gameType)["team"]) {
@@ -259,15 +262,15 @@ const gameObject = {
             }
             playerForm.innerHTML += `<input type="submit" name="submit" value="Klar">`
         } else {
-            let teamSize = play.teamSize
-            if (Array.isArray(teamSize)) {
-                teamSize = Math.max(...teamSize.filter(x => count % x === 0))
+            this.teamSize = this.play.teamSize
+            if (Array.isArray(this.teamSize)) {
+                this.teamSize = Math.max(...this.teamSize.filter(x => count % x === 0))
             }
-            // const teamCount = count / teamSize
+            this.teamCount = count / this.teamSize
             let content = ``
             for (let i = 1; i<=count; i++) {
-                let membNum = i % teamSize
-                let teamNum = Math.floor(i/teamSize) + 1
+                let membNum = i % this.teamSize
+                let teamNum = Math.ceil(i/this.teamSize)
                 // if (this.playTypes.find(x=>x["id"] == this.gameType)["team"]) {
                 //     extraField = `<label>Lag: <input type="number" name="p${i}team" id="p${i}team" min="1" max="${Math.ceil(count/2)}"></label>`
                 // }
@@ -288,8 +291,6 @@ const gameObject = {
             content += `<input type="submit" name="submit" value="Klar">`
             playerForm.innerHTML = content
         }
-        
-
     },
     setUpPlayers: function(e) {
         e.preventDefault()
@@ -297,55 +298,31 @@ const gameObject = {
         // console.log([...data.entries()])
         let players = []
         for (let i = 1; i<=this.playerCount; i++) {
-            players.push({
+            let player = {
                 "name": data.get(`p${i}name`) || `Spelare ${i}`,
                 "handicap": parseFloat(data.get(`p${i}handicap`)) || 0
-            })
+            }
+            if (this.play.team) {
+                player.team = Math.ceil(i/this.teamSize)
+            }
+            players.push(player)
         }
         this.players = players
         this.openScoreKeeper()
     },
     openScoreKeeper: function() {
         switchView("play")
+        this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
         console.log(this.gameType, this.players)
         this.keeper.innerHTML = ""
-        
+
         for (let i = 1; i<=this.holes; i++) {
-            const inputFields = this.players.map(player => {
-                return `<label>${player.name}: <input type="number" name="${player.name}-${i}" min="0" max="999"></label>`
-            })
-            let parVal = ""
-            let indVal = ""
-            let extraContent = ""
-            if (this.courseData) {
-                parVal = ` value="${this.courseData.holes[i-1].par}"`
-                indVal = ` value="${this.courseData.holes[i-1].index}"`
-            }
-            if (this.gameType == "matchgame") {
-                extraContent = `
-                <label>Vinnare:</label>
-                <div class="horizontal-radio-buttons" id="winnerRadios">`
-                extraContent += this.players.map(player => {
-                    return `<span><input type="radio" name="winner-${i}" value="${player.name}" id="winner-${i}-${player.name.replace(" ", "-")}">
-                    <label for="winner-${i}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
-                }).join("\n")
-                extraContent += `</div>`
-            }
-            this.keeper.innerHTML += `
-            <div class="col white hole" id="hole${i}">
-                <h3>Hål ${i}</h3>
-                <label class="separate">Par: <input type="number" name="par-${i}" min="1" max="99"${parVal}></label>
-                <label class="separate">Index: <input type="number" name="index-${i}" min="1" max="99"${indVal}></label>
-                ${inputFields.join("\n")}
-                ${extraContent}
-            </div>
-            `
+            this.keeper.innerHTML += this.ruleset.holeForm(i)
         }
         this.keeper.innerHTML += `<div class="col white">
             <input type="submit" value="Räkna ut resultat">
             <div class="results row cols-2"></div>
         </div>`
-        this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
         this.ruleset.additionalListeners()
     },
     toggleOverlay: function () {
@@ -605,6 +582,26 @@ class GameRules {
         }
         return extra_par
     }
+
+    holeForm(hole) {
+        const inputFields = this.players.map(player => {
+            return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+        })
+        let parVal = ""
+        let indVal = ""
+        if (gameObject.courseData) {
+            parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
+            indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+        }
+        return `
+        <div class="col white hole" id="hole${hole}">
+            <h3>Hål ${hole}</h3>
+            <label class="separate">Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
+            <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>
+            ${inputFields.join("\n")}
+        </div>
+        `
+    }
 }
 
 class Nassau extends GameRules {
@@ -704,6 +701,35 @@ const rules = {
         constructor(players, holes) {
             super(players, holes)
             this.order = "desc"
+        }
+
+        holeForm(hole) {
+            let content = ""
+            const inputFields = this.players.map(player => {
+                return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+            })
+            let parVal = ""
+            let indVal = ""
+            if (gameObject.courseData) {
+                parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
+                indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+            }
+
+            content = `
+            <div class="col white hole" id="hole${hole}">
+                <h3>Hål ${hole}</h3>
+                <label class="separate">Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
+                <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>
+                ${inputFields.join("\n")}
+                <label>Vinnare:</label>
+                <div class="horizontal-radio-buttons winner-radios">`
+            content += this.players.map(player => {
+                return `<span><input type="radio" name="winner-${hole}" value="${player.name}" id="winner-${hole}-${player.name.replace(" ", "-")}">
+                <label for="winner-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
+            }).join("\n")
+            content += `</div></div>`
+
+            return content
         }
 
         readInputs() {
@@ -1049,6 +1075,42 @@ const rules = {
         constructor(players, holes) {
             super(players, holes)
         }
+
+        holeForm(hole) {
+            let content = ""
+            const inputFields = this.players.map(player => {
+                return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+            })
+            let parVal = ""
+            let indVal = ""
+            if (gameObject.courseData) {
+                parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
+                indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+            }
+
+            content = `
+            <div class="col white hole" id="hole${hole}">
+                <h3>Hål ${hole}</h3>
+                <label class="separate">Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
+                <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
+
+            for (let i=1; i<=gameObject.teamCount; i++) {
+                content += `<fieldset><legend>Lag ${i}</legend><label>Utslag:</label>
+                <div class="horizontal-radio-buttons teeshot-radios">`
+                content += this.players.map(player => {
+                    if (player.team == i) {
+                        return `<span><input type="radio" name="teeshot-${hole}" value="${player.name}" id="teeshot-${hole}-${player.name.replace(" ", "-")}">
+                        <label for="teeshot-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
+                    }
+                }).join("\n")
+                content += `</div><label>Slag: <input type="number" name="team${i}-${hole}" min="0" max="999"></label></fieldset>`
+            }
+
+            content += `</div>`
+
+            return content
+        }
+
         calculateHcp (hcps) {
             let res = 0
             hcps.map(h=>res += h*0.5)
