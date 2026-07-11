@@ -15,7 +15,8 @@ const views = {
     "score": document.getElementById("scoreView"),
     "history": document.getElementById("historyView"),
     "players": document.getElementById("playersView"),
-    "partRes": document.getElementById("partialResults")
+    "partRes": document.getElementById("partialResults"),
+    "typeInfo": document.getElementById("typeInfoWindow")
 }
 const buttons = {
     "new": document.getElementById("newGame"),
@@ -27,7 +28,8 @@ const buttons = {
     "backFromPlay": document.querySelector("#playView .back-button"),
     "partRes": document.querySelector("#partialResults .always-visible"),
     "nextHole": document.querySelector("#keeper-nav .right"),
-    "prevHole": document.querySelector("#keeper-nav .left")
+    "prevHole": document.querySelector("#keeper-nav .left"),
+    "typeInfo": document.getElementById("gameTypeInfo")
 }
 const forms = {
     "newGame": document.getElementById("newGameForm"),
@@ -187,6 +189,31 @@ async function populateNewGameForm(playTypes, golfClubs) {
 
 async function populateHistory() {}
 
+const infoWindow = {
+    window: document.getElementById("typeInfoWindow"),
+    button: document.getElementById("gameTypeInfo"),
+    init: function(plays) {
+        this.button.onclick = (e) => this.open(e)
+        let content = `<button class="close-button">X</button>`
+        content += plays.map(play => {
+            return `
+            <h3>${play.name}</h3>
+            <p>${play.desc}</p>
+            `
+        }).join("\n")
+        this.window.innerHTML = content
+        this.window.querySelector(".close-button").onclick = (e) => this.close(e)
+    },
+    open: function(e) {
+        e.preventDefault()
+        this.window.style.display = "block"
+    },
+    close: function(e) {
+        e.preventDefault()
+        this.window.style.display = "none"
+    }
+}
+
 async function setup() {
     createListeners()
     const plays =  await data.loadPlayTypes()
@@ -194,6 +221,7 @@ async function setup() {
     const courses = await data.loadGolfClubs()
     await data.loadClubData()
     populateNewGameForm(plays, courses)
+    infoWindow.init(plays)
     populateHistory()
 }
 
@@ -307,8 +335,14 @@ const gameObject = {
             }
             players.push(player)
         }
-        this.players = players
-        this.openScoreKeeper()
+        console.log(players, this.players)
+        if (players.map(x=>x.name) == this.players.map(x=>x.name)) {
+            this.players = players
+            switchView("play")
+        } else {
+            this.players = players
+            this.openScoreKeeper()
+        }
     },
     openScoreKeeper: function() {
         switchView("play")
@@ -350,7 +384,7 @@ const gameObject = {
         if (!res) { return }
         let content = ""
         content += this.ruleset.generateScoreCard("v")
-        content += this.ruleset.generateScoreCard("h")
+        // content += this.ruleset.generateScoreCard("h")
         Object.keys(res).forEach(player => {
             content += `<div class="player"><h4>${player}</h4>`
             for (const [key, val] of Object.entries(res[player])) {
@@ -585,7 +619,7 @@ class GameRules {
 
     holeForm(hole) {
         const inputFields = this.players.map(player => {
-            return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+            return `<label>${player.name} (${player.handicap}hcp): <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
         })
         let parVal = ""
         let indVal = ""
@@ -705,8 +739,9 @@ const rules = {
 
         holeForm(hole) {
             let content = ""
+            const minHcp = Math.min(...this.players.map(p => p.handicap))
             const inputFields = this.players.map(player => {
-                return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+                return `<label>${player.name} (${player.handicap-minHcp}hcp): <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
             })
             let parVal = ""
             let indVal = ""

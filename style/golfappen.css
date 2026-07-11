@@ -632,6 +632,10 @@ label {
   padding: 0.2em;
   font-size: 1rem;
   align-self: flex-start;
+  font-family: var(--font);
+  color: var(--text-color-light);
+  background: transparent;
+  border: 0;
 }
 
 .separating-row-flex {
@@ -891,4 +895,54 @@ table {
 
 .scorecard .last-row :is(td, th){
   border-bottom: 1pt solid #000;
+}
+
+.info-button, .close-button {
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  font-size: 1.1rem;
+  background: transparent;
+  border: 1px solid;
+  text-align: center;
+  line-height: 1;
+}
+.close-button {
+  float: right;
+  width: 3ch;
+  font-size: 1.3rem;
+  margin: 0.5rem;
+  color: var(--text-color-dark);
+}
+
+.info-button {
+  color: var(--text-color-light);
+  height: 70%;
+  font-family: serif;
+  font-style: italic;
+  font-size: 1.5rem;
+}
+
+.info-window {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  border-radius: 1rem;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow-y: auto;
+  background: #fff;
+  top: 10px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  color: var(--text-color-dark);
+  padding: 1em;
+}
+
+.horizontal-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }

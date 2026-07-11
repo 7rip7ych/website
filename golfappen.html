@@ -78,9 +78,14 @@
                 <input type="number" min="1" max="18" value="18" id="holeCount" name="holes" required>
                 </label>
                 
-                <select id="gameType" name="type" required>
-                    <option value="" selected disabled>Välj speltyp</option>
-                </select>
+                <div class="horizontal-flex">
+                    <select id="gameType" name="type" required>
+                        <option value="" selected disabled>Välj speltyp</option>
+                    </select>
+                    <button class="info-button" id="gameTypeInfo">i</button>
+                    <div class="info-window" id="typeInfoWindow"></div>
+                </div>
+                
 
                 <select id="golfClub" name="club">
                     <option selected disabled>Välj golfklubb</option>

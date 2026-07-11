@@ -134,7 +134,7 @@ const elements = {
         // element.classList.add("top-transition")
         // if (movementX < movementY) {
         // let initPos = startY / window.innerHeight
-        if (Math.abs(posY-startY) < 100) {
+        if (Math.abs(posY-startY) < window.innerHeight*0.25) {
             // element.style.top = startY + "px"
             return
         }
