@@ -126,6 +126,7 @@ const elements = {
      * @param {event} e The triggering event.
      */
     processTouchEnd: function (e, element, startY) {
+        e.preventDefault()
         if (element.scrollTop !== 0) {return}
         const posY = e.changedTouches[0].clientY// + this.diffY
         // const posX = e.changedTouches[0].clientX + this.diffX
@@ -134,7 +135,7 @@ const elements = {
         // element.classList.add("top-transition")
         // if (movementX < movementY) {
         // let initPos = startY / window.innerHeight
-        if (Math.abs(posY-startY) < window.innerHeight*0.25) {
+        if (Math.abs(posY-startY) < window.innerHeight*0.15) {
             // element.style.top = startY + "px"
             return
         }
