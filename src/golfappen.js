@@ -728,9 +728,207 @@ class Nassau extends GameRules {
         return tbl + resStr
     }
 }
+
+class GolfSome extends GameRules {
+    constructor(players, holes) {
+        super(players, holes)
+    }
+
+    holeForm(hole) {
+        let content = ""
+        // const inputFields = this.players.map(player => {
+        //     return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+        // })
+        let parVal = ""
+        let indVal = ""
+        if (gameObject.courseData) {
+            parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
+            indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+        }
+
+        content = `
+        <div class="col white hole" id="hole${hole}">
+            <h3>Hål ${hole}</h3>
+            <label class="separate">Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
+            <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
+
+        for (let i=1; i<=gameObject.teamCount; i++) {
+            content += `<fieldset><legend>Lag ${i}</legend><label>Utslag:</label>
+            <div class="horizontal-radio-buttons teeshot-radios">`
+            content += this.players.map(player => {
+                if (player.team == i) {
+                    return `<span><input type="radio" name="teeshot-t${i}-${hole}" value="${player.name}" id="teeshot-${hole}-${player.name.replace(" ", "-")}">
+                    <label for="teeshot-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
+                }
+            }).join("\n")
+            content += `</div><label>Slag: <input type="number" name="team${i}-${hole}" min="0" max="999"></label></fieldset>`
+        }
+
+        content += `</div>`
+
+        return content
+    }
+
+    calculateHcp (team) {
+        let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
+        let res = 0
+        hcps.map(h=>res += h*0.5)
+        return Math.round(res)
+    }
+
+
+    readInputs() {
+        let formData = new FormData(forms["keeper"])
+        let points = {}
+        for (let i = 1; i<=this.holes; i++) {
+            points[i] = {
+                "par": parseInt(formData.get(`par-${i}`)) || 0,
+                "index": parseInt(formData.get(`index-${i}`)) || 0
+            }
+            for (let j=1; j<=gameObject.teamCount; j++) {
+                points[i][`Lag ${j}`] = [parseInt(formData.get(`team${j}-${i}`))||0, formData.get(`teeshot-t${j}-${i}`)||""]
+            }
+            // this.players.forEach(p => {
+            //     points[i][p.name] = parseInt(formData.get(`${p.name}-${i}`)) || 0
+            // })
+        }
+        this.setPoints(points)
+        console.log(points)
+    }
+
+    calculatePoints () {
+        let points = {}
+        for (let i=1; i<=this.holes; i++) {
+            points[i] = {}
+            for (let j=1; j<=gameObject.teamCount; j++) {
+                let key = `Lag ${j}`
+                points[i][key] = 0
+                if (!this._points[i][key]) { return }
+                const hcp = this.calculateHcp(j)
+                let extra = this.calculatePlayerPar(hcp, this._points[i].index)
+                points[i][key] = extra < this._points[i][key][0] ? this._points[i][key][0] - extra : 0
+            }
+            // this.players.forEach(player => {
+            //     points[i][player.name] = 0
+            //     if (!this._points[i][player.name]) { return }
+            //     let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
+            //     points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
+            // })
+        }
+        this.calculatedPoints = points
+        return points
+    }
+
+    calculateScores() {
+        this.calculatePoints()
+        let total = {}
+        for (let j=1; j<=gameObject.teamCount; j++) {
+            let name = `Lag ${j}`
+            let score = {
+                hcp: this.calculateHcp(j),
+                shots: 0,
+                points: 0,
+                par: 0
+            }
+            Object.keys(this._points).forEach(key => {
+                if (!this._points[key][name]) { return }
+                score.par += this._points[key]["par"]
+                score.shots += this._points[key][name][0]
+                score.points += this.calculatedPoints[key][name]
+            })
+            total[name] = score
+        }
+        console.log(total)
+        return total
+    }
+    generateScoreCard(dir="h") {
+        const teams = [...Array(gameObject.teamCount+1).keys()]
+        teams.shift()
+        console.log(teams)
+        let tbl = `<div class="horizontal-scroll">`
+        console.log(this._points)
+        if (dir == "h" || dir.includes("h")) {
+            tbl += `<table class="scorecard horizontal">
+            <tr>
+                <th colspan="2">Hole</th>`
+            for (let i=1; i<=this.holes; i++) {
+                tbl += `<td>${i}</td>`
+            }
+            tbl += `</tr>
+            <tr>
+                <th colspan="2">Par</th>
+                ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
+            </tr>
+            <tr>
+                <th colspan="2">Index</th>
+                ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
+            </tr>`
+            for (let j=1; j<=gameObject.teamCount; j++) {
+                let key = `Lag ${j}`
+                tbl += `<tr>
+                <th rowspan="3">${key} (${this.calculateHcp(j)}hcp)</th><th>Utslag</th>
+                ${Object.values(this._points).map(hole => `<td>${hole[key][1]}</td>`).join("\n")}
+                </tr>
+                <tr><th>Slag</th>${Object.values(this._points).map(hole => `<td>${hole[key][0]}</td>`).join("\n")}</tr>
+                <tr><th>Poäng</th>
+                ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[key]}</td>`).join("\n")}
+                </tr>
+                `
+            }
+            
+
+        } else {
+            tbl += `<table class="scorecard vertical">
+            <tr>
+                <th rowspan="2">Hole</th>
+                <th rowspan="2">Par</th>
+                <th rowspan="2">Index</th>
+            `
+            tbl += teams.map(team => `<th colspan="3">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
+            tbl += `</tr><tr>`
+            tbl += `<th>Utslag</th><th>Slag</th><th>Poäng</th>\n`.repeat(gameObject.teamCount)
+            tbl += `</tr>`
+            let sum = {
+                par: 0,
+                index: 0
+            }
+            teams.map(team => sum[`Lag ${team}`] = [0, 0])
+
+            for (let i=1; i<=this.holes; i++) {
+                sum.par += this._points[i].par
+                sum.index += this._points[i].index
+                teams.map(team => {
+                    sum[`Lag ${team}`][0] += this._points[i][`Lag ${team}`][0]
+                    sum[`Lag ${team}`][1] += this.calculatedPoints[i][`Lag ${team}`]
+                })
+                tbl += `
+                <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
+                    <td>${i}</td>
+                    <td>${this._points[i].par}</td>
+                    <td>${this._points[i].index}</td>
+                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
+                </tr>
+                `
+                if (i == 9 || i == this.holes) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Summa</th>
+                        <td>${sum.par}</td>
+                        <td></td>
+                        ${teams.map(team => `<td></td><td>${sum[`Lag ${team}`][0]}</td><td>${sum[`Lag ${team}`][1]}</td>`).join("\n")}
+                    </tr>`
+                }
+            }
+        }
+        tbl += `</table></div>`
+        return tbl
+    }
+}
 const rules = {
     forms: [],
-    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", "copenhagener", "nassauShotgolf", "nassauShotcomp", "nassauPointbogey"],
+    implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", 
+        "copenhagener", "nassauShotgolf", "nassauShotcomp",
+        "nassauPointbogey", "foursome", "greensome", "irishgreen"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes)
@@ -1106,69 +1304,50 @@ const rules = {
             return points
         }
     },
-    foursome: class Foursome extends GameRules {
+    foursome: class Foursome extends GolfSome {
         constructor(players, holes) {
             super(players, holes)
         }
+        additionalListeners() {
+            for (let i = 1; i<= this.holes; i++) {
+                for (let j = 1; j<=gameObject.teamCount; j++) {
+                    document.getElementsByName(`teeshot-t${j}-${i}`).forEach(rad => rad.onclick = (e) => this.switchTeeshots(e, i, j))
+                }
+            }
+        }
 
-        holeForm(hole) {
-            let content = ""
-            const inputFields = this.players.map(player => {
-                return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+        switchTeeshots(e, hole, team) {
+            let player1 = document.querySelector(`input[name="teeshot-t${team}-${hole}"]:checked`).value
+            let player2 = ""
+            
+            this.players.map(player => {
+                if (player.team == team && player.name !== player1) {
+                    player2 = player.name
+                }
             })
-            let parVal = ""
-            let indVal = ""
-            if (gameObject.courseData) {
-                parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
-                indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+            let odd = hole % 2 === 1 ? [player2, player1] : [player1, player2]
+            for (let i = 1; i<= this.holes; i++) {
+                document.getElementById(`teeshot-${i}-${odd[i % 2].replace(" ", "-")}`).checked = true
             }
-
-            content = `
-            <div class="col white hole" id="hole${hole}">
-                <h3>Hål ${hole}</h3>
-                <label class="separate">Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
-                <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
-
-            for (let i=1; i<=gameObject.teamCount; i++) {
-                content += `<fieldset><legend>Lag ${i}</legend><label>Utslag:</label>
-                <div class="horizontal-radio-buttons teeshot-radios">`
-                content += this.players.map(player => {
-                    if (player.team == i) {
-                        return `<span><input type="radio" name="teeshot-${hole}" value="${player.name}" id="teeshot-${hole}-${player.name.replace(" ", "-")}">
-                        <label for="teeshot-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
-                    }
-                }).join("\n")
-                content += `</div><label>Slag: <input type="number" name="team${i}-${hole}" min="0" max="999"></label></fieldset>`
-            }
-
-            content += `</div>`
-
-            return content
-        }
-
-        calculateHcp (hcps) {
-            let res = 0
-            hcps.map(h=>res += h*0.5)
-            return Math.round(res)
         }
     },
-    greensome: class Greensome extends GameRules {
+    greensome: class Greensome extends GolfSome {
         constructor(players, holes) {
             super(players, holes)
         }
-        calculateHcp (hcps) {
+        calculateHcp (team) {
+            let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
             let res = Math.min(...hcps)*0.6 + Math.max(...hcps)*0.4
-
             return Math.round(res)
         }
     },
-    irishgreen: class IrishGreensome extends GameRules {
+    irishgreen: class IrishGreensome extends GolfSome {
         constructor(players, holes) {
             super(players, holes)
         }
-        calculateHcp (hcps) {
+        calculateHcp (team) {
+            let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
             let res = Math.min(...hcps)*0.6 + Math.max(...hcps)*0.4
-
             return Math.round(res)
         }
     },
