@@ -952,3 +952,7 @@ table {
   gap: 0.5rem;
   max-width: 100%;
 }
+
+.horizontal-flex select {
+  max-width: 90%;
+}

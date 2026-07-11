@@ -449,6 +449,8 @@ p.col {
   .wrapper .row .col { flex: 1 1 100%; }
   
   .sitefooter .cols-3 .footer-column { flex: 1 1 100%; }
+  .sitefooter .cols-2 { flex-wrap: wrap; }
+  .sitefooter .cols-2 .footer-column { flex: 1 1 100%; }
 }
 
 
