@@ -126,7 +126,6 @@ const elements = {
      * @param {event} e The triggering event.
      */
     processTouchEnd: function (e, element, startY) {
-        e.preventDefault()
         if (element.scrollTop !== 0) {return}
         const posY = e.changedTouches[0].clientY// + this.diffY
         // const posX = e.changedTouches[0].clientX + this.diffX
