@@ -928,7 +928,7 @@ table {
 
 .info-button {
   color: var(--text-color-light);
-  height: 70%;
+  height: 2rem;
   font-family: serif;
   font-style: italic;
   font-size: 1.5rem;
@@ -961,4 +961,7 @@ table {
 
 .horizontal-flex select {
   max-width: calc(100% - 2.2rem);
+}
+fieldset {
+  max-width: 100%;
 }
