@@ -69,12 +69,12 @@ function createListeners() {
     forms["keeper"].addEventListener("submit", (e) => gameObject.showResults(e))
 
     // swipe
-    // views["partRes"].addEventListener("touchstart", (e) => elements.processTouchStart(e, views["partRes"], 
-    //     views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
+    views["partRes"].addEventListener("touchstart", (e) => elements.processTouchStart(e, views["partRes"], 
+        views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
     // views["partRes"].addEventListener("touchmove", (e) => elements.processTouchMove(e, views["partRes"], 
     //     views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
-    // views["partRes"].addEventListener("touchcancel", (e) => elements.processTouchCancel(e, views["partRes"], 
-    //     views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
+    views["partRes"].addEventListener("touchcancel", (e) => elements.processTouchCancel(e, views["partRes"], 
+        views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
     views["partRes"].addEventListener("touchend", (e) => elements.processTouchEnd(e, views["partRes"], 
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
 

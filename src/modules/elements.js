@@ -93,11 +93,11 @@ const elements = {
      * Function that handles the touchstart event.
      * @param {event} e The triggering event.
      */
-    processTouchStart: function (e, element, startY) {
+    processTouchStart: function (e, element) {
         element.classList.remove("top-transition")
         if (element.scrollTop !== 0) {return}
         this.diffY = element.offsetTop - e.touches[0].clientY
-        // startY = element.offsetTop
+        this.startY = element.offsetTop
 
         this.diffX = element.offsetLeft - e.touches[0].clientX
         this.startX = element.offsetLeft
@@ -107,59 +107,64 @@ const elements = {
      * Function that handles the touchmove event.
      * @param {event} e The triggering event.
      */
-    processTouchMove: function (e, element, startY) {
+    processTouchMove: function (e, element, startY, startX=0) {
         if (element.scrollTop !== 0) {return}
+        console.log(1)
         let posY = e.touches[0].clientY + this.diffY
         let posX = e.touches[0].clientX + this.diffX
-        if ((startY / window.innerHeight) > 0.2 || posY > startY) {
-            const movementY = Math.abs(posY - startY)
-            const movementX = Math.abs(posX - this.startX)
-            if (movementY > movementX) {
-                e.preventDefault()
-                element.style.top = posY + 'px'
-            }
+        console.log(this.diffY, this.diffX, this.startY, this.startX)
+        // if ((startY / window.innerHeight) > 0.2 || posY > startY) {
+        const movementY = Math.abs(posY - this.startY)
+        const movementX = Math.abs(posX - this.startX)
+        console.log(movementX, movementY)
+        if (movementY > movementX) {
+            e.preventDefault()
+            element.style.top = posY + 'px'
+            console.log(2)
         }
+        // }
     },
     
     /**
      * Function that handles the touchend event.
      * @param {event} e The triggering event.
      */
-    processTouchEnd: function (e, element, startY) {
+    processTouchEnd: function (e, element) {
         if (element.scrollTop !== 0) {return}
-        const posY = e.changedTouches[0].clientY// + this.diffY
-        // const posX = e.changedTouches[0].clientX + this.diffX
-        // const movementY = Math.abs(posY - startY)
-        // const movementX = Math.abs(posX - this.startX)
+        const posY = e.changedTouches[0].clientY + this.diffY
+        const posX = e.changedTouches[0].clientX + this.diffX
+        const movementY = Math.abs(posY - this.startY)
+        const movementX = Math.abs(posX - this.startX)
         // element.classList.add("top-transition")
         // if (movementX < movementY) {
         // let initPos = startY / window.innerHeight
-        if (Math.abs(posY-startY) < window.innerHeight*0.15) {
+        if (Math.abs(posY-this.startY) < window.innerHeight*0.15) {
             // element.style.top = startY + "px"
             return
         }
-        if (posY < startY) {
-            // if (initPos > 0.8) {
-            //     element.style.top = 0.55*window.innerHeight + 'px'
-            //     element.style.overflowY = "hidden"
-            //     element.scrollTop = 0
-            // } else {
-            //     element.style.top = 0.05*window.innerHeight + 'px'
-            //     element.style.overflowY = "scroll"
-            // }
-            this.swipeUp(element)
-        } else if (posY > startY) {
-            // if (initPos < 0.3) {
-            //     element.style.top = 0.55*window.innerHeight + 'px'
-            //     element.style.overflowY = "hidden"
-            //     element.scrollTop = 0
-            // } else {
-            //     element.style.top = 0.90*window.innerHeight + 'px'
-            //     element.style.overflowY = "hidden"
-            //     element.scrollTop = 0
-            // }
-            this.swipeDown(element)
-        }
+        if (movementX < movementY) {
+            if (posY < this.startY) {
+                // if (initPos > 0.8) {
+                //     element.style.top = 0.55*window.innerHeight + 'px'
+                //     element.style.overflowY = "hidden"
+                //     element.scrollTop = 0
+                // } else {
+                //     element.style.top = 0.05*window.innerHeight + 'px'
+                //     element.style.overflowY = "scroll"
+                // }
+                this.swipeUp(element)
+            } else if (posY > this.startY) {
+                // if (initPos < 0.3) {
+                //     element.style.top = 0.55*window.innerHeight + 'px'
+                //     element.style.overflowY = "hidden"
+                //     element.scrollTop = 0
+                // } else {
+                //     element.style.top = 0.90*window.innerHeight + 'px'
+                //     element.style.overflowY = "hidden"
+                //     element.scrollTop = 0
+                // }
+                this.swipeDown(element)
+            }}
         // }
     },
 
@@ -167,10 +172,10 @@ const elements = {
      * Function that handles the touchcancel event.
      * @param {event} e The triggering event.
      */
-    processTouchCancel: function (e, element, startY) {
+    processTouchCancel: function (e, element) {
         e.preventDefault()
         //console.log(e)
-        element.style.top = startY + "px"
+        element.style.top = this.startY + "px"
     }
 
 }
