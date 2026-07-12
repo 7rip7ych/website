@@ -77,7 +77,12 @@ function createListeners() {
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
     views["partRes"].addEventListener("touchend", (e) => elements.processTouchEnd(e, views["partRes"], 
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
-
+    
+    window.onresize = () => {
+        pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight),
+        pos["partResCollapsed"] = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top'))
+        views["partRes"].style.top = pos["partResCollapsed"] + "px"
+    }
 }
 
 const data = {
