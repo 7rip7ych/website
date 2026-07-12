@@ -91,7 +91,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 2rem;
+  padding: 0.3rem 1rem;
   background-color: var(--header-background);
   border-bottom: 2px solid var(--header-shadow);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -130,8 +130,8 @@ body {
 /* Styling for the logo image */
 .siteheader .logo img,
 .siteheader .logo model-viewer {
-  width: 60px;
-  height: 60px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -284,20 +284,21 @@ body {
   justify-content: start;
   align-items: center;
   min-height: 5rem;
+  padding: 1rem;
 }
 
 section {
   width: 100%;
   max-width: 100%;
   padding: 0.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 0 10px var(--green1);
+  /* margin-bottom: 1rem; */
+  /* box-shadow: 0 0 10px var(--green1); */
   display: flex;
   flex-direction: column;
 }
 
 section > h2 {
-  margin: 1.5rem 2rem 0.5rem;
+  margin: 0.7rem 1rem 0.1rem;
 }
 
 .content {
@@ -393,7 +394,7 @@ p.col {
   }
 
   .wrapper {
-    padding: 1rem 0;
+    padding: 0 0;
   }
 
   .scroll .col { min-width: 300px; }
@@ -617,6 +618,8 @@ p.col {
   gap: 1rem;
   padding: 1rem;
   border-radius: 32px;
+  align-self: center;
+  width: 100%;
 }
 
 input, select, button {
@@ -954,14 +957,20 @@ table {
 .horizontal-flex {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   gap: 0.2rem;
   max-width: 100%;
 }
 
 .horizontal-flex select {
   max-width: calc(100% - 2.2rem);
+  width: stretch;
 }
+
 fieldset {
   max-width: 100%;
+}
+
+#playView {
+  margin-bottom: 2rem;
 }
