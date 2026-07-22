@@ -298,8 +298,8 @@ const gameObject = {
                 playerForm.innerHTML += `
                 <fieldset>
                     <legend>Player ${i}</legend>
-                    <label>Namn: <input type="text" name="p${i}name" id="p${i}name" value="${exists.name?exists.name:""}"></label>
-                    <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap" value="${exists.handicap?exists.handicap:""}"></label>
+                    <label>Namn: <input type="text" name="p${i}name" id="p${i}name" value="${exists?exists.name:""}"></label>
+                    <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap" value="${exists?exists.handicap:""}"></label>
                     ${extraField}
                 </fieldset>
                 `
@@ -551,9 +551,10 @@ const historyManager = {
         return prev
     },
     updateHistory: function(date) {
-        const prev = this.getHistory("asc")
+        const prev = this.getHistory()
         if (!prev.includes(date)) {
             prev.push(date)
+            console.log("new")
             storage.setItem("games", JSON.stringify(prev))
         }
     },
@@ -564,9 +565,19 @@ const historyManager = {
     populateHistory: function() {
         const games = this.getHistory()
         document.querySelector("#historyView .list").innerHTML = games.map(x => {
-            return `<p>${x}</p>`
-        }
-        )
+            const game = historyManager.getGame(x)
+            let clubLine = ""
+            if (game.club && game.course) {
+                clubLine = `<p><span>${game.club}</span> - <span>${game.course}</span></p>`
+            } else if (game.club) {
+                clubLine = `<p><span>${game.club}</span></p>`
+            }
+            return `<div class="history-item">
+            <h3><span>${game.gameType}</span> - <span>${new Date(x).toLocaleString()}</span></h3>
+            ${clubLine}
+            <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
+        </div>`
+        }).join("\n")
     }
 }
 

@@ -974,3 +974,24 @@ fieldset {
 #playView {
   margin-bottom: 2rem;
 }
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-item {
+  background: var(--white);
+  color: var(--text-color-dark);
+  border-radius: 1rem;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-item p,
+.history-item h3 {
+  margin: 0;
+}
