@@ -562,22 +562,65 @@ const historyManager = {
         const his = this.getHistory()
         return this.getGame(his[0])
     },
-    populateHistory: function() {
+    populateHistory: async function() {
         const games = this.getHistory()
+        this.plays = await data.loadPlayTypes()
+        this.clubs = await data.loadGolfClubs()
         document.querySelector("#historyView .list").innerHTML = games.map(x => {
             const game = historyManager.getGame(x)
             let clubLine = ""
+            let winLine =""
             if (game.club && game.course) {
-                clubLine = `<p><span>${game.club}</span> - <span>${game.course}</span></p>`
+                clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span> - <span>${game.course}</span></p>`
             } else if (game.club) {
-                clubLine = `<p><span>${game.club}</span></p>`
+                clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span></p>`
             }
-            return `<div class="history-item">
-            <h3><span>${game.gameType}</span> - <span>${new Date(x).toLocaleString()}</span></h3>
+            let winner = this.calculateWinner(game)
+            if (winner !== "N/A" && winner) {
+                winLine = `<p>Vinnare: ${winner}</p>`
+            }
+            return `<div class="history-item" id="${x}">
+            <p>${new Date(x).toLocaleString()}</p>
+            <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
             ${clubLine}
             <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
+            ${winLine}
+            <div class="collapsed scores"></div>
+            <div class="horizontal-flex">
+                ${!Array.isArray(game.scores) ? '<button class="expand">Visa scorekort</button>': ''}
+                <button class="continue">Fortsätt</button>
+            </div>
         </div>`
         }).join("\n")
+        games.map(x => {
+            const parent = document.getElementById(x)
+            parent.querySelector(`.expand`)?parent.querySelector(`.expand`).onclick = () => historyManager.toggleScores(x): null
+            parent.querySelector(`.continue`).onclick = () => gameObject.resumeGame(x)
+        })
+    },
+    calculateWinner: function (game) {
+        if (!game.scores || game.scores.length < 1) { return "N/A" }
+        const ruleset = new rules[game.gameType.toString()](game.players, game.holes)
+        // console.log(game.scores)
+        ruleset.setPoints(game.scores)
+        return ruleset.getWinner()
+    },
+    toggleScores: function(id) {
+        // console.log(id)
+        const ele = document.getElementById(id)
+        const cont = ele.querySelector(".scores")
+        if (cont.classList.contains("collapsed")) {
+            const game = historyManager.getGame(id)
+            if (!game.scores || game.scores.length < 1) {return}
+            ele.querySelector(`.expand`).innerText = "Dölj scorekort"
+            const ruleset = new rules[game.gameType.toString()](game.players, game.holes)
+            // console.log(game.scores)
+            ruleset.setPoints(game.scores)
+            cont.innerHTML = ruleset.generateScoreCard("v")
+        } else {
+            ele.querySelector(`.expand`).innerText = "Visa scorekort"
+        }
+        cont.classList.toggle("collapsed")
     }
 }
 
@@ -615,6 +658,7 @@ class GameRules {
 
     setPoints(points) {
         this._points = points
+        this.calculatePoints()
     }
 
     fillInputs() {
@@ -699,7 +743,7 @@ class GameRules {
         return
     }
 
-    generateScoreCard(dir="h") {
+    generateScoreCard(dir="v") {
         let tbl = `<div class="horizontal-scroll">`
         console.log(this._points)
         if (dir == "h" || dir.includes("h")) {
@@ -802,6 +846,22 @@ class GameRules {
             ${inputFields.join("\n")}
         </div>
         `
+    }
+
+    getWinner() {
+        const tot = this.calculateScores()
+        let rank = this.playernames
+        let win
+        const ptList = Object.values(tot).map(x => x.points)
+        if (this.order == "asc") {
+            win = Math.min(...ptList)
+            // rank.sort((a,b) => tot[a].points - tot[b].points)
+        } else {
+            win = Math.max(...ptList)
+            // rank.sort((a,b) => tot[a].points - tot[b].points)
+        }
+        const winners = Object.keys(tot).filter(x => tot[x].points == win)
+        return winners.join(", ")
     }
 }
 

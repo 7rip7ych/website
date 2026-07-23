@@ -992,6 +992,17 @@ fieldset {
 }
 
 .history-item p,
-.history-item h3 {
+.history-item h2 {
   margin: 0;
+}
+.history-item h2 {
+  text-align: center;
+}
+
+.scores {
+  display: block;
+}
+
+.scores.collapsed {
+  display: none;
 }
