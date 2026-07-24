@@ -7,7 +7,7 @@ import { elements } from "./modules/elements.js"
 
 // declare variables
 const main = document.querySelector(".wrapper")
-const storage = window.sessionStorage
+const storage = window.localStorage //window.sessionStorage
 const views = {
     "start": document.getElementById("startView"),
     "new": document.getElementById("newView"),
@@ -325,8 +325,8 @@ const gameObject = {
                 content += `
                 <fieldset>
                     <legend>Player ${i}</legend>
-                    <label>Namn: <input type="text" name="p${i}name" id="p${i}name" value="${exists.name?exists.name:""}"></label>
-                    <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap" value="${exists.handicap?exists.handicap:""}"></label>
+                    <label>Namn: <input type="text" name="p${i}name" id="p${i}name" value="${exists?exists.name:""}"></label>
+                    <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap" value="${exists?exists.handicap:""}"></label>
                 </fieldset>
                 `
                 if (membNum === 0) {
@@ -601,6 +601,7 @@ const historyManager = {
     calculateWinner: function (game) {
         if (!game.scores || game.scores.length < 1) { return "N/A" }
         const ruleset = new rules[game.gameType.toString()](game.players, game.holes)
+        if (this.plays.find(x=> x.id == game.gameType).team) { ruleset.teamCount = game.teamCount }
         // console.log(game.scores)
         ruleset.setPoints(game.scores)
         return ruleset.getWinner()
@@ -613,10 +614,14 @@ const historyManager = {
             const game = historyManager.getGame(id)
             if (!game.scores || game.scores.length < 1) {return}
             ele.querySelector(`.expand`).innerText = "Dölj scorekort"
-            const ruleset = new rules[game.gameType.toString()](game.players, game.holes)
-            // console.log(game.scores)
-            ruleset.setPoints(game.scores)
-            cont.innerHTML = ruleset.generateScoreCard("v")
+            if (!cont.querySelector(".scorecard")) {
+                const ruleset = new rules[game.gameType.toString()](game.players, game.holes)
+                if (this.plays.find(x=> x.id == game.gameType).team) { ruleset.teamCount = game.teamCount }
+                // console.log(game.scores)
+                ruleset.setPoints(game.scores)
+                cont.innerHTML = ruleset.generateScoreCard("v")
+            }
+            
         } else {
             ele.querySelector(`.expand`).innerText = "Visa scorekort"
         }
@@ -782,17 +787,24 @@ class GameRules {
             tbl += `</tr><tr>`
             tbl += `<th>Slag</th><th>Poäng</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
-            let sum = {
+            let sum1 = {
                 par: 0,
                 index: 0
             }
-            this.playernames.map(player => sum[player] = [0, 0])
+            let sum2 = {
+                par: 0,
+                index: 0
+            }
+            this.playernames.map(player => {
+                sum1[player] = [0, 0]
+                sum2[player] = [0, 0]
+            })
             for (let i=1; i<=this.holes; i++) {
-                sum.par += this._points[i].par
-                sum.index += this._points[i].index
+                (i<=9?sum1:sum2).par += this._points[i].par;
+                (i<=9?sum1:sum2).index += this._points[i].index
                 this.playernames.map(player => {
-                    sum[player][0] += this._points[i][player]
-                    sum[player][1] += this.calculatedPoints[i][player]
+                    (i<=9?sum1:sum2)[player][0] += this._points[i][player];
+                    (i<=9?sum1:sum2)[player][1] += this.calculatedPoints[i][player]
                 })
                 tbl += `
                 <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
@@ -802,13 +814,30 @@ class GameRules {
                     ${this.playernames.map(player => `<td>${this._points[i][player]}</td><td>${this.calculatedPoints[i][player]}</td>`).join("\n")}
                 </tr>
                 `
-                if (i == 9 || i == this.holes) {
+                if (i == 9) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Summa</th>
-                        <td>${sum.par}</td>
+                        <th>Del 1</th>
+                        <td>${sum1.par}</td>
                         <td></td>
-                        ${this.playernames.map(player => `<td>${sum[player][0]}</td><td>${sum[player][1]}</td>`).join("\n")}
+                        ${this.playernames.map(player => `<td>${sum1[player][0]}</td><td>${sum1[player][1]}</td>`).join("\n")}
+                    </tr>`
+                } else if (i == 18) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Del 2</th>
+                        <td>${sum2.par}</td>
+                        <td></td>
+                        ${this.playernames.map(player => `<td>${sum2[player][0]}</td><td>${sum2[player][1]}</td>`).join("\n")}
+                    </tr>`
+                }
+                if (i == this.holes) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Total</th>
+                        <td>${sum1.par + sum2.par}</td>
+                        <td></td>
+                        ${this.playernames.map(player => `<td>${sum1[player][0] + sum2[player][0]}</td><td>${sum1[player][1] + sum2[player][1]}</td>`).join("\n")}
                     </tr>`
                 }
             }
@@ -850,7 +879,7 @@ class GameRules {
 
     getWinner() {
         const tot = this.calculateScores()
-        let rank = this.playernames
+        // let rank = this.playernames
         let win
         const ptList = Object.values(tot).map(x => x.points)
         if (this.order == "asc") {
@@ -865,11 +894,193 @@ class GameRules {
     }
 }
 
+class TeamGame extends GameRules {
+    constructor(players, holes) {
+        super(players, holes)
+        this.teamCount = gameObject.teamCount
+    }
+
+    calculatePoints() {
+        let points = {}
+        for (let i=1; i<=this.holes; i++) {
+            points[i] = {}
+            for (let j=1; j<=this.teamCount; j++) {
+                let key = `Lag ${j}`
+                points[i][key] = 0
+                if (!this._points[i][key]) { continue }
+                const hcp = this.calculateHcp(j)
+                let extra = this.calculatePlayerPar(hcp, this._points[i].index)
+                points[i][key] = extra < this._points[i][key][0] ? this._points[i][key][0] - extra : 0
+            }
+            // this.players.forEach(player => {
+            //     points[i][player.name] = 0
+            //     if (!this._points[i][player.name]) { return }
+            //     let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
+            //     points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
+            // })
+        }
+        this.calculatedPoints = points
+        // console.log(this.calculatedPoints)
+        return points
+    }
+
+    calculateScores() {
+        this.calculatePoints()
+        let total = {}
+        for (let j=1; j<=this.teamCount; j++) {
+            let name = `Lag ${j}`
+            let score = {
+                hcp: this.calculateHcp(j),
+                shots: 0,
+                points: 0,
+                par: 0
+            }
+            Object.keys(this._points).forEach(key => {
+                if (!this._points[key][name]) { return }
+                score.par += this._points[key]["par"]
+                score.shots += this._points[key][name][0]
+                score.points += this.calculatedPoints[key][name]
+            })
+            total[name] = score
+        }
+        // console.log(total)
+        return total
+    }
+
+    generateScoreCard(dir="v") {
+        const teams = [...Array(this.teamCount+1).keys()]
+        teams.shift()
+        // console.log(teams)
+        let tbl = `<div class="horizontal-scroll">`
+        console.log(this._points)
+        if (dir == "h" || dir.includes("h")) {
+            tbl += `<table class="scorecard horizontal">
+            <tr>
+                <th colspan="2">Hole</th>`
+            for (let i=1; i<=this.holes; i++) {
+                tbl += `<td>${i}</td>`
+            }
+            tbl += `</tr>
+            <tr>
+                <th colspan="2">Par</th>
+                ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
+            </tr>
+            <tr>
+                <th colspan="2">Index</th>
+                ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
+            </tr>`
+            for (let j=1; j<=this.teamCount; j++) {
+                let key = `Lag ${j}`
+                tbl += `<tr>
+                <th rowspan="3">${key} (${this.calculateHcp(j)}hcp)</th><th>Utslag</th>
+                ${Object.values(this._points).map(hole => `<td>${hole[key][1]}</td>`).join("\n")}
+                </tr>
+                <tr><th>Slag</th>${Object.values(this._points).map(hole => `<td>${hole[key][0]}</td>`).join("\n")}</tr>
+                <tr><th>Poäng</th>
+                ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[key]}</td>`).join("\n")}
+                </tr>
+                `
+            }
+
+        } else {
+            tbl += `<table class="scorecard vertical">
+            <tr>
+                <th rowspan="2">Hole</th>
+                <th rowspan="2">Par</th>
+                <th rowspan="2">Index</th>
+            `
+            tbl += teams.map(team => `<th colspan="3">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
+            tbl += `</tr><tr>`
+            tbl += `<th>Utslag</th><th>Slag</th><th>Poäng</th>\n`.repeat(this.teamCount)
+            tbl += `</tr>`
+            let sum1 = {
+                par: 0,
+                index: 0
+            }
+            let sum2 = {
+                par: 0,
+                index: 0
+            }
+            teams.map(team => {
+                sum1[`Lag ${team}`] = [0, 0]
+                sum2[`Lag ${team}`] = [0, 0]
+            })
+            // teams.map(team => sum[`Lag ${team}`] = [0, 0])
+
+            for (let i=1; i<=this.holes; i++) {
+                (i<=9?sum1:sum2).par += this._points[i].par;
+                (i<=9?sum1:sum2).index += this._points[i].index
+                teams.map(team => {
+                    (i<=9?sum1:sum2)[`Lag ${team}`][0] += this._points[i][`Lag ${team}`][0];
+                    (i<=9?sum1:sum2)[`Lag ${team}`][1] += this.calculatedPoints[i][`Lag ${team}`]
+                })
+                tbl += `
+                <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
+                    <td>${i}</td>
+                    <td>${this._points[i].par}</td>
+                    <td>${this._points[i].index}</td>
+                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
+                </tr>
+                `
+                if (i == 9) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Del 1</th>
+                        <td>${sum1.par}</td>
+                        <td></td>
+                        ${teams.map(team => `<td></td><td>${sum1[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1]}</td>`).join("\n")}
+                    </tr>`
+                } else if (i == 18) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Del 2</th>
+                        <td>${sum2.par}</td>
+                        <td></td>
+                        ${teams.map(team => `<td></td><td>${sum2[`Lag ${team}`][0]}</td><td>${sum2[`Lag ${team}`][1]}</td>`).join("\n")}
+                    </tr>`
+                }
+                if (i == this.holes) {
+                    tbl += `
+                    <tr class="sum-row">
+                        <th>Total</th>
+                        <td>${sum1.par + sum2.par}</td>
+                        <td></td>
+                        ${teams.map(team => `<td></td><td>${sum1[`Lag ${team}`][0] + sum2[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1] + sum2[`Lag ${team}`][1]}</td>`).join("\n")}
+                    </tr>`
+                }
+            }
+        }
+        tbl += `</table></div>`
+        return tbl
+    }
+
+    // getWinner() {
+    //     const tot = this.calculateScores()
+    //     // let rank = this.playernames
+    //     let win
+    //     const ptList = Object.values(tot).map(x => x.points)
+    //     if (this.order == "asc") {
+    //         win = Math.min(...ptList)
+    //         // rank.sort((a,b) => tot[a].points - tot[b].points)
+    //     } else {
+    //         win = Math.max(...ptList)
+    //         // rank.sort((a,b) => tot[a].points - tot[b].points)
+    //     }
+    //     const winners = Object.keys(tot).filter(x => tot[x].points == win)
+    //     return winners.join(", ")
+    // }
+}
+
 class Nassau extends GameRules {
     constructor(players, holes) {
         super(players, holes)
         this.winners = {}
         this.sumPoints = {}
+    }
+
+    setPoints(points) {
+        this._points = points
+        this.calculateScores()
     }
 
     calculateScores() {
@@ -904,9 +1115,9 @@ class Nassau extends GameRules {
     calculateWinners() {
         const res = this.sumPoints
         this.winners = {
-            firstHalf: null,
-            secondHalf: null,
-            total: null
+            firstHalf: "",
+            secondHalf: "",
+            total: ""
         }
 
         let firstSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].firstHalf - b[1].firstHalf: b[1].firstHalf - a[1].firstHalf)
@@ -927,6 +1138,10 @@ class Nassau extends GameRules {
         }
 
         return this.winners
+    }
+
+    getWinner() {
+        return Object.values(this.winners).join(" - ")
     }
 
     generateScoreCard(dir="h") {
@@ -956,9 +1171,10 @@ class Nassau extends GameRules {
     }
 }
 
-class GolfSome extends GameRules {
+class GolfSome extends TeamGame {
     constructor(players, holes) {
         super(players, holes)
+        // this.teamCount = gameObject.teamCount
     }
 
     holeForm(hole) {
@@ -979,7 +1195,7 @@ class GolfSome extends GameRules {
             <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
             <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
 
-        for (let i=1; i<=gameObject.teamCount; i++) {
+        for (let i=1; i<=this.teamCount; i++) {
             content += `<fieldset><legend>Lag ${i}</legend><label>Utslag:</label>
             <div class="horizontal-radio-buttons teeshot-radios">`
             content += this.players.map(player => {
@@ -1012,7 +1228,7 @@ class GolfSome extends GameRules {
                 "par": parseInt(formData.get(`par-${i}`)) || 0,
                 "index": parseInt(formData.get(`index-${i}`)) || 0
             }
-            for (let j=1; j<=gameObject.teamCount; j++) {
+            for (let j=1; j<=this.teamCount; j++) {
                 points[i][`Lag ${j}`] = [parseInt(formData.get(`team${j}-${i}`))||0, formData.get(`teeshot-t${j}-${i}`)||""]
             }
             // this.players.forEach(p => {
@@ -1021,134 +1237,6 @@ class GolfSome extends GameRules {
         }
         this.setPoints(points)
         console.log(points)
-    }
-
-    calculatePoints () {
-        let points = {}
-        for (let i=1; i<=this.holes; i++) {
-            points[i] = {}
-            for (let j=1; j<=gameObject.teamCount; j++) {
-                let key = `Lag ${j}`
-                points[i][key] = 0
-                if (!this._points[i][key]) { return }
-                const hcp = this.calculateHcp(j)
-                let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                points[i][key] = extra < this._points[i][key][0] ? this._points[i][key][0] - extra : 0
-            }
-            // this.players.forEach(player => {
-            //     points[i][player.name] = 0
-            //     if (!this._points[i][player.name]) { return }
-            //     let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
-            //     points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
-            // })
-        }
-        this.calculatedPoints = points
-        return points
-    }
-
-    calculateScores() {
-        this.calculatePoints()
-        let total = {}
-        for (let j=1; j<=gameObject.teamCount; j++) {
-            let name = `Lag ${j}`
-            let score = {
-                hcp: this.calculateHcp(j),
-                shots: 0,
-                points: 0,
-                par: 0
-            }
-            Object.keys(this._points).forEach(key => {
-                if (!this._points[key][name]) { return }
-                score.par += this._points[key]["par"]
-                score.shots += this._points[key][name][0]
-                score.points += this.calculatedPoints[key][name]
-            })
-            total[name] = score
-        }
-        console.log(total)
-        return total
-    }
-    generateScoreCard(dir="h") {
-        const teams = [...Array(gameObject.teamCount+1).keys()]
-        teams.shift()
-        console.log(teams)
-        let tbl = `<div class="horizontal-scroll">`
-        console.log(this._points)
-        if (dir == "h" || dir.includes("h")) {
-            tbl += `<table class="scorecard horizontal">
-            <tr>
-                <th colspan="2">Hole</th>`
-            for (let i=1; i<=this.holes; i++) {
-                tbl += `<td>${i}</td>`
-            }
-            tbl += `</tr>
-            <tr>
-                <th colspan="2">Par</th>
-                ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
-            </tr>
-            <tr>
-                <th colspan="2">Index</th>
-                ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
-            </tr>`
-            for (let j=1; j<=gameObject.teamCount; j++) {
-                let key = `Lag ${j}`
-                tbl += `<tr>
-                <th rowspan="3">${key} (${this.calculateHcp(j)}hcp)</th><th>Utslag</th>
-                ${Object.values(this._points).map(hole => `<td>${hole[key][1]}</td>`).join("\n")}
-                </tr>
-                <tr><th>Slag</th>${Object.values(this._points).map(hole => `<td>${hole[key][0]}</td>`).join("\n")}</tr>
-                <tr><th>Poäng</th>
-                ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[key]}</td>`).join("\n")}
-                </tr>
-                `
-            }
-            
-
-        } else {
-            tbl += `<table class="scorecard vertical">
-            <tr>
-                <th rowspan="2">Hole</th>
-                <th rowspan="2">Par</th>
-                <th rowspan="2">Index</th>
-            `
-            tbl += teams.map(team => `<th colspan="3">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
-            tbl += `</tr><tr>`
-            tbl += `<th>Utslag</th><th>Slag</th><th>Poäng</th>\n`.repeat(gameObject.teamCount)
-            tbl += `</tr>`
-            let sum = {
-                par: 0,
-                index: 0
-            }
-            teams.map(team => sum[`Lag ${team}`] = [0, 0])
-
-            for (let i=1; i<=this.holes; i++) {
-                sum.par += this._points[i].par
-                sum.index += this._points[i].index
-                teams.map(team => {
-                    sum[`Lag ${team}`][0] += this._points[i][`Lag ${team}`][0]
-                    sum[`Lag ${team}`][1] += this.calculatedPoints[i][`Lag ${team}`]
-                })
-                tbl += `
-                <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
-                    <td>${i}</td>
-                    <td>${this._points[i].par}</td>
-                    <td>${this._points[i].index}</td>
-                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
-                </tr>
-                `
-                if (i == 9 || i == this.holes) {
-                    tbl += `
-                    <tr class="sum-row">
-                        <th>Summa</th>
-                        <td>${sum.par}</td>
-                        <td></td>
-                        ${teams.map(team => `<td></td><td>${sum[`Lag ${team}`][0]}</td><td>${sum[`Lag ${team}`][1]}</td>`).join("\n")}
-                    </tr>`
-                }
-            }
-        }
-        tbl += `</table></div>`
-        return tbl
     }
 }
 
@@ -1175,7 +1263,7 @@ class Scram extends GolfSome {
             <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
             <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
 
-        for (let i=1; i<=gameObject.teamCount; i++) {
+        for (let i=1; i<=this.teamCount; i++) {
             content += `<fieldset><legend>Lag ${i}</legend>`
             content += `<label>Slag: <input type="number" name="team${i}-${hole}" min="0" max="999"></label></fieldset>`
         }
@@ -1208,7 +1296,7 @@ class Scram extends GolfSome {
                 "par": parseInt(formData.get(`par-${i}`)) || 0,
                 "index": parseInt(formData.get(`index-${i}`)) || 0
             }
-            for (let j=1; j<=gameObject.teamCount; j++) {
+            for (let j=1; j<=this.teamCount; j++) {
                 points[i][`Lag ${j}`] = parseInt(formData.get(`team${j}-${i}`)) || 0
             }
             // this.players.forEach(p => {
@@ -1218,136 +1306,9 @@ class Scram extends GolfSome {
         this.setPoints(points)
         console.log(points)
     }
-
-    calculatePoints () {
-        let points = {}
-        for (let i=1; i<=this.holes; i++) {
-            points[i] = {}
-            for (let j=1; j<=gameObject.teamCount; j++) {
-                let key = `Lag ${j}`
-                points[i][key] = 0
-                if (!this._points[i][key]) { return }
-                const hcp = this.calculateHcp(j)
-                let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                points[i][key] = extra < this._points[i][key][0] ? this._points[i][key][0] - extra : 0
-            }
-            // this.players.forEach(player => {
-            //     points[i][player.name] = 0
-            //     if (!this._points[i][player.name]) { return }
-            //     let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
-            //     points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
-            // })
-        }
-        this.calculatedPoints = points
-        return points
-    }
-
-    calculateScores() {
-        this.calculatePoints()
-        let total = {}
-        for (let j=1; j<=gameObject.teamCount; j++) {
-            let name = `Lag ${j}`
-            let score = {
-                hcp: this.calculateHcp(j),
-                shots: 0,
-                points: 0,
-                par: 0
-            }
-            Object.keys(this._points).forEach(key => {
-                if (!this._points[key][name]) { return }
-                score.par += this._points[key]["par"]
-                score.shots += this._points[key][name][0]
-                score.points += this.calculatedPoints[key][name]
-            })
-            total[name] = score
-        }
-        console.log(total)
-        return total
-    }
-    generateScoreCard(dir="h") {
-        const teams = [...Array(gameObject.teamCount+1).keys()]
-        teams.shift()
-        console.log(teams)
-        let tbl = `<div class="horizontal-scroll">`
-        console.log(this._points)
-        if (dir == "h" || dir.includes("h")) {
-            tbl += `<table class="scorecard horizontal">
-            <tr>
-                <th colspan="2">Hole</th>`
-            for (let i=1; i<=this.holes; i++) {
-                tbl += `<td>${i}</td>`
-            }
-            tbl += `</tr>
-            <tr>
-                <th colspan="2">Par</th>
-                ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
-            </tr>
-            <tr>
-                <th colspan="2">Index</th>
-                ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
-            </tr>`
-            for (let j=1; j<=gameObject.teamCount; j++) {
-                let key = `Lag ${j}`
-                tbl += `<tr>
-                <th rowspan="2">${key} (${this.calculateHcp(j)}hcp)</th>
-                </tr>
-                <tr><th>Slag</th>${Object.values(this._points).map(hole => `<td>${hole[key]}</td>`).join("\n")}</tr>
-                <tr><th>Poäng</th>
-                ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[key]}</td>`).join("\n")}
-                </tr>
-                `
-            }
-            
-
-        } else {
-            tbl += `<table class="scorecard vertical">
-            <tr>
-                <th rowspan="2">Hole</th>
-                <th rowspan="2">Par</th>
-                <th rowspan="2">Index</th>
-            `
-            tbl += teams.map(team => `<th colspan="2">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
-            tbl += `</tr><tr>`
-            tbl += `<th>Slag</th><th>Poäng</th>\n`.repeat(gameObject.teamCount)
-            tbl += `</tr>`
-            let sum = {
-                par: 0,
-                index: 0
-            }
-            teams.map(team => sum[`Lag ${team}`] = [0, 0])
-
-            for (let i=1; i<=this.holes; i++) {
-                sum.par += this._points[i].par
-                sum.index += this._points[i].index
-                teams.map(team => {
-                    sum[`Lag ${team}`][0] += this._points[i][`Lag ${team}`]
-                    sum[`Lag ${team}`][1] += this.calculatedPoints[i][`Lag ${team}`]
-                })
-                tbl += `
-                <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
-                    <td>${i}</td>
-                    <td>${this._points[i].par}</td>
-                    <td>${this._points[i].index}</td>
-                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`]}</td><td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
-                </tr>
-                `
-                if (i == 9 || i == this.holes) {
-                    tbl += `
-                    <tr class="sum-row">
-                        <th>Summa</th>
-                        <td>${sum.par}</td>
-                        <td></td>
-                        ${teams.map(team => `<td>${sum[`Lag ${team}`][0]}</td><td>${sum[`Lag ${team}`][1]}</td>`).join("\n")}
-                    </tr>`
-                }
-            }
-        }
-        tbl += `</table></div>`
-        return tbl
-    }
 }
 
-class FourBall extends GameRules {
+class FourBall extends TeamGame {
     constructor(players, holes) {
         super(players, holes)
     }
@@ -1367,7 +1328,7 @@ class FourBall extends GameRules {
             <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
             <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
 
-        for (let i=1; i<=gameObject.teamCount; i++) {
+        for (let i=1; i<=this.teamCount; i++) {
             content += `<fieldset><legend>Lag ${i}</legend>`
             content += this.players.map(player => {
                 return `<label>${player.name}: <input type="number" name="team${i}-${hole}-${player.name}" min="0" max="999"></label>`
@@ -1395,7 +1356,7 @@ class FourBall extends GameRules {
                 "par": parseInt(formData.get(`par-${i}`)) || 0,
                 "index": parseInt(formData.get(`index-${i}`)) || 0
             }
-            for (let j=1; j<=gameObject.teamCount; j++) {
+            for (let j=1; j<=this.teamCount; j++) {
                 let playerPoints = {}
                 this.players.map(player => {
                     if (player.team == j) {
@@ -1411,134 +1372,8 @@ class FourBall extends GameRules {
         this.setPoints(points)
         console.log(points)
     }
-
-    calculatePoints () {
-        let points = {}
-        for (let i=1; i<=this.holes; i++) {
-            points[i] = {}
-            for (let j=1; j<=gameObject.teamCount; j++) {
-                let key = `Lag ${j}`
-                points[i][key] = 0
-                if (!this._points[i][key]) { return }
-                const hcp = this.calculateHcp(j)
-                let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                points[i][key] = extra < this._points[i][key][0] ? this._points[i][key][0] - extra : 0
-            }
-            // this.players.forEach(player => {
-            //     points[i][player.name] = 0
-            //     if (!this._points[i][player.name]) { return }
-            //     let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
-            //     points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
-            // })
-        }
-        this.calculatedPoints = points
-        return points
-    }
-
-    calculateScores() {
-        this.calculatePoints()
-        let total = {}
-        for (let j=1; j<=gameObject.teamCount; j++) {
-            let name = `Lag ${j}`
-            let score = {
-                hcp: this.calculateHcp(j),
-                shots: 0,
-                points: 0,
-                par: 0
-            }
-            Object.keys(this._points).forEach(key => {
-                if (!this._points[key][name]) { return }
-                score.par += this._points[key]["par"]
-                score.shots += this._points[key][name][0]
-                score.points += this.calculatedPoints[key][name]
-            })
-            total[name] = score
-        }
-        console.log(total)
-        return total
-    }
-    generateScoreCard(dir="h") {
-        const teams = [...Array(gameObject.teamCount+1).keys()]
-        teams.shift()
-        console.log(teams)
-        let tbl = `<div class="horizontal-scroll">`
-        console.log(this._points)
-        if (dir == "h" || dir.includes("h")) {
-            tbl += `<table class="scorecard horizontal">
-            <tr>
-                <th colspan="2">Hole</th>`
-            for (let i=1; i<=this.holes; i++) {
-                tbl += `<td>${i}</td>`
-            }
-            tbl += `</tr>
-            <tr>
-                <th colspan="2">Par</th>
-                ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
-            </tr>
-            <tr>
-                <th colspan="2">Index</th>
-                ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
-            </tr>`
-            for (let j=1; j<=gameObject.teamCount; j++) {
-                let key = `Lag ${j}`
-                tbl += `<tr>
-                <th rowspan="2">${key} (${this.calculateHcp(j)}hcp)</th>
-                </tr>
-                <tr><th>Slag</th>${Object.values(this._points).map(hole => `<td>${hole[key]}</td>`).join("\n")}</tr>
-                <tr><th>Poäng</th>
-                ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[key]}</td>`).join("\n")}
-                </tr>
-                `
-            }
-            
-
-        } else {
-            tbl += `<table class="scorecard vertical">
-            <tr>
-                <th rowspan="2">Hole</th>
-                <th rowspan="2">Par</th>
-                <th rowspan="2">Index</th>
-            `
-            tbl += teams.map(team => `<th colspan="2">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
-            tbl += `</tr><tr>`
-            tbl += `<th>Slag</th><th>Poäng</th>\n`.repeat(gameObject.teamCount)
-            tbl += `</tr>`
-            let sum = {
-                par: 0,
-                index: 0
-            }
-            teams.map(team => sum[`Lag ${team}`] = [0, 0])
-
-            for (let i=1; i<=this.holes; i++) {
-                sum.par += this._points[i].par
-                sum.index += this._points[i].index
-                teams.map(team => {
-                    sum[`Lag ${team}`][0] += this._points[i][`Lag ${team}`]
-                    sum[`Lag ${team}`][1] += this.calculatedPoints[i][`Lag ${team}`]
-                })
-                tbl += `
-                <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
-                    <td>${i}</td>
-                    <td>${this._points[i].par}</td>
-                    <td>${this._points[i].index}</td>
-                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`]}</td><td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
-                </tr>
-                `
-                if (i == 9 || i == this.holes) {
-                    tbl += `
-                    <tr class="sum-row">
-                        <th>Summa</th>
-                        <td>${sum.par}</td>
-                        <td></td>
-                        ${teams.map(team => `<td>${sum[`Lag ${team}`][0]}</td><td>${sum[`Lag ${team}`][1]}</td>`).join("\n")}
-                    </tr>`
-                }
-            }
-        }
-        tbl += `</table></div>`
-        return tbl
-    }
 }
+
 const rules = {
     forms: [],
     implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", 
@@ -1925,7 +1760,7 @@ const rules = {
         }
         additionalListeners() {
             for (let i = 1; i<= this.holes; i++) {
-                for (let j = 1; j<=gameObject.teamCount; j++) {
+                for (let j = 1; j<=this.teamCount; j++) {
                     document.getElementsByName(`teeshot-t${j}-${i}`).forEach(rad => rad.onclick = (e) => this.switchTeeshots(e, i, j))
                 }
             }
