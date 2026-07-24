@@ -107,7 +107,11 @@
 
         <section id="playView" class="hidden">
             <button class="back-button navigation-button">&lt; Tillbaka</button>
-            <h2>Poängräknare</h2>
+            <div class="horizontal-flex separate">
+                <h2>Poängräknare</h2>
+                <button class="info-button" id="gameInfo">i</button>
+            </div>
+            <div class="info-window" id="gameInfoWindow"></div>
             <form class="cols-1 rounded white step-scroll" id="scoreKeeper">
                 <div class="col white hole" id="hole1">
                     <h3>Hål 1</h3>

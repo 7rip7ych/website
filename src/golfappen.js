@@ -16,7 +16,8 @@ const views = {
     "history": document.getElementById("historyView"),
     "players": document.getElementById("playersView"),
     "partRes": document.getElementById("partialResults"),
-    "typeInfo": document.getElementById("typeInfoWindow")
+    "typeInfo": document.getElementById("typeInfoWindow"),
+    "gameInfo": document.getElementById("gameInfoWindow")
 }
 const buttons = {
     "new": document.getElementById("newGame"),
@@ -29,7 +30,8 @@ const buttons = {
     "partRes": document.querySelector("#partialResults .always-visible"),
     "nextHole": document.querySelector("#keeper-nav .right"),
     "prevHole": document.querySelector("#keeper-nav .left"),
-    "typeInfo": document.getElementById("gameTypeInfo")
+    "typeInfo": document.getElementById("gameTypeInfo"),
+    "gameInfo": document.getElementById("gameInfo")
 }
 const forms = {
     "newGame": document.getElementById("newGameForm"),
@@ -183,7 +185,6 @@ async function populateNewGameForm(playTypes, golfClubs) {
         }
 
         courseSelect.disabled = false
-        
     })
 }
 
@@ -219,6 +220,40 @@ const infoWindow = {
     }
 }
 
+const gameInfoWindow = {
+    window: document.getElementById("gameInfoWindow"),
+    button: document.getElementById("gameInfo"),
+    init: function(plays) {
+        this.button.onclick = (e) => this.open(e)
+        let content = `<button class="close-button">X</button>`
+        this.plays = plays
+        content += plays.map(play => {
+            return `
+            <h3>${play.name}</h3>
+            <p>${play.desc}</p>
+            `
+        }).join("\n")
+        this.window.innerHTML = content
+        this.window.querySelector(".close-button").onclick = (e) => this.close(e)
+    },
+    setContent: function(type) {
+        const play = this.plays.find(x =>x.id == type)
+        this.window.innerHTML = `<button class="close-button">X</button>
+        <h3>${play.name}</h3>
+        <p>${play.desc}</p>
+        `
+        this.window.querySelector(".close-button").onclick = (e) => this.close(e)
+    },
+    open: function(e) {
+        e.preventDefault()
+        this.window.style.display = "block"
+    },
+    close: function(e) {
+        e.preventDefault()
+        this.window.style.display = "none"
+    }
+}
+
 async function setup() {
     createListeners()
     const plays =  await data.loadPlayTypes()
@@ -227,6 +262,7 @@ async function setup() {
     await data.loadClubData()
     populateNewGameForm(plays, courses)
     infoWindow.init(plays)
+    gameInfoWindow.init(plays)
 }
 
 
@@ -278,6 +314,7 @@ const gameObject = {
         }
         switchView("players")
         this.openPlayerSetup(this.playerCount)
+        gameInfoWindow.setContent(this.gameType)
     },
     loadCourseData: async function() {
         this.clubData = await data.getClubData(this.club)
@@ -580,7 +617,7 @@ const historyManager = {
                 winLine = `<p>Vinnare: ${winner}</p>`
             }
             return `<div class="history-item" id="${x}">
-            <p>${new Date(x).toLocaleString()}</p>
+            <p class="timestamp">${new Date(x).toLocaleString()}</p>
             <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
             ${clubLine}
             <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
@@ -783,7 +820,7 @@ class GameRules {
                 <th rowspan="2">Par</th>
                 <th rowspan="2">Index</th>
             `
-            tbl += this.playernames.map(player => `<th colspan="2">${player}</th>`).join("\n")
+            tbl += this.players.map(player => `<th colspan="2">${player.name} (${player.handicap}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
             tbl += `<th>Slag</th><th>Poäng</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
@@ -811,7 +848,9 @@ class GameRules {
                     <td>${i}</td>
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
-                    ${this.playernames.map(player => `<td>${this._points[i][player]}</td><td>${this.calculatedPoints[i][player]}</td>`).join("\n")}
+                    ${this.playernames.map(player => `<td>${this._points[i][player]}</td>
+                        <td class="left-indent"><span class="super">${this.calculatePlayerPar(this.players.find(x=>x.name==player).handicap, this._points[i].index)}</span>
+                        ${this.calculatedPoints[i][player]}</td>`).join("\n")}
                 </tr>
                 `
                 if (i == 9) {
@@ -859,7 +898,8 @@ class GameRules {
 
     holeForm(hole) {
         const inputFields = this.players.map(player => {
-            return `<label>${player.name} (${player.handicap}hcp): <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+            // return `<label>${player.name} (${player.handicap}hcp): <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
+            return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
         })
         let parVal = ""
         let indVal = ""
@@ -1019,7 +1059,7 @@ class TeamGame extends GameRules {
                     <td>${i}</td>
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
-                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
+                    ${teams.map(team => `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`).join("\n")}
                 </tr>
                 `
                 if (i == 9) {

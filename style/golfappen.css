@@ -892,6 +892,28 @@ table {
 .scorecard :is(td, th) {
   border: 0.5px solid #00000070;
   padding: 0.2em 0.4em;
+  text-wrap: nowrap;
+}
+
+/* .scorecard td::before {
+  content: "0";
+  position: absolute;
+  font-size: 0.7em;
+  margin: -0.3rem -0.65rem;
+  padding: 0.2em;
+  color: #444;
+} */
+
+.super {
+  font-size: 0.7em;
+  margin: -6px -12px;
+  padding: 0.2em;
+  color: #444;
+  position: absolute;
+}
+.scorecard td.left-indent {
+  padding-left: 0.7rem;
+  position: relative;
 }
 
 .horizontal-scroll {
@@ -967,6 +989,18 @@ table {
   width: stretch;
 }
 
+.horizontal-flex.separate {
+  justify-content: space-between;
+}
+
+.horizontal-flex.around {
+  justify-content: space-around;
+}
+
+.horizontal-flex.center {
+  justify-content: center;
+}
+
 fieldset {
   max-width: 100%;
 }
@@ -1005,4 +1039,11 @@ fieldset {
 
 .scores.collapsed {
   display: none;
+}
+
+.timestamp {
+  color: #616161;
+  font-family: system-ui;
+  font-size: 0.85em;
+  letter-spacing: 1pt;
 }
