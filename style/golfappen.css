@@ -903,7 +903,9 @@ table {
   padding: 0.2em;
   color: #444;
 } */
-
+.empty {
+  background-color: #0000000f;
+}
 .super {
   font-size: 0.7em;
   margin: -6px -12px;
@@ -911,10 +913,24 @@ table {
   color: #444;
   position: absolute;
 }
+
+.sub {
+  font-size: 0.7em;
+  /* margin: 6px 12px; */
+  padding: 0.2em;
+  color: #444;
+  /* position: absolute; */
+}
+
 .scorecard td.left-indent {
   padding-left: 0.7rem;
   position: relative;
 }
+.scorecard td.right-indent {
+  padding-right: 0.7rem;
+  position: relative;
+}
+
 
 .horizontal-scroll {
   max-width: 100%;
@@ -928,6 +944,10 @@ table {
 
 .scorecard .last-row :is(td, th){
   border-bottom: 1pt solid #000;
+}
+
+td.green {
+  background-color: #a2eda0;
 }
 
 .info-button, .close-button {
