@@ -890,19 +890,13 @@ table {
 }
 
 .scorecard :is(td, th) {
-  border: 0.5px solid #00000070;
+  border: 0.5px solid ;
+  border-color: #00000070;
+  -webkit-border-color: #8c8c8c;
   padding: 0.2em 0.4em;
   text-wrap: nowrap;
 }
 
-/* .scorecard td::before {
-  content: "0";
-  position: absolute;
-  font-size: 0.7em;
-  margin: -0.3rem -0.65rem;
-  padding: 0.2em;
-  color: #444;
-} */
 .empty {
   background-color: #0000000f;
 }
