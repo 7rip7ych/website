@@ -113,7 +113,7 @@
         "desc": "Är ytterligare en variant av scramble. Laget består av tre spelare. Spelas som scramble men med följande resultatberäkning: Hål 1 till 6: Bästa resultatet (poängen eller slagen) räknas för endast en spelare räknas. Hål 7 till 12: De två bästa resultaten adderas och räknas. Hål 13 till 18: Alla tre resultaten adderas och räknas. Skulle laget bestå av fyra spelare beräknas resultaten enligt ovan men på hål 13 till 18 adderas de tre bästa resultaten.",
         "minPlayers": 3,
         "team": true,
-        "teamSize": 3
+        "teamSize": [3, 4, 5]
     },
     {
         "name": "Tryall",
