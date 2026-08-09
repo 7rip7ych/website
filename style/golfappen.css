@@ -890,9 +890,8 @@ table {
 }
 
 .scorecard :is(td, th) {
-  border: 0.5px solid ;
-  border-color: #00000070;
-  -webkit-border-color: #8c8c8c;
+  border: 1px solid #959595;
+  /* -webkit-border-color: #8c8c8c; */
   padding: 0.2em 0.4em;
   text-wrap: nowrap;
 }
@@ -933,7 +932,8 @@ table {
 }
 
 .scorecard .sum-row :is(td, th) {
-  border-color: black #00000075;
+  border-color: black #959595;
+  border-width: 1pt 1px;
 }
 
 .scorecard .last-row :is(td, th){
