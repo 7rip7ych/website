@@ -899,12 +899,12 @@ table {
 .scorecard th {
   border-width: 1px;
   border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(0, 0, 0, 0.5);
   border-bottom-color: #000c;
 }
 
 .scorecard td {
-  border: 1px solid #4446;
+  border: 1px solid #4444;
 }
 
 .empty {
