@@ -104,12 +104,12 @@ const data = {
     getClubData: async function(club) {
         console.log(club)
         let data = this.clubdata || await getFile("assets/caddee-data.json")
-        console.log(await Object.keys(data))
+        // console.log(await Object.keys(data))
         // if (!this.clubdata) {
         //     this.clubdata = await getFile("assets/caddee-data.json")
         // }
         if (!await data[club]) { return }
-        console.log(data[club])
+        // console.log(data[club])
         return await data[club]["props"]["pageProps"]
     }
 }
@@ -939,10 +939,10 @@ class TeamGame extends GameRules {
         super(players, holes, name)
         console.log(this.name)
         this.teamCount = gameObject.teamCount
+        this.teeshot = rules.utslagGames.includes(this.name)
     }
 
     holeForm(hole) {
-        const utslag = rules.utslagGames.includes(this.name)
         let content = ""
         // const inputFields = this.players.map(player => {
         //     return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
@@ -962,13 +962,13 @@ class TeamGame extends GameRules {
 
         for (let i=1; i<=this.teamCount; i++) {
             content += `<fieldset><legend>Lag ${i}</legend>`
-            if (utslag) {
+            if (this.teeshot) {
                 content += `<label>Utslag:</label>
                 <div class="horizontal-radio-buttons teeshot-radios">`
                 content += this.players.map(player => {
                     if (player.team == i) {
-                        return `<span><input type="radio" name="teeshot-t${i}-${hole}" value="${player.name}" id="teeshot-${hole}-${player.name.replace(" ", "-")}">
-                        <label for="teeshot-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
+                        return `<span><input type="radio" name="teeshot-t${i}-${hole}" value="${player.name}" id="teeshot-t${i}-${hole}-${player.name.replace(" ", "-")}">
+                        <label for="teeshot-t${i}-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
                     }
                 }).join("\n")
                 content += `</div>`
@@ -982,7 +982,6 @@ class TeamGame extends GameRules {
     }
 
     readInputs() {
-        const utslag = rules.utslagGames.includes(this.name)
         let formData = new FormData(forms["keeper"])
         let points = {}
         for (let i = 1; i<=this.holes; i++) {
@@ -991,20 +990,19 @@ class TeamGame extends GameRules {
                 "index": parseInt(formData.get(`index-${i}`)) || 0
             }
             for (let j=1; j<=this.teamCount; j++) {
-                points[i][`Lag ${j}`] = utslag ? [parseInt(formData.get(`team${j}-${i}`))||0, formData.get(`teeshot-t${j}-${i}`)||""] : parseInt(formData.get(`team${j}-${i}`)) || 0
+                points[i][`Lag ${j}`] = this.teeshot ? [parseInt(formData.get(`team${j}-${i}`))||0, formData.get(`teeshot-t${j}-${i}`)||""] : parseInt(formData.get(`team${j}-${i}`)) || 0
             }
             // this.players.forEach(p => {
             //     points[i][p.name] = parseInt(formData.get(`${p.name}-${i}`)) || 0
             // })
         }
         this.setPoints(points)
-        console.log(points)
+        // console.log(points)
     }
 
     calculatePoints() {
-        const utslag = rules.utslagGames.includes(this.name)
         let points = {}
-        console.log(this._points)
+        // console.log(this._points)
         for (let i=1; i<=this.holes; i++) {
             points[i] = {}
             for (let j=1; j<=this.teamCount; j++) {
@@ -1013,7 +1011,7 @@ class TeamGame extends GameRules {
                 if (!this._points[i][key]) { continue }
                 const hcp = this.calculateHcp(j)
                 let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                if (utslag) {
+                if (this.teeshot) {
                     points[i][key] = extra < this._points[i][key][0] ? this._points[i][key][0] - extra : 0
                 } else {
                     points[i][key] = extra < this._points[i][key] ? this._points[i][key] - extra : 0
@@ -1059,8 +1057,7 @@ class TeamGame extends GameRules {
         const teams = [...Array(this.teamCount+1).keys()]
         teams.shift()
         // console.log(teams)
-        const utslag = rules.utslagGames.includes(this.name)
-        // console.log(utslag)
+        // console.log(this.teeshot)
         let tbl = `<div class="horizontal-scroll">`
         console.log(this._points)
         if (dir == "h" || dir.includes("h")) {
@@ -1099,9 +1096,9 @@ class TeamGame extends GameRules {
                 <th rowspan="2">Par</th>
                 <th rowspan="2">Index</th>
             `
-            tbl += teams.map(team => `<th colspan="${utslag?3:2}">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
+            tbl += teams.map(team => `<th colspan="${this.teeshot?3:2}">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += `${utslag?'<th>Utslag</th>':''}<th>Slag</th><th>Poäng</th>\n`.repeat(this.teamCount)
+            tbl += `${this.teeshot?'<th>Utslag</th>':''}<th>Slag</th><th>Poäng</th>\n`.repeat(this.teamCount)
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -1121,7 +1118,7 @@ class TeamGame extends GameRules {
                 (i<=9?sum1:sum2).par += this._points[i].par;
                 (i<=9?sum1:sum2).index += this._points[i].index
                 teams.map(team => {
-                    (i<=9?sum1:sum2)[`Lag ${team}`][0] += utslag ? this._points[i][`Lag ${team}`][0] : this._points[i][`Lag ${team}`];
+                    (i<=9?sum1:sum2)[`Lag ${team}`][0] += this.teeshot ? this._points[i][`Lag ${team}`][0] : this._points[i][`Lag ${team}`];
                     (i<=9?sum1:sum2)[`Lag ${team}`][1] += this.calculatedPoints[i][`Lag ${team}`]
                 })
                 tbl += `
@@ -1130,7 +1127,7 @@ class TeamGame extends GameRules {
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
                     ${teams.map(team => {
-        if (utslag) {
+        if (this.teeshot) {
             return `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
         } else {
             return `<td>${this._points[i][`Lag ${team}`]}</td><td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
@@ -1144,7 +1141,7 @@ class TeamGame extends GameRules {
                         <th>Del 1</th>
                         <td>${sum1.par}</td>
                         <td class="empty"></td>
-                        ${teams.map(team => `${utslag?'<td class="empty"></td>':''}<td>${sum1[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1]}</td>`).join("\n")}
+                        ${teams.map(team => `${this.teeshot?'<td class="empty"></td>':''}<td>${sum1[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1]}</td>`).join("\n")}
                     </tr>`
                 } else if (i == 18) {
                     tbl += `
@@ -1152,7 +1149,7 @@ class TeamGame extends GameRules {
                         <th>Del 2</th>
                         <td>${sum2.par}</td>
                         <td class="empty"></td>
-                        ${teams.map(team => `${utslag?'<td class="empty"></td>':''}<td>${sum2[`Lag ${team}`][0]}</td><td>${sum2[`Lag ${team}`][1]}</td>`).join("\n")}
+                        ${teams.map(team => `${this.teeshot?'<td class="empty"></td>':''}<td>${sum2[`Lag ${team}`][0]}</td><td>${sum2[`Lag ${team}`][1]}</td>`).join("\n")}
                     </tr>`
                 }
                 if (i == this.holes) {
@@ -1161,7 +1158,7 @@ class TeamGame extends GameRules {
                         <th>Total</th>
                         <td>${sum1.par + sum2.par}</td>
                         <td class="empty"></td>
-                        ${teams.map(team => `${utslag?'<td class="empty"></td>':''}<td>${sum1[`Lag ${team}`][0] + sum2[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1] + sum2[`Lag ${team}`][1]}</td>`).join("\n")}
+                        ${teams.map(team => `${this.teeshot?'<td class="empty"></td>':''}<td>${sum1[`Lag ${team}`][0] + sum2[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1] + sum2[`Lag ${team}`][1]}</td>`).join("\n")}
                     </tr>`
                 }
             }
@@ -1170,21 +1167,42 @@ class TeamGame extends GameRules {
         return tbl
     }
 
-    // getWinner() {
-    //     const tot = this.calculateScores()
-    //     // let rank = this.playernames
-    //     let win
-    //     const ptList = Object.values(tot).map(x => x.points)
-    //     if (this.order == "asc") {
-    //         win = Math.min(...ptList)
-    //         // rank.sort((a,b) => tot[a].points - tot[b].points)
-    //     } else {
-    //         win = Math.max(...ptList)
-    //         // rank.sort((a,b) => tot[a].points - tot[b].points)
-    //     }
-    //     const winners = Object.keys(tot).filter(x => tot[x].points == win)
-    //     return winners.join(", ")
-    // }
+    fillInputs() {
+        if (!this._points || Array.isArray(this._points)) {return}
+        console.log(this._points)
+        for (let i = 1; i<=this.holes; i++) {
+            let par = this._points[i].par
+            let ind = this._points[i].index
+            if (gameObject.courseData && gameObject.courseData.holes[i-1]) {
+                document.getElementsByName(`par-${i}`)[0].value = gameObject.courseData.holes[i-1].par
+                document.getElementsByName(`index-${i}`)[0].value = gameObject.courseData.holes[i-1].index
+            } else {
+                if (par && par !== 0) {
+                    document.getElementsByName(`par-${i}`)[0].value = par
+                }
+                if (ind && ind !== 0) {
+                    document.getElementsByName(`index-${i}`)[0].value = ind
+                }
+            }
+
+            for (let j=1; j<=this.teamCount; j++) {
+                let name = `Lag ${j}`
+                let pts
+                let shot
+                if (this.teeshot) {
+                    [pts, shot] = this._points[i][name]
+                    if (shot) {
+                        document.getElementById(`teeshot-t${j}-${i}-${shot.replace(" ", "-")}`).checked = true
+                    }
+                } else {
+                    pts = this._points[i][name]
+                }
+                if (pts && pts !== 0) {
+                    document.getElementsByName(`team${j}-${i}`)[0].value = pts
+                }
+            }
+        }
+    }
 }
 
 class Nassau extends GameRules {
