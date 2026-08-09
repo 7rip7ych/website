@@ -890,7 +890,7 @@ table {
 }
 
 .scorecard :is(td, th) {
-  border: 1px solid #959595;
+  /* border: 1px solid #959595; */
   /* -webkit-border-color: #8c8c8c; */
   padding: 0.2em 0.4em;
   text-wrap: nowrap;
