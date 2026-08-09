@@ -1062,3 +1062,9 @@ fieldset {
   font-size: 0.85em;
   letter-spacing: 1pt;
 }
+
+.delete-button {
+  width: fit-content;
+  padding: 0.1em 0.5em;
+  color: #b72f2f;
+}

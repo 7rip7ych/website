@@ -31,7 +31,8 @@ const buttons = {
     "nextHole": document.querySelector("#keeper-nav .right"),
     "prevHole": document.querySelector("#keeper-nav .left"),
     "typeInfo": document.getElementById("gameTypeInfo"),
-    "gameInfo": document.getElementById("gameInfo")
+    "gameInfo": document.getElementById("gameInfo"),
+    "clearHis": document.getElementById("clearHistory")
 }
 const forms = {
     "newGame": document.getElementById("newGameForm"),
@@ -80,6 +81,14 @@ function createListeners() {
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
     
     window.onresize = () => reloadOverlayPos()
+
+    buttons["clearHis"].onclick = () => {
+        const confirmation = confirm("Är du säker på att du vill radera hela historiken?")
+        if (confirmation) {
+            historyManager.clearHistory()
+            document.querySelector("#historyView .list").innerHTML = ""
+        }
+    }
 }
 
 const data = {
@@ -581,6 +590,11 @@ const historyManager = {
     setGame: function(date, data) {
         return storage.setItem(date, JSON.stringify(data))
     },
+    deleteGame: (date) => {
+        storage.removeItem(date)
+        const prev = this.getHistory()
+        prev.remove(date)
+    },
     getHistory: function(order="desc") {
         const prev = JSON.parse(storage.getItem("games") || "[]")
         prev.sort((a, b) => {
@@ -596,6 +610,7 @@ const historyManager = {
             storage.setItem("games", JSON.stringify(prev))
         }
     },
+    clearHistory: () => storage.clear(),
     getLatest: function() {
         const his = this.getHistory()
         return this.getGame(his[0])
@@ -618,7 +633,10 @@ const historyManager = {
                 winLine = `<p>Vinnare: ${winner}</p>`
             }
             return `<div class="history-item" id="${x}">
+            <div class="horizontal-flex separate">
             <p class="timestamp">${new Date(x).toLocaleString()}</p>
+            <button class="delete-button">Ta bort</button>
+            </div>
             <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
             ${clubLine}
             <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
@@ -634,6 +652,10 @@ const historyManager = {
             const parent = document.getElementById(x)
             parent.querySelector(`.expand`)?parent.querySelector(`.expand`).onclick = () => historyManager.toggleScores(x): null
             parent.querySelector(`.continue`).onclick = () => gameObject.resumeGame(x)
+            parent.querySelector(".delete-button").onclick = () => {
+                historyManager.deleteGame(x)
+                parent.remove()
+            }
         })
     },
     calculateWinner: function (game) {
