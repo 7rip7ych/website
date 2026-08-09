@@ -890,26 +890,25 @@ table {
 }
 
 .scorecard :is(td, th) {
-  /* border: 1px solid #959595; */
-  /* -webkit-border-color: #8c8c8c; */
+  border: 1px solid #0004;
   padding: 0.2em 0.4em;
   text-wrap: nowrap;
 }
 
-.scorecard th {
-  border-width: 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.5);
-  border-bottom-color: #000c;
+.scorecard .sum-row :is(td, th) {
+  border-color: #000b #0004;
+  border-width: 1pt 1px;
 }
 
-.scorecard td {
-  border: 1px solid #4444;
+.scorecard .last-row :is(td, th),
+.scorecard th {
+  border-bottom: 1pt solid #000b;
 }
 
 .empty {
   background-color: #0000000f;
 }
+
 .super {
   font-size: 0.7em;
   margin: -6px -12px;
@@ -940,15 +939,6 @@ table {
   max-width: 100%;
   width: fit-content;
   overflow-x: auto;
-}
-
-.scorecard .sum-row :is(td, th) {
-  border-color: black #959595;
-  border-width: 1pt 1px;
-}
-
-.scorecard .last-row :is(td, th){
-  border-bottom: 1pt solid #000;
 }
 
 td.green {
