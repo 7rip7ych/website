@@ -102,7 +102,7 @@ const data = {
         // storage.setItem("courses", JSON.stringify(plays))
     },
     getClubData: async function(club) {
-        console.log(club)
+        // console.log(club)
         let data = this.clubdata || await getFile("assets/caddee-data.json")
         // console.log(await Object.keys(data))
         // if (!this.clubdata) {
@@ -189,7 +189,7 @@ async function populateNewGameForm(playTypes, golfClubs) {
 }
 
 function reloadOverlayPos() {
-    console.log("resize")
+    // console.log("resize")
     pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight),
     pos["partResCollapsed"] = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top'))
     views["partRes"].style.top = pos["partResCollapsed"] + "px"
@@ -276,7 +276,7 @@ function switchView(newView) {
     views[newView].classList.replace("hidden", "visible")
     if (newView == "play") {
         reloadOverlayPos()
-        gameObject.cacheGame()
+        // gameObject.cacheGame()
     } else if (newView == "history") {
         historyManager.populateHistory()
     }
@@ -319,7 +319,7 @@ const gameObject = {
     loadCourseData: async function() {
         this.clubData = await data.getClubData(this.club)
         this.courseData = this.clubData.courseArray.find(x => x.name == this.course)
-        console.log(this.courseData)
+        // console.log(this.courseData)
     },
     openPlayerSetup: function(count) {
         let playerForm = forms["players"]
@@ -376,6 +376,7 @@ const gameObject = {
     },
     setUpPlayers: function(e) {
         e.preventDefault()
+        this.time = new Date()
         const data = new FormData(e.target)
         // console.log([...data.entries()])
         let players = []
@@ -397,12 +398,13 @@ const gameObject = {
             this.players = players
             this.openScoreKeeper()
         }
+        
+        gameObject.cacheGame()
     },
     openScoreKeeper: function() {
-        this.time = new Date()
         switchView("play")
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
-        console.log(this.gameType, this.players)
+        // console.log(this.gameType, this.players)
         this.keeper.innerHTML = ""
 
         for (let i = 1; i<=this.holes; i++) {
@@ -510,7 +512,7 @@ const gameObject = {
         }
         historyManager.updateHistory(date)
         historyManager.setGame(date, gameData)
-        console.log(gameData)
+        console.log("cached", gameData)
     },
     resumeGame: async function(game) {
         if (typeof game == 'string' || game instanceof String) {
@@ -525,7 +527,7 @@ const gameObject = {
         this.teamCount = game.teamCount
         this.teamSize = game.teamSize
         this.time = new Date(game.time)
-        
+
         if (this.course) {
             await this.loadCourseData()
         }
@@ -534,7 +536,6 @@ const gameObject = {
         this.ruleset.points = game.scores
         this.ruleset.fillInputs()
         console.log(game.scores)
-
     },
     resumeLatest: function() {
         const latest = historyManager.getLatest()
