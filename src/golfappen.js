@@ -129,6 +129,7 @@ async function populateNewGameForm(playTypes, golfClubs) {
     const clubSelect = document.getElementById("golfClub")
     const courseSelect = document.getElementById("golfCourse")
     const playerCount = document.getElementById("playerCount")
+    const teamSize = document.getElementById("teamSize")
     
     for (const play in playTypes) {
         // let opt = new Option(playTypes[play]["name"], playTypes[play]["id"])
@@ -171,7 +172,29 @@ async function populateNewGameForm(playTypes, golfClubs) {
         if (unavailable.includes(gameSelect.value)) {
             gameSelect.selectedIndex = 0
         }
+        const play = playTypes.find(x => x.id == gameSelect.value)
+        const possible = gameObject.possibleTeamSizes(parseInt(playerCount.value), play.teamSize)
+        teamSize.querySelectorAll("option").forEach(opt => {opt.disabled = !possible.includes(parseInt(opt.value))})
+        teamSize.value = gameObject.determineTeamSize(parseInt(playerCount.value), play.teamSize)
     })
+
+    gameSelect.onchange = (e) => {
+        console.log(e)
+        const play = playTypes.find(x => x.id == e.target.value)
+        const lbl = document.getElementById("teamSizeLabel")
+        console.log(play)
+        if (!play || !play.team || !Array.isArray(play.teamSize)) {
+            lbl.className = "hidden"
+        } else {
+            lbl.classList.remove("hidden")
+            teamSize.innerHTML = ""
+            const possible = gameObject.possibleTeamSizes(parseInt(playerCount.value), play.teamSize)
+            play.teamSize.forEach(x => teamSize.add(new Option(x, x)))
+            teamSize.querySelectorAll("option").forEach(opt => {opt.disabled = !possible.includes(parseInt(opt.value))})
+            teamSize.value = gameObject.determineTeamSize(parseInt(playerCount.value), play.teamSize)
+        }
+    }
+
     for (const course in golfClubs) {
         clubSelect.add(new Option(golfClubs[course]["name"], golfClubs[course]["id"]))
     }
@@ -323,6 +346,8 @@ const gameObject = {
         if (this.course) {
             this.loadCourseData()
         }
+        this.play = this.playTypes.find(x => x.id === this.gameType)
+        this.teamSize = parseInt(data.get("teamSize")) || gameObject.determineTeamSize(this.playerCount, this.play.teamSize)
         switchView("players")
         this.openPlayerSetup(this.playerCount)
         gameInfoWindow.setContent(this.gameType)
@@ -335,7 +360,7 @@ const gameObject = {
     openPlayerSetup: function(count) {
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
-        this.play = this.playTypes.find(x => x.id === this.gameType)
+        // this.play = this.playTypes.find(x => x.id === this.gameType)
         if (!this.play.team) {
             for (let i = 1; i<=count; i++) {
                 let extraField = ``
@@ -354,10 +379,11 @@ const gameObject = {
             }
             playerForm.innerHTML += `<input type="submit" name="submit" value="Klar">`
         } else {
-            this.teamSize = this.play.teamSize
-            if (Array.isArray(this.teamSize)) {
-                this.teamSize = Math.max(...this.teamSize.filter(x => count % x === 0))
-            }
+            // this.teamSize = this.play.teamSize
+            // if (Array.isArray(this.teamSize)) {
+            //     this.teamSize = Math.max(...this.teamSize.filter(x => count % x === 0))
+            // }
+            this.teamSize = this.determineTeamSize(count, this.play.teamSize)
             this.teamCount = count / this.teamSize
             let content = ``
             for (let i = 1; i<=count; i++) {
@@ -384,6 +410,31 @@ const gameObject = {
             content += `<input type="submit" name="submit" value="Klar">`
             playerForm.innerHTML = content
         }
+    },
+    determineTeamSize: (playerCount, teamSizes) => {
+        if (Array.isArray(teamSizes)) {
+            const divisibles = teamSizes.filter(x => playerCount % x === 0)
+            if (divisibles.length === 1) {
+                return divisibles[0]
+            } else if (divisibles.length === 0) {
+                return teamSizes[0]
+            }
+            const multipleTeams = divisibles.filter(x => x < playerCount)
+            if (multipleTeams.length === 1) {
+                return multipleTeams[0]
+            } else if (multipleTeams.length === 0) {
+                return divisibles[0]
+            }
+            return Math.max(...multipleTeams)
+            // this.teamSize = Math.max(...this.teamSize.filter(x => count % x === 0))
+        }
+        return teamSizes
+    },
+    possibleTeamSizes: (playerCount, teamSizes) => {
+        if (Array.isArray(teamSizes)) {
+            return teamSizes.filter(x => playerCount % x === 0)
+        }
+        return teamSizes
     },
     setUpPlayers: function(e) {
         e.preventDefault()
