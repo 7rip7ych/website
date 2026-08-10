@@ -1798,6 +1798,10 @@ const rules = {
             this.players.map(p => {
                 res[p.name] = Object.values(this.calculatedPoints).reduce((a, c) => a + c[p.name], 0)
             })
+            let min = Math.min(...Object.values(res))
+            Object.keys(res).forEach(key => {
+                res[key] -= min
+            })
             return res
             // this.fillStatusBanner(res)
         }
