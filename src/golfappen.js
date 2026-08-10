@@ -592,8 +592,14 @@ const historyManager = {
     },
     deleteGame: (date) => {
         storage.removeItem(date)
-        const prev = this.getHistory()
-        prev.remove(date)
+        const prev = historyManager.getHistory()
+        // console.log(prev)
+        const index = prev.indexOf(date)
+        if (index !== -1) {
+            prev.splice(index, 1)
+        }
+        console.log(prev)
+        historyManager.setHistory(prev)
     },
     getHistory: function(order="desc") {
         const prev = JSON.parse(storage.getItem("games") || "[]")
@@ -602,15 +608,25 @@ const historyManager = {
         })
         return prev
     },
+    setHistory: function(list) {
+        storage.setItem("games", JSON.stringify(list))
+    },
     updateHistory: function(date) {
         const prev = this.getHistory()
         if (!prev.includes(date)) {
             prev.push(date)
             console.log("new")
-            storage.setItem("games", JSON.stringify(prev))
+            historyManager.setHistory(prev)
         }
     },
     clearHistory: () => storage.clear(),
+    repairHistory: () => {
+        const list = historyManager.getHistory()
+        if (list.length < 1) { return }
+        const repaired = list.filter(item => storage.getItem(item) && item && typeof item == 'string')
+        console.log(list, repaired)
+        historyManager.setHistory(repaired)
+    },
     getLatest: function() {
         const his = this.getHistory()
         return this.getGame(his[0])
@@ -619,35 +635,41 @@ const historyManager = {
         const games = this.getHistory()
         this.plays = await data.loadPlayTypes()
         this.clubs = await data.loadGolfClubs()
-        document.querySelector("#historyView .list").innerHTML = games.map(x => {
-            const game = historyManager.getGame(x)
-            let clubLine = ""
-            let winLine =""
-            if (game.club && game.course) {
-                clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span> - <span>${game.course}</span></p>`
-            } else if (game.club) {
-                clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span></p>`
-            }
-            let winner = this.calculateWinner(game)
-            if (winner !== "N/A" && winner) {
-                winLine = `<p>Vinnare: ${winner}</p>`
-            }
-            return `<div class="history-item" id="${x}">
-            <div class="horizontal-flex separate">
-            <p class="timestamp">${new Date(x).toLocaleString()}</p>
-            <button class="delete-button">Ta bort</button>
-            </div>
-            <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
-            ${clubLine}
-            <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
-            ${winLine}
-            <div class="collapsed scores"></div>
-            <div class="horizontal-flex">
-                ${!Array.isArray(game.scores) ? '<button class="expand">Visa scorekort</button>': ''}
-                <button class="continue">Fortsätt</button>
-            </div>
-        </div>`
-        }).join("\n")
+        try {
+            document.querySelector("#historyView .list").innerHTML = games.map(x => {
+                const game = historyManager.getGame(x)
+                let clubLine = ""
+                let winLine =""
+                if (game.club && game.course) {
+                    clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span> - <span>${game.course}</span></p>`
+                } else if (game.club) {
+                    clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span></p>`
+                }
+                let winner = this.calculateWinner(game)
+                if (winner !== "N/A" && winner) {
+                    winLine = `<p>Vinnare: ${winner}</p>`
+                }
+                return `<div class="history-item" id="${x}">
+                <div class="horizontal-flex separate">
+                <p class="timestamp">${new Date(x).toLocaleString()}</p>
+                <button class="delete-button">Ta bort</button>
+                </div>
+                <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
+                ${clubLine}
+                <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
+                ${winLine}
+                <div class="collapsed scores"></div>
+                <div class="horizontal-flex">
+                    ${!Array.isArray(game.scores) ? '<button class="expand">Visa scorekort</button>': ''}
+                    <button class="continue">Fortsätt</button>
+                </div>
+            </div>`
+            }).join("\n")
+        } catch {
+            await historyManager.repairHistory()
+            console.log("Fixing history")
+            return historyManager.populateHistory()
+        }
         games.map(x => {
             const parent = document.getElementById(x)
             parent.querySelector(`.expand`)?parent.querySelector(`.expand`).onclick = () => historyManager.toggleScores(x): null
