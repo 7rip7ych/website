@@ -288,6 +288,8 @@ function switchView(newView) {
         // gameObject.cacheGame()
     } else if (newView == "history") {
         historyManager.populateHistory()
+    } else if (newView == "start") {
+        gameObject.reset()
     }
 }
 
@@ -385,7 +387,6 @@ const gameObject = {
     },
     setUpPlayers: function(e) {
         e.preventDefault()
-        this.time = new Date()
         const data = new FormData(e.target)
         // console.log([...data.entries()])
         let players = []
@@ -400,14 +401,16 @@ const gameObject = {
             players.push(player)
         }
         console.log(players, this.players)
-        if (players.map(x=>x.name).sort().join(',') === this.players.map(x=>x.name).sort().join(',')) {
+        // Decide whether to continue or start anew
+        if (players.map(x=>x.name).sort().join(',') === this.players.map(x=>x.name).sort().join(',') && this.time) {
             this.players = players
             switchView("play")
         } else {
+            this.time = new Date()
             this.players = players
             this.openScoreKeeper()
         }
-        
+
         gameObject.cacheGame()
     },
     openScoreKeeper: function() {
@@ -415,7 +418,7 @@ const gameObject = {
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
         // console.log(this.gameType, this.players)
         this.keeper.innerHTML = ""
-
+        this.keeper.scrollTo(0,0)
         for (let i = 1; i<=this.holes; i++) {
             this.keeper.innerHTML += this.ruleset.holeForm(i)
         }
@@ -579,6 +582,20 @@ const gameObject = {
             document.getElementById("golfCourse").value = this.course
         }
         this.openPlayerSetup(this.playerCount)
+    },
+    reset: () => {
+        gameObject.ruleset = null
+        gameObject.playerCount = 0
+        gameObject.holes = 18
+        gameObject.gameType = null
+        gameObject.club = null
+        gameObject.course = null
+        // gameObject.players = []
+        gameObject.play = null
+        gameObject.teamCount = null
+        gameObject.teamSize = 1
+        gameObject.time = null
+        // forms["keeper"].scrollTo(0, 0)
     }
 }
 
