@@ -66,6 +66,7 @@ function createListeners() {
 
     // form submits
     forms["newGame"].addEventListener("submit", (e) => gameObject.create(e))
+    forms["newGame"].onchange = () => { gameObject.time = null }
     forms["players"].addEventListener("submit", (e) => gameObject.setUpPlayers(e))
     forms["keeper"].addEventListener("submit", (e) => gameObject.showResults(e))
     forms["keeper"].onchange = () => gameObject.cacheGame()
@@ -79,7 +80,7 @@ function createListeners() {
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
     views["partRes"].addEventListener("touchend", (e) => elements.processTouchEnd(e, views["partRes"], 
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
-    
+
     window.onresize = () => reloadOverlayPos()
 
     buttons["clearHis"].onclick = () => {
@@ -173,9 +174,11 @@ async function populateNewGameForm(playTypes, golfClubs) {
             gameSelect.selectedIndex = 0
         }
         const play = playTypes.find(x => x.id == gameSelect.value)
-        const possible = gameObject.possibleTeamSizes(parseInt(playerCount.value), play.teamSize)
-        teamSize.querySelectorAll("option").forEach(opt => {opt.disabled = !possible.includes(parseInt(opt.value))})
-        teamSize.value = gameObject.determineTeamSize(parseInt(playerCount.value), play.teamSize)
+        if (!document.getElementById("teamSizeLabel").classList.contains("hidden")) {
+            const possible = gameObject.possibleTeamSizes(parseInt(playerCount.value), play.teamSize)
+            teamSize.querySelectorAll("option").forEach(opt => {opt.disabled = !possible.includes(parseInt(opt.value))})
+            teamSize.value = gameObject.determineTeamSize(parseInt(playerCount.value), play.teamSize)
+        }
     })
 
     gameSelect.onchange = (e) => {
@@ -347,7 +350,9 @@ const gameObject = {
             this.loadCourseData()
         }
         this.play = this.playTypes.find(x => x.id === this.gameType)
-        this.teamSize = parseInt(data.get("teamSize")) || gameObject.determineTeamSize(this.playerCount, this.play.teamSize)
+        if (this.play.team) {
+            this.teamSize = parseInt(data.get("teamSize")) || gameObject.determineTeamSize(this.playerCount, this.play.teamSize)
+        }
         switchView("players")
         this.openPlayerSetup(this.playerCount)
         gameInfoWindow.setContent(this.gameType)
@@ -360,7 +365,7 @@ const gameObject = {
     openPlayerSetup: function(count) {
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
-        // this.play = this.playTypes.find(x => x.id === this.gameType)
+        this.play = this.playTypes.find(x => x.id === this.gameType)
         if (!this.play.team) {
             for (let i = 1; i<=count; i++) {
                 let extraField = ``
@@ -467,6 +472,13 @@ const gameObject = {
     openScoreKeeper: function() {
         switchView("play")
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
+        const banner = document.getElementById("topBanner")
+        if (rules.usingTopBanner.includes(this.gameType)) {
+            banner.classList.remove("hidden")
+            this.ruleset.fillStatusBanner()
+        } else if (!banner.classList.contains("hidden")) {
+            banner.classList.add("hidden")
+        }
         // console.log(this.gameType, this.players)
         this.keeper.innerHTML = ""
         this.keeper.scrollTo(0,0)
@@ -1044,6 +1056,12 @@ class GameRules {
         }
         const winners = Object.keys(tot).filter(x => tot[x].points == win)
         return winners.join(", ")
+    }
+
+    getPlayerClass(player) {
+        const nr = this.playernames.indexOf(player)
+        const classes = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15"]
+        return classes[nr%classes.length]
     }
 }
 
@@ -1628,6 +1646,7 @@ const rules = {
         "nassauPointbogey", "foursome", "greensome", "irishgreen", "scramble", 
         "dropoutscram", "texscramble"],
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
+    usingTopBanner: ["matchgame"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes, "matchgame")
@@ -1713,6 +1732,7 @@ const rules = {
             } else {
                 document.getElementsByName(`winner-${hole}`).forEach(ele => {ele.checked = false})
             }
+            this.fillStatusBanner()
         }
 
         calculatePoints () {
@@ -1757,6 +1777,40 @@ const rules = {
             this.calculatedPoints = points
             console.log(points)
             return points
+        }
+
+        fillInputs() {
+            super.fillInputs()
+            for (let i = 1; i <= this.holes; i++) {
+                let winner = this._points[i].winner
+                if (winner) {
+                    document.getElementById(`winner-${i}-${winner.replace(" ", "-")}`).checked = true
+                } else {
+                    document.getElementsByName(`winner-${i}`).forEach(ele => {ele.checked = false})
+                }
+            }
+            this.fillStatusBanner()
+        }
+        calculateRelativePoints() {
+            // console.log(this.calculatedPoints)
+            this.calculatePoints()
+            let res = {}
+            this.players.map(p => {
+                res[p.name] = Object.values(this.calculatedPoints).reduce((a, c) => a + c[p.name], 0)
+            })
+            return res
+            // this.fillStatusBanner(res)
+        }
+
+        fillStatusBanner() {
+            let currRankings = this.calculateRelativePoints()
+            const banner = document.getElementById("topBanner")
+            console.log(currRankings)
+            let content = ``
+            for (const [key, value] of Object.entries(currRankings).toSorted((a,b) => b[1] - a[1])) {
+                content += `<span class="${this.getPlayerClass(key)}">(+${value}) ${key}</span>`
+            }
+            banner.innerHTML = content
         }
     },
     pointbogey: class PointBogey extends GameRules {
