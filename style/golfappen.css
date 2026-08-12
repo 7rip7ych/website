@@ -922,6 +922,16 @@ table {
   /* position: absolute; */
 }
 
+.centered {
+  position: relative;
+  display: block;
+  text-align: center;
+}
+
+.super.centered {
+  padding-top: 0.3em;
+}
+
 .scorecard td.left-indent {
   padding-left: 0.7rem;
   position: relative;
