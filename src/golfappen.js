@@ -19,6 +19,9 @@ const views = {
     "typeInfo": document.getElementById("typeInfoWindow"),
     "gameInfo": document.getElementById("gameInfoWindow")
 }
+const dynamic = {
+    "title": document.getElementById("header-title")
+}
 const buttons = {
     "new": document.getElementById("newGame"),
     "continue": document.getElementById("continueGame"),
@@ -259,7 +262,6 @@ const gameInfoWindow = {
     window: document.getElementById("gameInfoWindow"),
     button: document.getElementById("gameInfo"),
     init: function(plays) {
-        this.button.onclick = (e) => this.open(e)
         let content = `<button class="close-button">X</button>`
         this.plays = plays
         content += plays.map(play => {
@@ -270,6 +272,10 @@ const gameInfoWindow = {
         }).join("\n")
         this.window.innerHTML = content
         this.window.querySelector(".close-button").onclick = (e) => this.close(e)
+    },
+    createListeners: function() {
+        this.button = document.getElementById("gameInfo")
+        this.button.onclick = (e) => this.open(e)
     },
     setContent: function(type) {
         const play = this.plays.find(x =>x.id == type)
@@ -309,7 +315,24 @@ function switchView(newView) {
     currView.classList.replace("visible", "hidden")
 
     views[newView].classList.replace("hidden", "visible")
+    // change dynamic content
+    const titles = {
+        "start": ``,
+        "new": `<h2>Nytt spel</h2>`,
+        "players": `<h2>Ange spelare</h2>`,
+        "play": `<h2>Poängräknare</h2><button class="info-button" id="gameInfo">i</button>`,
+        "score": `<h2>Resultat</h2>`,
+        "history": `<h2>Historik</h2>`,
+        "partRes": false,
+        "typeInfo": false,
+        "gameInfo": false
+    }
+    if (titles[newView] !== false) {
+        dynamic["title"].innerHTML = titles[newView]
+    }
+
     if (newView == "play") {
+        gameInfoWindow.createListeners()
         reloadOverlayPos()
         // gameObject.cacheGame()
     } else if (newView == "history") {

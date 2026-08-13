@@ -19,18 +19,18 @@
     <header class="siteheader">
         <div class="logo">
             <a href="#hem">
-                <!-- <img src="img/onepage/mushroom-glowin.svg" alt="Logo"> -->
-                <model-viewer
+                <img src="img/golfball.png" alt="Logo">
+                <!-- <model-viewer
                     src="assets/golf_ball.glb"
                     alt="golf ball"
                     shadow_intensity="1"
                     rotation-per-second="0.15rad"
                     camera-orbit="0deg 140deg 105%"
-                    auto-rotate-delay="10"></model-viewer>
+                    auto-rotate-delay="10"></model-viewer> -->
                 <span>Golfappen</span>
             </a>
         </div>
-
+        <div id="header-title" class="header-title"></div>
         <!-- <nav class="navbar">
             <button class="menu-toggle" id="menu-toggle">&#9776;</button>
             <ul class="nav-links" id="nav-links">
@@ -68,7 +68,7 @@
 
         <section id="newView" class="hidden">
             <button class="back-button navigation-button">&lt; Tillbaka</button>
-            <h2>Nytt spel</h2>
+            <!-- <h2>Nytt spel</h2> -->
             <form id="newGameForm" class="form">
                 <label>Antal spelare:
                 <input type="number" min="1" max="1000" value="2" id="playerCount" name="players" required>
@@ -108,16 +108,16 @@
 
         <section id="playersView" class="hidden">
             <button class="back-button navigation-button">&lt; Tillbaka</button>
-            <h2>Ange spelare</h2>
+            <!-- <h2>Ange spelare</h2> -->
             <form class="form" id="playerForm"></form>
         </section>
 
         <section id="playView" class="hidden">
             <button class="back-button navigation-button">&lt; Tillbaka</button>
-            <div class="horizontal-flex separate">
+            <!-- <div class="horizontal-flex separate">
                 <h2>Poängräknare</h2>
                 <button class="info-button" id="gameInfo">i</button>
-            </div>
+            </div> -->
             <div class="info-window" id="gameInfoWindow"></div>
             <div class="white-container rounded top-banner hidden" id="topBanner">
                 <span></span>
@@ -256,8 +256,10 @@
         </section>
 
         <section id="historyView" class="hidden">
-            <button class="back-button navigation-button">&lt; Tillbaka</button>
-            <h2 class="horizontal-flex separate">Historik<button class="delete-button clear-button" id="clearHistory">Rensa</button></h2>
+            <div class="horizontal-flex separate">
+                <button class="back-button navigation-button">&lt; Tillbaka</button>
+                <button class="delete-button clear-button" id="clearHistory">Rensa</button>
+            </div>
             <div class="history list">
                 <!-- <div class="history-item">
                     <h3><span>form</span> - <span>date</span></h3>
