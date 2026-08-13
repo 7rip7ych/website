@@ -317,7 +317,7 @@ function switchView(newView) {
     views[newView].classList.replace("hidden", "visible")
     // change dynamic content
     const titles = {
-        "start": ``,
+        "start": `<h1>Golfappen</h1>`,
         "new": `<h2>Nytt spel</h2>`,
         "players": `<h2>Ange spelare</h2>`,
         "play": `<h2>Poängräknare</h2><button class="info-button" id="gameInfo">i</button>`,
@@ -1049,17 +1049,19 @@ class GameRules {
             // return `<label>${player.name} (${player.handicap}hcp): <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
             return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
         })
-        let parVal = ""
-        let indVal = ""
+        let topPart = `<div class="input-container-row separate-bottom"><label>Par: <input type="number" name="par-${hole}" min="1" max="99"></label>
+        <label>Index: <input type="number" name="index-${hole}" min="1" max="99"></label>
+        </div>`
         if (gameObject.courseData) {
-            parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
-            indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+            topPart = `<div class="input-container-row separate-bottom plain-text">
+            <label>Par: <input type="number" name="par-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].par}"></label>
+            <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
+            </div>`
         }
         return `
         <div class="col white hole" id="hole${hole}">
             <h3>Hål ${hole}</h3>
-            <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
-            <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>
+            ${topPart}
             ${inputFields.join("\n")}
         </div>
         `
@@ -1098,21 +1100,19 @@ class TeamGame extends GameRules {
 
     holeForm(hole) {
         let content = ""
-        // const inputFields = this.players.map(player => {
-        //     return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
-        // })
-        let parVal = ""
-        let indVal = ""
+        let topPart = `<div class="input-container-row separate-bottom"><label>Par: <input type="number" name="par-${hole}" min="1" max="99"></label>
+        <label>Index: <input type="number" name="index-${hole}" min="1" max="99"></label>
+        </div>`
         if (gameObject.courseData) {
-            parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
-            indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
+            topPart = `<div class="input-container-row separate-bottom plain-text">
+            <label>Par: <input type="number" name="par-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].par}"></label>
+            <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
+            </div>`
         }
-
         content = `
         <div class="col white hole" id="hole${hole}">
             <h3>Hål ${hole}</h3>
-            <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
-            <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
+            ${topPart}`
 
         for (let i=1; i<=this.teamCount; i++) {
             content += `<fieldset><legend>Lag ${i}</legend>`
@@ -1603,19 +1603,20 @@ class FourBall extends TeamGame {
 
     holeForm(hole) {
         let content = ""
-        
-        let parVal = ""
-        let indVal = ""
-        if (gameObject.courseData) {
-            parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
-            indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
-        }
 
+        let topPart = `<div class="input-container-row separate-bottom"><label>Par: <input type="number" name="par-${hole}" min="1" max="99"></label>
+        <label>Index: <input type="number" name="index-${hole}" min="1" max="99"></label>
+        </div>`
+        if (gameObject.courseData) {
+            topPart = `<div class="input-container-row separate-bottom plain-text">
+            <label>Par: <input type="number" name="par-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].par}"></label>
+            <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
+            </div>`
+        }
         content = `
         <div class="col white hole" id="hole${hole}">
             <h3>Hål ${hole}</h3>
-            <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
-            <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
+            ${topPart}`
 
         for (let i=1; i<=this.teamCount; i++) {
             content += `<fieldset><legend>Lag ${i}</legend>`
@@ -1851,18 +1852,20 @@ const rules = {
             const inputFields = this.players.map(player => {
                 return `<label>${player.name} (${player.handicap-minHcp}hcp): <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
             })
-            let parVal = ""
-            let indVal = ""
-            if (gameObject.courseData) {
-                parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
-                indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
-            }
 
+            let topPart = `<div class="input-container-row separate-bottom"><label>Par: <input type="number" name="par-${hole}" min="1" max="99"></label>
+            <label>Index: <input type="number" name="index-${hole}" min="1" max="99"></label>
+            </div>`
+            if (gameObject.courseData) {
+                topPart = `<div class="input-container-row separate-bottom plain-text">
+                <label>Par: <input type="number" name="par-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].par}"></label>
+                <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
+                </div>`
+            }
             content = `
             <div class="col white hole" id="hole${hole}">
                 <h3>Hål ${hole}</h3>
-                <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
-                <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>
+                ${topPart}
                 ${inputFields.join("\n")}
                 <label>Vinnare:</label>
                 <div class="horizontal-radio-buttons winner-radios">`
