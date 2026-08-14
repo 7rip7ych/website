@@ -589,8 +589,19 @@ const gameObject = {
             content += "</div>"
         })
         content += `</div>`
+        if (rules.hcpSwitch.includes(this.gameType)) {
+            console.log("incl")
+            content += `<label>Behåll original handicap<input type="checkbox" class="checkbox" id="hcpSwitchRes"${this.ruleset.keepHcp?' checked':''}></label>`
+        }
         content += this.ruleset.generateScoreCard("v")
         container.innerHTML = content
+        if (rules.hcpSwitch.includes(this.gameType)) {
+            container.querySelector("#hcpSwitchRes")?.addEventListener("input", (e) => {
+                console.log(e.target.checked)
+                this.ruleset.keepHcp = e.target.checked
+                this.showResults()
+            })
+        }
     },
     readInputs: function() {
         let formData = new FormData(this.keeper)
