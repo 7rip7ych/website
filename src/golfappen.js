@@ -538,6 +538,10 @@ const gameObject = {
         container.innerHTML = ""
         if (!res) { return }
         let content = ""
+        if (rules.hcpSwitch.includes(this.gameType)) {
+            console.log("incl")
+            content += `<label>Behåll original handicap<input type="checkbox" class="checkbox" id="hcpSwitch"${this.ruleset.keepHcp?' checked':''}></label>`
+        }
         content += this.ruleset.generateScoreCard("v")
         // content += this.ruleset.generateScoreCard("h")
         Object.keys(res).forEach(player => {
@@ -547,7 +551,16 @@ const gameObject = {
             }
             content += "</div>"
         })
-        container.innerHTML = content
+
+        container.innerHTML += content
+
+        if (rules.hcpSwitch.includes(this.gameType)) {
+            container.querySelector("#hcpSwitch")?.addEventListener("input", (e) => {
+                console.log(e.target.checked)
+                this.ruleset.keepHcp = e.target.checked
+                this.showPartResults()
+            })
+        }
     },
     showResults: function(e) {
         e.preventDefault()
@@ -1599,6 +1612,7 @@ class Scram extends TeamGame {
 class FourBall extends TeamGame {
     constructor(players, holes, name="fourball") {
         super(players, holes, name)
+        this.keepHcp = false
     }
 
     holeForm(hole) {
@@ -1633,9 +1647,9 @@ class FourBall extends TeamGame {
         return content
     }
 
-    calculateHcp (player) {
+    calculateHcp(player) {
         let p = this.players.find(x => x.name == player)
-        return Math.round(p.handicap * 0.9)
+        return this.keepHcp ? p.handicap : Math.round(p.handicap * 0.9)
     }
 
 
@@ -1840,6 +1854,7 @@ const rules = {
         "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto"],
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
     usingTopBanner: ["matchgame"],
+    hcpSwitch: ["fourball", "fourballbewo", "fourballbeto"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes, "matchgame")
