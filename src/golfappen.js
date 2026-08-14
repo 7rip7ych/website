@@ -657,6 +657,7 @@ const gameObject = {
         this.openScoreKeeper()
         this.ruleset.points = game.scores
         this.ruleset.fillInputs()
+        gameInfoWindow.setContent(this.gameType)
         console.log(game.scores)
     },
     resumeLatest: function() {
