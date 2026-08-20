@@ -26,17 +26,17 @@
   },
   "keywords": [],
   "devDependencies": {
-    "@eslint/css": "^0.13.0",
-    "@eslint/js": "^9.38.0",
-    "@eslint/json": "^0.13.2",
-    "eslint": "^9.38.0",
-    "globals": "^15.15.0",
-    "htmlhint": "^1.1.4",
+    "@eslint/css": "^1.4.0",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^2.0.1",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0",
+    "htmlhint": "^1.9.2",
     "http-server": "^14.1.1",
-    "stylelint": "^16.13.2",
-    "stylelint-config-standard": "^37.0.0"
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0"
   },
   "dependencies": {
-    "js-beautify": "^1.15.4"
+    "js-beautify": "^2.0.3"
   }
 }
