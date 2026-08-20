@@ -84,6 +84,14 @@
         "teamSize": 2
     },
     {
+        "name": "Tryall",
+        "id": "tryall",
+        "desc": "I denna spelform är man två spelare i laget. var och en slår ut med sin egen boll från tee. Inför andraslaget skiftar man boll. A slår på B:s boll och vice versa. Därefter spelar man hålet som foursome tills bollen är i koppen. Sedan börjar man om igen med varsin boll från nästa tee osv. Om man t ex spelar ett par 3 hål och båda spelarna missar sina puttar, väljer laget vems boll som skall spelas. Väljer laget spelare B:s boll från tee, är det denne som också skall putta tredje slaget. Tryall är en omväxlande och rolig spelform som ger spelarna bollägen som de normalt inte är vana vid.",
+        "minPlayers": 2,
+        "team": true,
+        "teamSize": 2
+    },
+    {
         "name": "Scramble",
         "id": "scramble",
         "desc": "Laget kan bestå av två, tre eller fyra spelare. Under spelet väljer laget ut den bäst placerade bollen och alla slår därefter på var sin boll från denna plats tills bollen slutligen är i hål. Alla är med och drar sitt ‘strå till stacken’, någon eller några gånger. En trevlig spelform som ger även de något mindre erfarna spelarna chansen att få vara med om något stort i resultatväg. Scorerna blir oftast låga.",
@@ -114,14 +122,6 @@
         "minPlayers": 3,
         "team": true,
         "teamSize": [3, 4, 5]
-    },
-    {
-        "name": "Tryall",
-        "id": "tryall",
-        "desc": "I denna spelform är man två spelare i laget. var och en slår ut med sin egen boll från tee. Inför andraslaget skiftar man boll. A slår på B:s boll och vice versa. Därefter spelar man hålet som foursome tills bollen är i koppen. Sedan börjar man om igen med varsin boll från nästa tee osv. Om man t ex spelar ett par 3 hål och båda spelarna missar sina puttar, väljer laget vems boll som skall spelas. Väljer laget spelare B:s boll från tee, är det denne som också skall putta tredje slaget. Tryall är en omväxlande och rolig spelform som ger spelarna bollägen som de normalt inte är vana vid.",
-        "minPlayers": 2,
-        "team": true,
-        "teamSize": 2
     },
     {
         "name": "Fyrboll",

@@ -1863,7 +1863,7 @@ const rules = {
     implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", 
         "copenhagener", "nassauShotgolf", "nassauShotcomp",
         "nassauPointbogey", "foursome", "greensome", "irishgreen", "scramble", 
-        "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto"],
+        "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto", "tryall"],
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
     usingTopBanner: ["matchgame"],
     hcpSwitch: ["fourball", "fourballbewo", "fourballbeto"],
@@ -2345,6 +2345,18 @@ const rules = {
             return Math.round(res)
         }
     },
+    tryall: class TryAll extends Scram {
+        constructor(players, holes) {
+            super(players, holes, "tryall")
+        }
+
+        calculateHcp(team) {
+            let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
+            let res = 0
+            hcps.map(h=>res += h*0.5)
+            return Math.round(res)
+        }
+    },
     scramble: class Scramble extends Scram {
         constructor(players, holes) {
             super(players, holes)
@@ -2410,11 +2422,6 @@ const rules = {
     rumble: class Rumble extends GameRules {
         constructor(players, holes) {
             super(players, holes, "rumble")
-        }
-    },
-    tryall: class TryAll extends Scram {
-        constructor(players, holes) {
-            super(players, holes, "tryall")
         }
     },
     fourball: class Four extends FourBall {
