@@ -1179,6 +1179,13 @@ fieldset {
   width: 2.2ch;
 }
 
+.win {
+  background: #fff;
+  box-shadow: inset 0 0 0px 1px #399533, inset 0 0 28px 0px #6ed96eb5;
+}
+
+
+
 .hidden {
   display: none;
 }

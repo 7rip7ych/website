@@ -959,7 +959,7 @@ class GameRules {
         return
     }
 
-    generateScoreCard(dir="v") {
+    generateScoreCard(dir="v", match=false) {
         let tbl = `<div class="horizontal-scroll">`
         if (dir == "h" || dir.includes("h")) {
             tbl += `<table class="scorecard horizontal">
@@ -995,7 +995,7 @@ class GameRules {
             `
             tbl += this.players.map(player => `<th colspan="2">${player.name} (${player.handicap}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += `<th>Slag</th><th>Netto</th>\n`.repeat(this.playernames.length)
+            tbl += `<th>Slag</th><th>${match?"Poäng":"Netto"}</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -1022,7 +1022,7 @@ class GameRules {
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
                     ${this.playernames.map(player => `<td>${this._points[i][player]}</td>
-                        <td class="left-indent"><span class="super">${this.calculatePlayerPar(this.players.find(x=>x.name==player).handicap, this._points[i].index)}</span>
+                        <td class="left-indent${match && this.calculatedPoints[i][player]?' win':''}"><span class="super">${this.calculatePlayerPar(this.players.find(x=>x.name==player).handicap, this._points[i].index)}</span>
                         ${this.calculatedPoints[i][player]}</td>`).join("\n")}
                 </tr>
                 `
@@ -1232,7 +1232,7 @@ class TeamGame extends GameRules {
         return total
     }
 
-    generateScoreCard(dir="v") {
+    generateScoreCard(dir="v", match=false) {
         const teams = [...Array(this.teamCount+1).keys()]
         teams.shift()
         // console.log(teams)
@@ -1242,7 +1242,7 @@ class TeamGame extends GameRules {
         if (dir == "h" || dir.includes("h")) {
             tbl += `<table class="scorecard horizontal">
             <tr>
-                <th colspan="2">Hole</th>`
+                <th colspan="2">Hål</th>`
             for (let i=1; i<=this.holes; i++) {
                 tbl += `<td>${i}</td>`
             }
@@ -1262,7 +1262,7 @@ class TeamGame extends GameRules {
                 ${Object.values(this._points).map(hole => `<td>${hole[key][1]}</td>`).join("\n")}
                 </tr>
                 <tr><th>Slag</th>${Object.values(this._points).map(hole => `<td>${hole[key][0]}</td>`).join("\n")}</tr>
-                <tr><th>Netto</th>
+                <tr><th>${match?"Poäng":"Netto"}</th>
                 ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[key]}</td>`).join("\n")}
                 </tr>
                 `
@@ -1271,13 +1271,13 @@ class TeamGame extends GameRules {
         } else {
             tbl += `<table class="scorecard vertical">
             <tr>
-                <th rowspan="2">Hole</th>
+                <th rowspan="2">Hål</th>
                 <th rowspan="2">Par</th>
                 <th rowspan="2">Index</th>
             `
             tbl += teams.map(team => `<th colspan="${this.teeshot?3:2}">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += `${this.teeshot?'<th>Utslag</th>':''}<th>Slag</th><th>Netto</th>\n`.repeat(this.teamCount)
+            tbl += `${this.teeshot?'<th>Utslag</th>':''}<th>Slag</th><th>${match?"Poäng":"Netto"}</th>\n`.repeat(this.teamCount)
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -1307,9 +1307,9 @@ class TeamGame extends GameRules {
                     <td>${this._points[i].index}</td>
                     ${teams.map(team => {
         if (this.teeshot) {
-            return `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
+            return `<td>${this._points[i][`Lag ${team}`][1]}</td><td>${this._points[i][`Lag ${team}`][0]}</td><td class="left-indent${match && this.calculatedPoints[i][`Lag ${team}`]?' win':''}"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
         } else {
-            return `<td>${this._points[i][`Lag ${team}`]}</td><td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
+            return `<td>${this._points[i][`Lag ${team}`]}</td><td class="left-indent${match && this.calculatedPoints[i][`Lag ${team}`]?' win':''}"><span class="super">${this.calculatePlayerPar(this.calculateHcp(team), this._points[i].index)}</span>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
         }
     }).join("\n")}
                 </tr>
@@ -1738,7 +1738,7 @@ class FourBall extends TeamGame {
         return total
     }
 
-    generateScoreCard(dir="v") {
+    generateScoreCard(dir="v", match=false) {
         const teams = [...Array(this.teamCount+1).keys()]
         teams.shift()
         // console.log(teams)
@@ -1758,7 +1758,7 @@ class FourBall extends TeamGame {
             `
             tbl += teams.map(team => `<th colspan="3">Lag ${team}</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += teams.map(team => `${teamMembers[team].map(p=>`<th><span class="super centered">(${this.calculateHcp(p)}hcp)</span>${p}</th>`).join("\n")}<th>Netto</th>`).join("\n")
+            tbl += teams.map(team => `${teamMembers[team].map(p=>`<th><span class="super centered">(${this.calculateHcp(p)}hcp)</span>${p}</th>`).join("\n")}<th>${match?"Poäng":"Netto"}</th>`).join("\n")
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -1788,10 +1788,10 @@ class FourBall extends TeamGame {
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
                     ${teams.map(team => {
-        return `${teamMembers[team].map(p=>`<td class="left-indent">
+        return teamMembers[team].map(p=>`<td class="left-indent">
             <span class="super">${this.calculatePlayerPar(this.calculateHcp(p), this._points[i].index)}</span>
-            ${this._points[i][`Lag ${team}`][p]}</td>`).join("\n")}
-        <td>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
+            ${this._points[i][`Lag ${team}`][p]}</td>`).join("\n") +
+       `<td${match && this.calculatedPoints[i][`Lag ${team}`]?' class="win"':''}>${this.calculatedPoints[i][`Lag ${team}`]}</td>`
 
     }).join("\n")}
                 </tr>
@@ -2040,8 +2040,8 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir)
-            return tbl.replaceAll("Netto", "Poäng")
+            let tbl = super.generateScoreCard(dir, true)
+            return tbl//.replaceAll("Netto", "Poäng")
         }
     },
     pointbogey: class PointBogey extends GameRules {
@@ -2472,8 +2472,8 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir)
-            return tbl.replaceAll("Netto", "Poäng")
+            let tbl = super.generateScoreCard(dir, true)
+            return tbl//.replaceAll("Netto", "Poäng")
         }
     },
     fourballbeto: class FourballBeTo extends FourBall {
@@ -2519,8 +2519,8 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir)
-            return tbl.replaceAll("Netto", "Poäng")
+            let tbl = super.generateScoreCard(dir, true)
+            return tbl//.replaceAll("Netto", "Poäng")
         }
     },
     flagcomp: class FlagComp extends GameRules {
