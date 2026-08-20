@@ -47,7 +47,7 @@ const elements = {
         let child = parent.children[index]
         const cssObj = window.getComputedStyle(child, null)
         const gap = cssObj.getPropertyValue('gap')
-        return child.offsetWidth + parseFloat(gap)
+        return child.offsetWidth + parseFloat(gap)*2
     },
     scrollToNext: function (parent) {
         // console.log(parent)
