@@ -533,10 +533,11 @@ const gameObject = {
     },
     compensateForKeyboard: function() {
         const MIN_KEYBOARD_HEIGHT = 300 // N.B.! this might not always be correct
-    
+
         const isMobile = window.innerWidth < 768
         const isKeyboardOpen = isMobile 
             && window.screen.height - MIN_KEYBOARD_HEIGHT > window.visualViewport.height
+        document.body.style.maxHeight = window.visualViewport.height + "px"
         document.body.className = isKeyboardOpen ? "space-saver" : ""
         isKeyboardOpen ? this.keeper.scrollIntoView() : window.scrollTo(0, 0)
         elements.centerChild(this.keeper)
