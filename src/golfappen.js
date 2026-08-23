@@ -60,10 +60,15 @@ function createListeners() {
     buttons["backFromHis"].addEventListener("click", () => switchView("start"))
     buttons["backFromPla"].addEventListener("click", () => switchView("new"))
     buttons["backFromPlay"].addEventListener("click", () => switchView("players"))
-    buttons["prevHole"].addEventListener("click", () => {
+
+    buttons["prevHole"].addEventListener("mouseup", () => elements.scrollToPrev(forms["keeper"]))
+    buttons["prevHole"].addEventListener("touchend", (e) => {
+        e.preventDefault()
         elements.scrollToPrev(forms["keeper"])
     })
-    buttons["nextHole"].addEventListener("click", () => {
+    buttons["nextHole"].addEventListener("mouseup", () => elements.scrollToNext(forms["keeper"]))
+    buttons["nextHole"].addEventListener("touchend", (e) => {
+        e.preventDefault()
         elements.scrollToNext(forms["keeper"])
     })
 
@@ -522,11 +527,18 @@ const gameObject = {
                     elements.scrollToChild(this.keeper, hole-1)
                 }
             }
-
-            
         }
-        this.keeper.onfocus
+        window.visualViewport.addEventListener('resize', () => this.compensateForKeyboard())
         this.ruleset.additionalListeners()
+    },
+    compensateForKeyboard: function() {
+        const MIN_KEYBOARD_HEIGHT = 300 // N.B.! this might not always be correct
+    
+        const isMobile = window.innerWidth < 768
+        const isKeyboardOpen = isMobile 
+            && window.screen.height - MIN_KEYBOARD_HEIGHT > window.visualViewport.height
+        document.body.className = isKeyboardOpen ? "space-saver" : ""
+        isKeyboardOpen ? this.keeper.scrollIntoView() : window.scrollTo(0, 0)
     },
     toggleOverlay: function () {
         views["partRes"].classList.toggle("collapsed")
