@@ -1189,6 +1189,8 @@ fieldset {
 } */
 
 .space-saver {
+  position: relative;
+  max-height: -webkit-fill-available;
   .bottom-container {
     padding: 0;
     display: none;
@@ -1235,6 +1237,9 @@ fieldset {
   }
   section {
     padding: 0;
+  }
+  .sitefooter {
+    display: none;
   }
 }
 

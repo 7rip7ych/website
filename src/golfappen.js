@@ -539,6 +539,7 @@ const gameObject = {
             && window.screen.height - MIN_KEYBOARD_HEIGHT > window.visualViewport.height
         document.body.className = isKeyboardOpen ? "space-saver" : ""
         isKeyboardOpen ? this.keeper.scrollIntoView() : window.scrollTo(0, 0)
+        elements.centerChild(this.keeper)
     },
     toggleOverlay: function () {
         views["partRes"].classList.toggle("collapsed")

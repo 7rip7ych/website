@@ -55,6 +55,15 @@ const elements = {
 
         parent.scrollTo(newPos <= parent.scrollWidth-childWidth? newPos : parent.scrollWidth-childWidth, 0)
     },
+    centerChild: function (parent) {
+        let fullWidth = parent.scrollWidth
+        let pos = parent.scrollLeft
+        // let childCount = parent.children.length
+        let childWidth = this.getChildWidth(parent)//fullWidth/childCount
+        let newPos = (Math.round(pos / childWidth)) * childWidth
+
+        parent.scrollTo(newPos <= fullWidth-childWidth? newPos : fullWidth-childWidth, 0)
+    },
     scrollToNext: function (parent) {
         // console.log(parent)
         let fullWidth = parent.scrollWidth
