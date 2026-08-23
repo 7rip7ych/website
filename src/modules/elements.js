@@ -49,6 +49,12 @@ const elements = {
         const gap = cssObj.getPropertyValue('gap')
         return child.offsetWidth + parseFloat(gap)*2
     },
+    scrollToChild: function (parent, nr) {
+        let childWidth = this.getChildWidth(parent)//fullWidth/childCount
+        let newPos = nr * childWidth
+
+        parent.scrollTo(newPos <= parent.scrollWidth-childWidth? newPos : parent.scrollWidth-childWidth, 0)
+    },
     scrollToNext: function (parent) {
         // console.log(parent)
         let fullWidth = parent.scrollWidth

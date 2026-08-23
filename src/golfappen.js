@@ -512,6 +512,20 @@ const gameObject = {
             <input type="submit" value="Räkna ut resultat">
             <div class="results row cols-2"></div>
         </div>`
+        const inputs = this.keeper.querySelectorAll('input')
+        for (let i = 0; i < inputs.length; i++) {
+            if (!inputs[i].value || inputs[i].type !== "number") {
+                inputs[i].tabIndex = i+1
+                inputs[i].onfocus = () => {
+                    const nameSplit = inputs[i].name.split("-")
+                    const hole = parseInt(nameSplit[nameSplit.length-1])
+                    elements.scrollToChild(this.keeper, hole-1)
+                }
+            }
+
+            
+        }
+        this.keeper.onfocus
         this.ruleset.additionalListeners()
     },
     toggleOverlay: function () {
@@ -2321,7 +2335,7 @@ const rules = {
             })
             let odd = hole % 2 === 1 ? [player2, player1] : [player1, player2]
             for (let i = 1; i<= this.holes; i++) {
-                document.getElementById(`teeshot-${i}-${odd[i % 2].replace(" ", "-")}`).checked = true
+                document.getElementById(`teeshot-t${team}-${i}-${odd[i % 2].replace(" ", "-")}`).checked = true
             }
         }
     },
