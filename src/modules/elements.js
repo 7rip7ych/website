@@ -66,11 +66,13 @@ const elements = {
     },
     scrollToNext: function (parent) {
         // console.log(parent)
-        let fullWidth = parent.scrollWidth
-        let pos = parent.scrollLeft
+        const fullWidth = parent.scrollWidth
+        const pos = parent.scrollLeft
         // let childCount = parent.children.length
-        let childWidth = this.getChildWidth(parent)//fullWidth/childCount
-        let newPos = (Math.floor(pos / childWidth) + 1) * childWidth
+        const childWidth = this.getChildWidth(parent)//fullWidth/childCount
+        const newNum = (Math.floor(pos / childWidth) + 1)
+        const newPos = newNum * childWidth
+        this.focusAnotherInput(parent, newNum)
 
         parent.scrollTo(newPos <= fullWidth-childWidth? newPos : fullWidth-childWidth, 0)
 
@@ -79,14 +81,22 @@ const elements = {
     scrollToPrev: function (parent) {
         // console.log(parent)
         // let fullWidth = parent.scrollWidth
-        let pos = parent.scrollLeft
+        const pos = parent.scrollLeft
         // let childCount = parent.children.length
-        let childWidth = this.getChildWidth(parent)//fullWidth/childCount
-        let newPos = (Math.floor(pos / childWidth) - 1) * childWidth
+        const childWidth = this.getChildWidth(parent)//fullWidth/childCount
+        const newNum = (Math.floor(pos / childWidth) - 1)
+        const newPos = newNum * childWidth
+        this.focusAnotherInput(parent, newNum)
 
         parent.scrollTo(newPos >= 0 ? newPos : 0, 0)
 
         // parent.children[(Math.floor(pos / childWidth) - 1)]?.scrollIntoView()
+    },
+    focusAnotherInput: function (parent, child) {
+        const childCont = parent.children[child]
+        const inputs = Array.from(childCont.querySelectorAll('input'))
+        const newEle = inputs.find(x => !x.value) || inputs[0]
+        newEle.focus()
     },
     swipeUp: function (element) {
         console.log("up")
