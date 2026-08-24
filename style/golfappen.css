@@ -1202,7 +1202,7 @@ fieldset {
   .siteheader {
     gap: 0.5rem;
     padding: 0.1rem 0.4rem;
-    padding-left: 13ch;
+    padding-left: 11ch;
 
     .logo img {
       width: 24px;
@@ -1247,6 +1247,29 @@ fieldset {
   }
 }
 
+@supports (-webkit-touch-callout: none) {
+  /* css for IOS devices*/
+  .space-saver .keeper-nav {
+    bottom: unset;
+    top: 31px;
+    border-radius: 0 0 15px 15px;
+  }
+  .space-saver .scorekeeper {
+    margin-top: 37px;
+  }
+}
+
+.ios-device {
+  /* css for IOS devices*/
+  .space-saver .keeper-nav {
+    bottom: unset;
+    top: 31px;
+    border-radius: 0 0 15px 15px;
+  }
+  .space-saver .scorekeeper {
+    margin-top: 37px;
+  }
+}
 
 .hidden {
   display: none;

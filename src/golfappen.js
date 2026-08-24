@@ -100,6 +100,29 @@ function createListeners() {
     }
 }
 
+// Source - https://stackoverflow.com/a/9039885
+// Posted by Pierre, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-08-24, License - CC BY-SA 4.0
+
+function iOS() {
+    return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod'
+    ].includes(navigator.platform)
+  // iPad on iOS 13 detection
+  || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+}
+window.onload = () => {
+    const isIOS = iOS()
+    if (isIOS) {
+        document.querySelector('html').classList.add("ios-device")
+    }
+}
+
 const data = {
     clubs: [],
     playtypes: [],
