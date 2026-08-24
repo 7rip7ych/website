@@ -676,16 +676,16 @@ label {
   display: block;
   width: 0;
   height: 0;
-  border-top: 0.65rem solid transparent;
-  border-bottom: 0.65rem solid transparent;
+  border-top: 0.6em solid transparent;
+  border-bottom: 0.6em solid transparent;
 }
 
 .nav-triangle.left {
-  border-right: 0.8rem solid var(--text-color-dark);
+  border-right: 0.7em solid var(--text-color-dark);
 }
 
 .nav-triangle.right {
-  border-left: 0.8rem solid var(--text-color-dark);
+  border-left: 0.7em solid var(--text-color-dark);
 }
 
 .step-scroll {
@@ -1228,10 +1228,14 @@ fieldset {
     left: 0;
     right: 0;
     box-shadow: 0px -1px 10px 0 #00000057;
+    font-size: 1.25rem;
+    background: #ffffffd6;
+    border-radius: 15px 15px 0 0;
+    padding: 0.3rem 0.5rem;
   }
 
   .back-button {
-    position: fixed;
+    position: absolute;
     left: 1px;
     top: 1px;
   }
