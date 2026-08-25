@@ -125,9 +125,9 @@ async function second() {
 
     courses = await JSON.parse(courses).map(x => x.id)
     let data = await JSON.parse(clubdata)
-    console.log(courses, data)
+    // console.log(courses, data)
     let missing = clubs.getMissing(courses, data)
-    console.log(missing.length)
+    console.log("missing: ", missing.length)
 
 
     let prom = new Promise((resolve, reject) => {
@@ -146,7 +146,7 @@ async function second() {
         blockingInterval = setInterval(()=> undefined, 100)
         clubs.saveToFile()
         let newMissing = clubs.getMissing(courses, data)
-        console.log(newMissing)
+        console.log("missing clubs: ", newMissing)
     })
 }
 // clubs.getClubs()
