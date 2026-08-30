@@ -378,15 +378,15 @@ const gameObject = {
     ruleset: null,
     playerCount: 0,
     holes: 18,
-    gameType: null,
-    club: null,
-    course: null,
+    gameType: null, // type name
+    club: null, // club name
+    course: null, // course name
     players: [],
-    playTypes: [],
-    play: null,
+    playTypes: [], // all playforms
+    play: null, // playtype info
     teamCount: null,
     teamSize: 1,
-    time: null,
+    time: null, // game start time
     create: function(e) {
         e.preventDefault()
         const data = new FormData(e.target)
@@ -523,6 +523,10 @@ const gameObject = {
     openScoreKeeper: function() {
         switchView("play")
         this.ruleset = new rules[this.gameType.toString()](this.players, this.holes)
+        if (this.play.play_as.length > 1) {
+            this.ruleset.subtype = this.play.play_as[0]
+        }
+        // this.ruleset.info = this.play
         const banner = document.getElementById("topBanner")
         if (rules.usingTopBanner.includes(this.gameType)) {
             banner.classList.remove("hidden")
@@ -545,6 +549,7 @@ const gameObject = {
             if (!inputs[i].value || inputs[i].type !== "number") {
                 inputs[i].tabIndex = i+1
                 inputs[i].onfocus = () => {
+                    // breaks if inputs do not end with hole nr
                     const nameSplit = inputs[i].name.split("-")
                     const hole = parseInt(nameSplit[nameSplit.length-1])
                     elements.scrollToChild(this.keeper, hole-1)
@@ -589,6 +594,9 @@ const gameObject = {
         container.innerHTML = ""
         if (!res) { return }
         let content = ""
+        if (this.play.play_as.length > 1) {
+            content += this.generateRuleSwitch("part")
+        }
         if (rules.hcpSwitch.includes(this.gameType)) {
             console.log("incl")
             content += `<label>Behåll original handicap<input type="checkbox" class="checkbox" id="hcpSwitch"${this.ruleset.keepHcp?' checked':''}></label>`
@@ -605,6 +613,7 @@ const gameObject = {
 
         container.innerHTML += content
 
+        // listener for hcp switch
         if (rules.hcpSwitch.includes(this.gameType)) {
             container.querySelector("#hcpSwitch")?.addEventListener("input", (e) => {
                 console.log(e.target.checked)
@@ -612,9 +621,25 @@ const gameObject = {
                 this.showPartResults()
             })
         }
+
+        const getRuleSubType = () => document.querySelector('input[name="part-ruleswitch"]:checked').value
+        // listener for rule switch
+        if (this.play.play_as.length > 1) {
+            const radios = document.querySelectorAll('input[name="part-ruleswitch"]')
+            if (!radios) {return}
+            // document.querySelector(`input[value="${this.ruleset.subtype}"]`).checked = true
+            Array.from(radios).find(x => x.value==this.ruleset.subtype).checked = true
+            radios.forEach(radio => {
+                radio.oninput = () => {
+                    this.ruleset.switchSubtype(getRuleSubType())
+                    this.cacheGame()
+                    this.showPartResults()
+                }
+            })
+        }
     },
     showResults: function(e) {
-        e.preventDefault()
+        e?.preventDefault()
 
         gameObject.ruleset.readInputs()
         let points = gameObject.ruleset.calculateScores()
@@ -640,17 +665,38 @@ const gameObject = {
             content += "</div>"
         })
         content += `</div>`
+        if (this.play.play_as.length > 1) {
+            content += this.generateRuleSwitch("end")
+        }
         if (rules.hcpSwitch.includes(this.gameType)) {
             console.log("incl")
             content += `<label>Behåll original handicap<input type="checkbox" class="checkbox" id="hcpSwitchRes"${this.ruleset.keepHcp?' checked':''}></label>`
         }
         content += this.ruleset.generateScoreCard("v")
         container.innerHTML = content
+        // listener for hcp switch
         if (rules.hcpSwitch.includes(this.gameType)) {
             container.querySelector("#hcpSwitchRes")?.addEventListener("input", (e) => {
                 console.log(e.target.checked)
                 this.ruleset.keepHcp = e.target.checked
-                this.showResults()
+                this.showResults(null)
+            })
+        }
+
+        const getRuleSubType = () => document.querySelector('input[name="end-ruleswitch"]:checked').value
+        // listener for rule switch
+        if (this.play.play_as.length > 1) {
+            const radios = document.querySelectorAll('input[name="end-ruleswitch"]')
+            if (!radios) {return}
+            // document.querySelector(`input[value="${this.ruleset.subtype}"]`).checked = true
+            // Array.from(radios).find(x => x.value==this.ruleset.subtype).checked = true
+            radios.forEach(radio => {
+                radio.oninput = () => {
+                    console.log("switch")
+                    this.ruleset.switchSubtype(getRuleSubType())
+                    this.cacheGame()
+                    this.showResults(null)
+                }
             })
         }
     },
@@ -676,12 +722,13 @@ const gameObject = {
             players: this.players,
             holes: this.holes,
             gameType: this.gameType,
+            subtype: this.ruleset.subtype,
             club: this.club,
             course: this.course,
             teamCount: this.teamCount,
             teamSize: this.teamSize,
             time: date,
-            scores: this.ruleset?.points || []
+            scores: this.ruleset?.getPoints() || []
         }
         historyManager.updateHistory(date)
         historyManager.setGame(date, gameData)
@@ -700,13 +747,16 @@ const gameObject = {
         this.teamCount = game.teamCount
         this.teamSize = game.teamSize
         this.time = new Date(game.time)
-
+        this.play = this.playTypes.find(x => x.id === this.gameType)
         if (this.course) {
             await this.loadCourseData()
         }
         this.fillSetupInputs()
         this.openScoreKeeper()
-        this.ruleset.points = game.scores
+        this.ruleset.setPoints(game.scores)
+        if (game.subtype) {
+            this.ruleset.subtype = game.subtype
+        }
         this.ruleset.fillInputs()
         gameInfoWindow.setContent(this.gameType)
         console.log(game.scores)
@@ -758,6 +808,13 @@ const gameObject = {
         gameObject.teamSize = 1
         gameObject.time = null
         // forms["keeper"].scrollTo(0, 0)
+    },
+    generateRuleSwitch(id="general") {
+        let content = '<div class="radio-group rule-switch">'
+        content += this.play.play_as.map(x=> `<label for="${id}-switch-${x}"><input type="radio" id="${id}-switch-${x}" name="${id}-ruleswitch" value="${x}"/>
+            ${gameObject.playTypes.find(p => p.id === x).name}</label>`).join("\n")
+        content += `</div>`
+        return content
     }
 }
 
@@ -810,7 +867,7 @@ const historyManager = {
         const his = this.getHistory()
         return this.getGame(his[0])
     },
-    populateHistory: async function() {
+    populateHistory: async function(iteration=1) {
         const games = this.getHistory()
         this.plays = await data.loadPlayTypes()
         this.clubs = await data.loadGolfClubs()
@@ -818,7 +875,8 @@ const historyManager = {
             document.querySelector("#historyView .list").innerHTML = games.map(x => {
                 const game = historyManager.getGame(x)
                 let clubLine = ""
-                let winLine =""
+                let winLine = ""
+                const subline = game.subtype ? `<p>Variant: ${this.plays.find(p => p.id === game.subtype).name}</p>` : ""
                 if (game.club && game.course) {
                     clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span> - <span>${game.course}</span></p>`
                 } else if (game.club) {
@@ -836,6 +894,7 @@ const historyManager = {
                 <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
                 ${clubLine}
                 <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
+                ${subline}
                 ${winLine}
                 <div class="collapsed scores"></div>
                 <div class="horizontal-flex">
@@ -844,13 +903,51 @@ const historyManager = {
                 </div>
             </div>`
             }).join("\n")
-        } catch {
-            await historyManager.repairHistory()
-            console.log("Fixing history")
-            return historyManager.populateHistory()
+        } catch (err) {
+            console.log(err)
+            if (iteration >= 3) {
+                document.querySelector("#historyView .list").innerHTML = games.map(x => {
+                    try {
+                        const game = historyManager.getGame(x)
+                        let clubLine = ""
+                        let winLine =""
+                        if (game.club && game.course) {
+                            clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span> - <span>${game.course}</span></p>`
+                        } else if (game.club) {
+                            clubLine = `<p><span>${this.clubs.find(x => x.id == game.club).name}</span></p>`
+                        }
+                        let winner = this.calculateWinner(game)
+                        if (winner !== "N/A" && winner) {
+                            winLine = `<p>Vinnare: ${winner}</p>`
+                        }
+                        return `<div class="history-item" id="${x}">
+                        <div class="horizontal-flex separate">
+                        <p class="timestamp">${new Date(x).toLocaleString()}</p>
+                        <button class="delete-button">Ta bort</button>
+                        </div>
+                        <h2><span>${this.plays.find(x => x.id == game.gameType).name}</span></h2>
+                        ${clubLine}
+                        <p><span>${game.holes} hål</span> - <span>${game.playerCount} spelare</span></p>
+                        ${winLine}
+                        <div class="collapsed scores"></div>
+                        <div class="horizontal-flex">
+                            ${!Array.isArray(game.scores) ? '<button class="expand">Visa scorekort</button>': ''}
+                            <button class="continue">Fortsätt</button>
+                        </div>
+                    </div>`
+                    } catch {
+                        return `<p>error with ${x}</p>`
+                    }
+                }).join("\n")
+            } else {
+                await historyManager.repairHistory()
+                console.log("Fixing history")
+                return historyManager.populateHistory(iteration+1)
+            }
         }
         games.map(x => {
             const parent = document.getElementById(x)
+            if (!parent) {return}
             parent.querySelector(`.expand`)?parent.querySelector(`.expand`).onclick = () => historyManager.toggleScores(x): null
             parent.querySelector(`.continue`).onclick = () => gameObject.resumeGame(x)
             parent.querySelector(".delete-button").onclick = () => {
@@ -879,7 +976,9 @@ const historyManager = {
                 const ruleset = new rules[game.gameType.toString()](game.players, game.holes)
                 if (this.plays.find(x=> x.id == game.gameType).team) { ruleset.teamCount = game.teamCount }
                 // console.log(game.scores)
+                if (game.subtype) { ruleset.subtype = game.subtype}
                 ruleset.setPoints(game.scores)
+                ruleset.calculatePoints()
                 cont.innerHTML = ruleset.generateScoreCard("v")
             }
             
@@ -887,6 +986,250 @@ const historyManager = {
             ele.querySelector(`.expand`).innerText = "Visa scorekort"
         }
         cont.classList.toggle("collapsed")
+    }
+}
+
+const baseTypes = {
+    order: {
+        "desc": ["matchgame", "pointbogey"],
+        "asc": ["shotcomp", "shotgolf"]
+    },
+    getOrder: (name) => {
+        return baseTypes.order.desc.includes(name) ? "desc" : "asc"
+    },
+    matchgame: (obj, keepformat=false, pts=null) => {
+        console.log("sub match")
+        const objPts = pts || obj.getPoints()
+        let points = {}
+        
+        let minHcp = Math.min(...obj.players.map(p => p.handicap))
+        for (let i=1; i<=obj.holes; i++) {
+            points[i] = {}
+            let holePoints = []
+            if (!obj.teamCount) {
+                obj.players.map((player) => {
+                    points[i][player.name] = 0
+                    let index = objPts[i]["index"]
+                    let hits = objPts[i][player.name]
+                    const hcp = player.handicap - minHcp
+                    let extra_par = obj.calculatePlayerPar(hcp, index)
+                    if (hits <= 0 || !hits) {
+                        if (objPts[i]["winner"] == player.name){
+                            points[i][player.name] = 1
+                        }
+                        return
+                    }
+
+                    holePoints.push([hits-extra_par, player.name])
+                })
+            } else {
+                let teams = [...Array(obj.teamCount+1).keys()]
+                teams.shift()
+                teams = teams.map(n => `Lag ${n}`)
+                teams.map((team)=> {
+                    points[i][team] = 0
+                    let hits = objPts[i][team]
+                    if (hits <= 0 || !hits) {
+                        return
+                    }
+
+                    holePoints.push([hits, team])
+                })
+            }
+            
+            if (!holePoints) {continue}
+            let lowest = Math.min(...holePoints.map(x => x[0]))
+            // console.log(lowest, holePoints)
+            if (lowest >= 998) {continue}
+            let winners = []
+            holePoints.forEach(x => {
+                // console.log(x[0])
+                if (x[0] && x[0] == lowest) {
+                    // total[x[1]].points += 1
+                    winners.push(x[1])
+                }
+            })
+
+            if (winners.length == 1) {
+                points[i][winners[0]] = 1
+            }
+        }
+        // obj.calculatedPoints = points
+        // console.log(points)
+        return points
+    },
+    shotcomp: (obj, keepformat=false) => {
+        console.log("sub shotcomp")
+        const objPts = obj.getPoints()
+        let points = {}
+        if (!keepformat) {
+            for (let i=1; i<=obj.holes; i++) {
+                points[i] = {}
+                obj.players.forEach(player => {
+                    points[i][player.name] = 0
+                    if (!objPts[i][player.name]) { return }
+                    let extra = obj.calculatePlayerPar(player.handicap, objPts[i].index)
+                    points[i][player.name] = extra < objPts[i][player.name] ? objPts[i][player.name] - extra : 0
+                })
+            }
+        } else {
+            // points = objPts
+            for (let i=1; i<=obj.holes; i++) {
+                points[i] = {
+                    par: objPts[i]["par"],
+                    index: objPts[i]["index"]
+                }
+                if (obj.teamCount) {
+                    for (let j=1; j<=obj.teamCount; j++) {
+                        let key = `Lag ${j}`
+                        points[i][key] = {}
+                        Object.keys(points[i][key]).forEach(player => {
+                            const hits = points[i][key][player]
+                            if (!hits) { return }
+                            const extra = obj.calculatePlayerPar(obj.calculateHcp(player), points[i]["index"])
+                            points[i][key][player] = extra < objPts[i][key][player] ? objPts[i][key][player] - extra : 0
+                        })
+                    }
+                } else {
+                    obj.players.forEach(player => {
+                        let hits = points[i][player.name]
+                        if (!hits) { return }
+                        // points[i][player.name] = 0
+                        let extra = obj.calculatePlayerPar(player.handicap, objPts[i].index)
+                        points[i][player.name] = extra < hits ? hits - extra : 0
+                    })
+                }
+            }
+        }
+
+        return points
+    },
+    shotgolf: (obj, keepformat=false) => {
+        console.log("sub shotgolf")
+        const objPts = obj.getPoints()
+        let points = {}
+        if (!keepformat) {
+            for (let i=1; i<=obj.holes; i++) {
+                points[i] = {}
+                obj.players.forEach(player => {
+                    points[i][player.name] = 0
+                    let point = objPts[i][player.name]
+                    if (!point) { return }
+                    let par = objPts[i]["par"]
+                    let extra = obj.calculatePlayerPar(player.handicap, objPts[i].index)
+                    let hcpPoint = point - extra
+                    let max = par + 5
+                    points[i][player.name] = hcpPoint > max ? max : hcpPoint
+                })
+            }
+        } else {
+            // points = objPts
+            for (let i=1; i<=obj.holes; i++) {
+                points[i] = {
+                    par: objPts[i]["par"],
+                    index: objPts[i]["index"]
+                }
+                if (obj.teamCount) {
+                    for (let j=1; j<=obj.teamCount; j++) {
+                        let key = `Lag ${j}`
+                        points[i][key] = {}
+                        Object.keys(points[i][key]).forEach(player => {
+                            const hits = points[i][key][player]
+                            if (!hits) { return }
+                            let par = points[i]["par"]
+                            let index = points[i]["index"]
+                            const extra = obj.calculatePlayerPar(obj.calculateHcp(player), index)
+                            let hcpPoint = hits - extra
+                            let max = par + 5
+                            points[i][key][player] = hcpPoint > max ? max : hcpPoint
+                        })
+                    }
+                } else {
+                    obj.players.forEach(player => {
+                        // points[i][player.name] = 0
+                        let point = points[i][player.name]
+                        if (!point) { return }
+                        let par = objPts[i]["par"]
+                        let extra = obj.calculatePlayerPar(player.handicap, objPts[i].index)
+                        let hcpPoint = point - extra
+                        let max = par + 5
+                        points[i][player.name] = hcpPoint > max ? max : hcpPoint
+                    })
+                }
+                
+            }
+            
+        }
+        // obj.calculatedPoints = points
+        return points
+    },
+    pointbogey: (obj, keepformat=false) => {
+        console.log("sub point")
+        const objPts = obj.getPoints()
+        let pts = {}
+        if (!keepformat) {
+            for (let i=1; i<=obj.holes; i++) {
+                pts[i] = {}
+                obj.players.forEach(player => {
+                    pts[i][player.name] = 0
+                    let hits = objPts[i][player.name]
+                    if (!hits) { return }
+                    let par = objPts[i]["par"]
+                    let index = objPts[i]["index"]
+                    let player_par = par + obj.calculatePlayerPar(player.handicap, index)
+                    let point = 2 - (hits - player_par)
+                    if (point < 0) {
+                        point = 0
+                    }
+                    pts[i][player.name] = point
+                })
+            }
+        } else {
+            pts = {}
+            for (let i=1; i<=obj.holes; i++) {
+                pts[i] = {
+                    par: objPts[i]["par"],
+                    index: objPts[i]["index"]
+                }
+
+                if (obj.teamCount) {
+                    for (let j=1; j<=obj.teamCount; j++) {
+                        let key = `Lag ${j}`
+                        pts[i][key] = {}
+                        Object.keys(objPts[i][key]).forEach(player => {
+                            const hits = objPts[i][key][player]
+                            if (!hits) { return }
+                            let par = pts[i]["par"]
+                            let index = pts[i]["index"]
+                            let player_par = par + obj.calculatePlayerPar(obj.calculateHcp(player), index)
+                            let point = 2 - (hits - player_par)
+                            // console.log(hits, point)
+                            if (point < 0) {
+                                point = 0
+                            }
+                            pts[i][key][player] = point
+                        })
+                    }
+                } else {
+                    obj.players.forEach(player => {
+                        // pts[i][player.name] = 0
+                        let hits = objPts[i][player.name]
+                        if (!hits) { return }
+                        let par = pts[i]["par"]
+                        let index = pts[i]["index"]
+                        let player_par = par + obj.calculatePlayerPar(player.handicap, index)
+                        let point = 2 - (hits - player_par)
+                        if (point < 0) {
+                            point = 0
+                        }
+                        pts[i][player.name] = point
+                    })
+                }
+            }
+        }
+
+        // obj.calculatedPoints = pts
+        return pts
     }
 }
 
@@ -898,6 +1241,7 @@ class GameRules {
         this._points = {}
         this.calculatedPoints = {}
         this.order = "asc"
+        this.subtype = null
         this.playernames = players.map(x => x.name)
         for (let i=1; i<=holes; i++) {
             this._points[i] = {
@@ -917,6 +1261,10 @@ class GameRules {
 
     print() {
         console.log(this.players, this.holes, this.points)
+    }
+
+    getPoints() {
+        return this._points
     }
 
     addPoints(hole, points) {
@@ -970,7 +1318,12 @@ class GameRules {
         this.setPoints(points)
     }
 
-    calculatePoints () {
+    calculatePoints() {
+        if (this.subtype && baseTypes[this.subtype]) {
+            const res = baseTypes[this.subtype](this)
+            this.calculatedPoints = res
+            return res
+        }
         let points = {}
         for (let i=1; i<=this.holes; i++) {
             points[i] = {}
@@ -986,6 +1339,7 @@ class GameRules {
     }
 
     calculateScores() {
+        console.log("calculateScores")
         this.calculatePoints()
         let total = {}
         this.players.map((player) => {
@@ -1106,7 +1460,23 @@ class GameRules {
             }
         }
         tbl += `</table></div>`
+        // if (this.info.play_as.length > 1) {
+        //     const swtch = this.generateRuleSwitch()
+        //     return swtch + tbl
+        // }
         return tbl
+    }
+    generateRuleSwitch() {
+        let content = '<div class="radio-group rule-switch">'
+        content += this.info.play_as.map(x=> `<input type="radio" id="switch-${x}" name="ruleswitch" value="${x}"/>
+            <label for="switch-${x}">${gameObject.playTypes.find(p => p.id === x).name}</label>`).join("\n")
+        content += `</div>`
+        return content
+    }
+
+    switchSubtype(newSubtype) {
+        this.subtype = newSubtype
+        // this.calculatePoints()
     }
 
     calculatePlayerPar(hcp, index) {
@@ -1185,7 +1555,7 @@ class TeamGame extends GameRules {
             <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
             </div>`
         }
-        content = `
+        content += `
         <div class="col white hole" id="hole${hole}">
             <h3>Hål ${hole}</h3>
             ${topPart}`
@@ -1248,12 +1618,6 @@ class TeamGame extends GameRules {
                 }
                 
             }
-            // this.players.forEach(player => {
-            //     points[i][player.name] = 0
-            //     if (!this._points[i][player.name]) { return }
-            //     let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
-            //     points[i][player.name] = extra < this._points[i][player.name] ? this._points[i][player.name] - extra : 0
-            // })
         }
         this.calculatedPoints = points
         // console.log(this.calculatedPoints)
@@ -1261,6 +1625,7 @@ class TeamGame extends GameRules {
     }
 
     calculateScores() {
+        console.log("calcScores")
         this.calculatePoints()
         let total = {}
         for (let j=1; j<=this.teamCount; j++) {
@@ -1447,7 +1812,20 @@ class Nassau extends GameRules {
         this.calculateScores()
     }
 
+    calculatePoints() {
+        if (this.subtype && baseTypes[this.subtype]) {
+            this.order = baseTypes.getOrder(this.subtype)
+            const points = baseTypes[this.subtype](this)
+            console.log(this.subtype, points)
+            this.calculatedPoints = points
+            return points
+        } else {
+            return super.calculatePoints()
+        }
+    }
+
     calculateScores() {
+        console.log("calcScores")
         this.calculatePoints()
         let total = {}
         let half = Math.round(this.holes / 2)
@@ -1676,6 +2054,12 @@ class FourBall extends TeamGame {
     constructor(players, holes, name="fourball") {
         super(players, holes, name)
         this.keepHcp = false
+        this.order = "desc"
+    }
+
+    setPoints(points) {
+        this._points = points
+        // this.calculatePoints()
     }
 
     holeForm(hole) {
@@ -1690,7 +2074,7 @@ class FourBall extends TeamGame {
             <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
             </div>`
         }
-        content = `
+        content += `
         <div class="col white hole" id="hole${hole}">
             <h3>Hål ${hole}</h3>
             ${topPart}`
@@ -1699,7 +2083,7 @@ class FourBall extends TeamGame {
             content += `<fieldset><legend>Lag ${i}</legend>`
             content += this.players.map(player => {
                 if (player.team === i) {
-                    return `<label>${player.name}: <input type="number" name="team${i}-${hole}-${player.name}" min="0" max="999"></label>`
+                    return `<label>${player.name}: <input type="number" name="team${i}-${player.name}-${hole}" min="0" max="999"></label>`
                 }
             }).join("\n")
             content += `</fieldset>`
@@ -1715,7 +2099,6 @@ class FourBall extends TeamGame {
         return this.keepHcp ? p.handicap : Math.round(p.handicap * 0.9)
     }
 
-
     readInputs() {
         let formData = new FormData(forms["keeper"])
         let points = {}
@@ -1728,7 +2111,7 @@ class FourBall extends TeamGame {
                 let playerPoints = {}
                 this.players.map(player => {
                     if (player.team == j) {
-                        playerPoints[player.name] = parseInt(formData.get(`team${j}-${i}-${player.name}`)) || 0
+                        playerPoints[player.name] = parseInt(formData.get(`team${j}-${player.name}-${i}`)) || 0
                     }
                 })
                 points[i][`Lag ${j}`] = playerPoints
@@ -1738,32 +2121,59 @@ class FourBall extends TeamGame {
             // })
         }
         this.setPoints(points)
-        console.log(points)
+        // console.log(points)
     }
 
-    
     calculatePoints() {
-        let points = {}
-        // console.log(this._points)
-        for (let i=1; i<=this.holes; i++) {
-            points[i] = {}
-            for (let j=1; j<=this.teamCount; j++) {
-                let key = `Lag ${j}`
-                points[i][key] = 0
-                if (!this._points[i][key]) { continue }
-                const comp = []
-                for (const p of Object.keys(this._points[i][key])) {
-                    if (!this._points[i][key][p]) {continue}
-                    const hcp = this.calculateHcp(p)
-                    let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                    comp.push(extra < this._points[i][key][p] ? this._points[i][key][p] - extra : 0)
+        let pts = {}
+        let scores
+        // console.log(this.subtype)
+        if (this.subtype && baseTypes[this.subtype] && !["shotcomp", "matchgame"].includes(this.subtype)) {
+            // console.log("points", this._points)
+            scores = baseTypes[this.subtype](this, true)
+            for (let i=1; i<=this.holes; i++) {
+                pts[i] = {}
+                for (let j=1; j<=this.teamCount; j++) {
+                    let key = `Lag ${j}`
+                    pts[i][key] = 0
+                    if (!scores[i][key]) { continue }
+                    const comp = [...Object.values(scores[i][key])]
+                    if (baseTypes.getOrder(this.subtype) === "asc") {
+                        pts[i][key] = comp.length > 0 ? Math.min(...comp) : 0
+                    } else {
+                        pts[i][key] = comp.length > 0 ? Math.max(...comp) : 0
+                    }
                 }
-                points[i][key] = comp.length > 0 ? Math.min(...comp) : 0
+            }
+        } else {
+            scores = Object.assign({}, this._points)//{...this._points}
+            // console.log(this._points)
+            for (let i=1; i<=this.holes; i++) {
+                pts[i] = {}
+                for (let j=1; j<=this.teamCount; j++) {
+                    let key = `Lag ${j}`
+                    pts[i][key] = 0
+                    if (!scores[i][key]) { continue }
+                    const comp = []
+                    for (const p of Object.keys(scores[i][key])) {
+                        if (!scores[i][key][p]) {continue}
+                        const hcp = this.calculateHcp(p)
+                        let extra = this.calculatePlayerPar(hcp, scores[i].index)
+                        comp.push(extra < scores[i][key][p] ? scores[i][key][p] - extra : 0)
+                    }
+                    pts[i][key] = comp.length > 0 ? Math.min(...comp) : 0
+                }
+            }
+            if (this.subtype === "matchgame") {
+                const otherPoints = baseTypes.matchgame(this, true, pts)
+                // console.log(otherPoints)
+                pts = otherPoints
             }
         }
-        this.calculatedPoints = points
+
+        this.calculatedPoints = pts
         // console.log(this.calculatedPoints)
-        return points
+        return pts
     }
 
     calculateScores() {
@@ -1790,6 +2200,7 @@ class FourBall extends TeamGame {
     }
 
     generateScoreCard(dir="v", match=false) {
+        this.calculatePoints()
         const teams = [...Array(this.teamCount+1).keys()]
         teams.shift()
         // console.log(teams)
@@ -1798,7 +2209,7 @@ class FourBall extends TeamGame {
         teams.forEach(x => {teamMembers[x] = []})
         this.players.forEach(p=>teamMembers[p.team].push(p.name))
 
-        console.log(this._points)
+        // console.log("scorecard: ", this._points)
         let tbl = `<div class="horizontal-scroll">`
         if (dir == "v" || dir.includes("v")) {
             tbl += `<table class="scorecard vertical">
@@ -1876,13 +2287,17 @@ class FourBall extends TeamGame {
             }
         }
         tbl += `</table></div>`
+        // if (this.info.play_as.length > 1) {
+        //     const swtch = this.generateRuleSwitch()
+        //     return swtch + tbl
+        // }
         return tbl
     }
 
 
     fillInputs() {
         if (!this._points || Array.isArray(this._points)) {return}
-        console.log(this._points)
+        console.log("fill: ", this._points)
         for (let i = 1; i<=this.holes; i++) {
             let par = this._points[i].par
             let ind = this._points[i].index
@@ -1901,7 +2316,7 @@ class FourBall extends TeamGame {
             this.players.map(p => {
                 let pts = this._points[i][`Lag ${p.team}`][p.name]
                 if (pts && pts !== 0) {
-                    document.getElementsByName(`team${p.team}-${i}-${p.name}`)[0].value = pts
+                    document.getElementsByName(`team${p.team}-${p.name}-${i}`)[0].value = pts
                 }
             })
 
@@ -1940,7 +2355,7 @@ const rules = {
                 <label>Index: <input type="number" name="index-${hole}" min="1" max="99" value="${gameObject.courseData.holes[hole-1].index}"></label>
                 </div>`
             }
-            content = `
+            content += `
             <div class="col white hole" id="hole${hole}">
                 <h3>Hål ${hole}</h3>
                 ${topPart}
@@ -2065,7 +2480,7 @@ const rules = {
             this.fillStatusBanner()
         }
         calculateRelativePoints() {
-            // console.log(this.calculatedPoints)
+            console.log("calcRelPoints")
             this.calculatePoints()
             let res = {}
             this.players.map(p => {
@@ -2091,8 +2506,9 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir, true)
-            return tbl//.replaceAll("Netto", "Poäng")
+            // let tbl = super.generateScoreCard(dir, true)
+            // return tbl//.replaceAll("Netto", "Poäng")
+            return super.generateScoreCard(dir, true)
         }
     },
     pointbogey: class PointBogey extends GameRules {
@@ -2320,6 +2736,7 @@ const rules = {
     nassauShotcomp: class NassauShotcomp extends Nassau {
         constructor(players, holes) {
             super(players, holes)
+            this.subtype = "shotcomp"
         }
     },
     nassauPointbogey: class NassauPointbogey extends Nassau {
