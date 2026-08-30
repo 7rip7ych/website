@@ -1916,6 +1916,7 @@ class Nassau extends GameRules {
 class GolfSome extends TeamGame {
     constructor(players, holes, name="some") {
         super(players, holes, name)
+        this.keepHcp = false
         // this.teamCount = gameObject.teamCount
     }
 
