@@ -859,8 +859,16 @@ const historyManager = {
     repairHistory: () => {
         const list = historyManager.getHistory()
         if (list.length < 1) { return }
-        const repaired = list.filter(item => storage.getItem(item) && item && typeof item == 'string')
-        console.log(list, repaired)
+        const repaired = list.filter(item => {
+            const game = historyManager.getGame(item)
+            if (!game) {return false}
+            if (!rules[game.gameType]) {
+                storage.removeItem(item)
+                return false
+            }
+            return item && typeof item == 'string'
+        })
+        console.log("history repair", list, repaired)
         historyManager.setHistory(repaired)
     },
     getLatest: function() {
@@ -1365,6 +1373,7 @@ class GameRules {
     }
 
     generateScoreCard(dir="v", match=false) {
+        const pointgame = rules.pointGames.includes(this.name) || rules.pointGames.includes(this.subtype)
         let tbl = `<div class="horizontal-scroll">`
         if (dir == "h" || dir.includes("h")) {
             tbl += `<table class="scorecard horizontal">
@@ -1400,7 +1409,7 @@ class GameRules {
             `
             tbl += this.players.map(player => `<th colspan="2">${player.name} (${player.handicap}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += `<th>Slag</th><th>${match?"Poäng":"Netto"}</th>\n`.repeat(this.playernames.length)
+            tbl += `<th>Slag</th><th>${match||pointgame?"Poäng":"Netto"}</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -1649,6 +1658,7 @@ class TeamGame extends GameRules {
     }
 
     generateScoreCard(dir="v", match=false) {
+        const pointgame = rules.pointGames.includes(this.name) || rules.pointGames.includes(this.subtype)
         const teams = [...Array(this.teamCount+1).keys()]
         teams.shift()
         // console.log(teams)
@@ -1693,7 +1703,7 @@ class TeamGame extends GameRules {
             `
             tbl += teams.map(team => `<th colspan="${this.teeshot?3:2}">Lag ${team} (${this.calculateHcp(team)}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += `${this.teeshot?'<th>Utslag</th>':''}<th>Slag</th><th>${match?"Poäng":"Netto"}</th>\n`.repeat(this.teamCount)
+            tbl += `${this.teeshot?'<th>Utslag</th>':''}<th>Slag</th><th>${match||pointgame?"Poäng":"Netto"}</th>\n`.repeat(this.teamCount)
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -2033,6 +2043,7 @@ class FourBall extends TeamGame {
     }
 
     generateScoreCard(dir="v", match=false) {
+        const pointgame = rules.pointGames.includes(this.name) || rules.pointGames.includes(this.subtype)
         this.calculatePoints()
         const teams = [...Array(this.teamCount+1).keys()]
         teams.shift()
@@ -2053,7 +2064,7 @@ class FourBall extends TeamGame {
             `
             tbl += teams.map(team => `<th colspan="3">Lag ${team}</th>`).join("\n")
             tbl += `</tr><tr>`
-            tbl += teams.map(team => `${teamMembers[team].map(p=>`<th><span class="super centered">(${this.calculateHcp(p)}hcp)</span>${p}</th>`).join("\n")}<th>${match?"Poäng":"Netto"}</th>`).join("\n")
+            tbl += teams.map(team => `${teamMembers[team].map(p=>`<th><span class="super centered">(${this.calculateHcp(p)}hcp)</span>${p}</th>`).join("\n")}<th>${match||pointgame?"Poäng":"Netto"}</th>`).join("\n")
             tbl += `</tr>`
             let sum1 = {
                 par: 0,
@@ -2165,6 +2176,7 @@ const rules = {
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
     usingTopBanner: ["matchgame"],
     hcpSwitch: ["fourball", "fourballbewo", "fourballbeto"],
+    pointGames: ["matchgame", "pointbogey", "copenhagener", "fourballbewo", "fourballbeto"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes, "matchgame")
