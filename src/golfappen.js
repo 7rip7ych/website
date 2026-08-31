@@ -1083,16 +1083,16 @@ const baseTypes = {
                     for (let j=1; j<=obj.teamCount; j++) {
                         let key = `Lag ${j}`
                         points[i][key] = {}
-                        Object.keys(points[i][key]).forEach(player => {
-                            const hits = points[i][key][player]
+                        Object.keys(objPts[i][key]).forEach(player => {
+                            const hits = objPts[i][key][player]
                             if (!hits) { return }
-                            const extra = obj.calculatePlayerPar(obj.calculateHcp(player), points[i]["index"])
+                            const extra = obj.calculatePlayerPar(obj.calculateHcp(player), objPts[i]["index"])
                             points[i][key][player] = extra < objPts[i][key][player] ? objPts[i][key][player] - extra : 0
                         })
                     }
                 } else {
                     obj.players.forEach(player => {
-                        let hits = points[i][player.name]
+                        let hits = objPts[i][player.name]
                         if (!hits) { return }
                         // points[i][player.name] = 0
                         let extra = obj.calculatePlayerPar(player.handicap, objPts[i].index)
@@ -1133,11 +1133,11 @@ const baseTypes = {
                     for (let j=1; j<=obj.teamCount; j++) {
                         let key = `Lag ${j}`
                         points[i][key] = {}
-                        Object.keys(points[i][key]).forEach(player => {
-                            const hits = points[i][key][player]
+                        Object.keys(objPts[i][key]).forEach(player => {
+                            const hits = objPts[i][key][player]
                             if (!hits) { return }
-                            let par = points[i]["par"]
-                            let index = points[i]["index"]
+                            let par = objPts[i]["par"]
+                            let index = objPts[i]["index"]
                             const extra = obj.calculatePlayerPar(obj.calculateHcp(player), index)
                             let hcpPoint = hits - extra
                             let max = par + 5
@@ -1147,7 +1147,7 @@ const baseTypes = {
                 } else {
                     obj.players.forEach(player => {
                         // points[i][player.name] = 0
-                        let point = points[i][player.name]
+                        let point = objPts[i][player.name]
                         if (!point) { return }
                         let par = objPts[i]["par"]
                         let extra = obj.calculatePlayerPar(player.handicap, objPts[i].index)
@@ -2778,7 +2778,18 @@ const rules = {
 
         calculatePoints() {
             let points = {}
-            // console.log(this._points)
+            let scores
+            let asc = true
+            // console.log(this.subtype)
+            const subbed = this.subtype && baseTypes[this.subtype] && !["shotcomp", "matchgame"].includes(this.subtype)
+            if (subbed) {
+                // console.log("points", this._points)
+                scores = baseTypes[this.subtype](this, true)
+                console.log(scores, this._points)
+                asc = baseTypes.getOrder(this.subtype) == "asc"
+            } else {
+                scores = {...this._points}
+            }
             for (let i=1; i<=this.holes; i++) {
                 points[i] = {}
                 let holePoints = {}
@@ -2786,21 +2797,33 @@ const rules = {
                     holePoints[j] = []
                     let key = `Lag ${j}`
                     points[i][key] = 0
-                    if (!this._points[i][key]) { continue }
-                    for (const p of Object.keys(this._points[i][key])) {
-                        if (!this._points[i][key][p]) {continue}
-                        const hcp = this.calculateHcp(p)
-                        let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                        holePoints[j].push(extra < this._points[i][key][p] ? this._points[i][key][p] - extra : 0)
+                    if (!scores[i][key]) { continue }
+                    for (const p of Object.keys(scores[i][key])) {
+                        if (!scores[i][key][p]) {
+                            holePoints[j].push(asc?999:-1)
+                            continue
+                        }
+                        if (subbed) {
+                            holePoints[j].push(scores[i][key][p])
+                        } else {
+                            // if (!scores[i][key][p]) {continue}
+                            const hcp = this.calculateHcp(p)
+                            let extra = this.calculatePlayerPar(hcp, scores[i].index)
+                            holePoints[j].push(extra < scores[i][key][p] ? scores[i][key][p] - extra : 0)
+                        }
                     }
                 }
-                Object.values(holePoints).forEach(lst => lst.sort((a, b)=>a-b))
+                Object.values(holePoints).forEach(lst => lst.sort((a, b)=> asc ? a-b : b-a)) // sort team points
+                // get each teams best and worst
                 const bests = Object.values(holePoints).map(x => x[0])
                 const worsts = Object.values(holePoints).map(x => x[1])
-                const best = Math.min(...bests)
-                const beWo = Math.min(...worsts)
+                // get the best and worst points
+                const best = asc ? Math.min(...bests) : Math.max(...bests) 
+                const beWo = asc ? Math.min(...worsts) : Math.max(...worsts)
+                // get list containing best and worst
                 const bestLst = Object.keys(holePoints).filter(key => holePoints[key][0] === best)
                 const beWoLst = Object.keys(holePoints).filter(key => holePoints[key][1] === beWo)
+                // give points if only one list matches
                 if (bestLst.length == 1) {
                     points[i][`Lag ${bestLst[0]}`] += 1
                 }
@@ -2808,6 +2831,7 @@ const rules = {
                     points[i][`Lag ${beWoLst[0]}`] += 1
                 }
             }
+
             this.calculatedPoints = points
             // console.log(this.calculatedPoints)
             return points
@@ -2825,7 +2849,18 @@ const rules = {
 
         calculatePoints() {
             let points = {}
-            // console.log(this._points)
+            let scores
+            let asc = true
+            // console.log(this.subtype)
+            const subbed = this.subtype && baseTypes[this.subtype] && !["shotcomp", "matchgame"].includes(this.subtype)
+            if (subbed) {
+                // console.log("points", this._points)
+                scores = baseTypes[this.subtype](this, true)
+                console.log(scores, this._points)
+                asc = baseTypes.getOrder(this.subtype) == "asc"
+            } else {
+                scores = {...this._points}
+            }
             for (let i=1; i<=this.holes; i++) {
                 points[i] = {}
                 let holePoints = {}
@@ -2833,21 +2868,33 @@ const rules = {
                     holePoints[j] = []
                     let key = `Lag ${j}`
                     points[i][key] = 0
-                    if (!this._points[i][key]) { continue }
-                    for (const p of Object.keys(this._points[i][key])) {
-                        if (!this._points[i][key][p]) {continue}
-                        const hcp = this.calculateHcp(p)
-                        let extra = this.calculatePlayerPar(hcp, this._points[i].index)
-                        holePoints[j].push(extra < this._points[i][key][p] ? this._points[i][key][p] - extra : 0)
+                    if (!scores[i][key]) { continue }
+                    for (const p of Object.keys(scores[i][key])) {
+                        if (!scores[i][key][p]) {
+                            holePoints[j].push(asc?999:-1)
+                            continue
+                        }
+                        if (subbed) {
+                            holePoints[j].push(scores[i][key][p])
+                        } else {
+                            // if (!scores[i][key][p]) {continue}
+                            const hcp = this.calculateHcp(p)
+                            let extra = this.calculatePlayerPar(hcp, scores[i].index)
+                            holePoints[j].push(extra < scores[i][key][p] ? scores[i][key][p] - extra : 0)
+                        }
                     }
                 }
-                Object.values(holePoints).forEach(lst => lst.sort((a, b)=>a-b))
+                Object.values(holePoints).forEach(lst => lst.sort((a, b)=> asc ? a-b : b-a)) // sort team points
+                // get each teams best and total
                 const bests = Object.values(holePoints).map(x => x[0])
                 const totals = Object.values(holePoints).map(x => x[0] + x[1])
-                const best = Math.min(...bests)
-                const beTot = Math.min(...totals)
+                // get the best and total points
+                const best = asc ? Math.min(...bests) : Math.max(...bests) 
+                const beTot = asc ? Math.min(...totals) : Math.max(...totals)
+                // get list containing best and total
                 const bestLst = Object.keys(holePoints).filter(key => holePoints[key][0] === best)
                 const beTotLst = Object.keys(holePoints).filter(key => holePoints[key][0] + holePoints[key][1] === beTot)
+                // give points if only one list matches
                 if (bestLst.length == 1) {
                     points[i][`Lag ${bestLst[0]}`] += 1
                 }
@@ -2855,6 +2902,7 @@ const rules = {
                     points[i][`Lag ${beTotLst[0]}`] += 1
                 }
             }
+
             this.calculatedPoints = points
             // console.log(this.calculatedPoints)
             return points
