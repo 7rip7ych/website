@@ -41,26 +41,8 @@
         "play_as": []
     },
     {
-        "name": "Nassau: slaggolf",
-        "id": "nassauShotgolf",
-        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
-        "minPlayers": 2,
-        "maxPlayers": 4,
-        "team": false,
-        "play_as": ["shotcomp", "shotgolf", "pointbogey"]
-    },
-    {
-        "name": "Nassau: slagtävling",
-        "id": "nassauShotcomp",
-        "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
-        "minPlayers": 2,
-        "maxPlayers": 4,
-        "team": false,
-        "play_as": ["shotcomp", "shotgolf", "pointbogey"]
-    },
-    {
-        "name": "Nassau: poängbogey",
-        "id": "nassauPointbogey",
+        "name": "Nassau",
+        "id": "nassau",
         "desc": "Denna spelform går att genomföra som slaggolf, slagtävling, poängbogey eller bogeytävling. Man kan vara två, tre eller fyra spelare. Vid en vanlig runda över 18 hål delas denna in i tre delar. Första nio, andra nio och totalt. För bästa resultat på dessa tre delar ges ett poäng för vardera. Spelare som inte är riktigt säker på sin spelform, kan nå en formtopp nio hål i rad för att därefter drabbas av tillfällig förvirring. Ändå kan de med Nassau vara med och slåss om vinsten.",
         "minPlayers": 2,
         "maxPlayers": 4,
@@ -146,7 +128,6 @@
         "minPlayers": 2,
         "team": true,
         "teamSize": 2,
-        "forms": ["matchgame", "shotcomp", "pointbogey"],
         "play_as": ["shotcomp", "matchgame", "pointbogey"]
     },
     {
@@ -156,7 +137,7 @@
         "minPlayers": 2,
         "team": true,
         "teamSize": 2,
-        "play_as": ["shotcomp", "pointbogey"]
+        "play_as": ["shotcomp", "shotgolf", "pointbogey"]
     },
     {
         "name": "Fyrboll bästboll och sammanlagt",
@@ -165,7 +146,7 @@
         "minPlayers": 2,
         "team": true,
         "teamSize": 2,
-        "play_as": ["shotcomp", "pointbogey"]
+        "play_as": ["shotcomp", "shotgolf", "pointbogey"]
     },
     {
         "name": "Snörtävling",

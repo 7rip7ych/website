@@ -1800,119 +1800,6 @@ class TeamGame extends GameRules {
     }
 }
 
-class Nassau extends GameRules {
-    constructor(players, holes) {
-        super(players, holes, "nassau")
-        this.winners = {}
-        this.sumPoints = {}
-    }
-
-    setPoints(points) {
-        this._points = points
-        this.calculateScores()
-    }
-
-    calculatePoints() {
-        if (this.subtype && baseTypes[this.subtype]) {
-            this.order = baseTypes.getOrder(this.subtype)
-            const points = baseTypes[this.subtype](this)
-            console.log(this.subtype, points)
-            this.calculatedPoints = points
-            return points
-        } else {
-            return super.calculatePoints()
-        }
-    }
-
-    calculateScores() {
-        console.log("calcScores")
-        this.calculatePoints()
-        let total = {}
-        let half = Math.round(this.holes / 2)
-        let points = this.calculatedPoints
-        this.players.map((player) => {
-            let score = {
-                firstHalf: 0,
-                secondHalf: 0,
-                total: 0
-            }
-            Object.keys(points).forEach(key => {
-                if (!points[key][player.name]) { return }
-                let pts = points[key][player.name]
-                score.total += pts
-                if (key <= half) {
-                    score.firstHalf += pts
-                } else {
-                    score.secondHalf += pts
-                }
-            })
-            total[player.name] = score
-        })
-        console.log(total)
-        this.sumPoints = total
-        this.calculateWinners()
-        return total
-    }
-
-    calculateWinners() {
-        const res = this.sumPoints
-        this.winners = {
-            firstHalf: "",
-            secondHalf: "",
-            total: ""
-        }
-
-        let firstSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].firstHalf - b[1].firstHalf: b[1].firstHalf - a[1].firstHalf)
-        let secondSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].secondHalf - b[1].secondHalf: b[1].secondHalf - a[1].secondHalf)
-        let totalSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].total - b[1].total: b[1].total - a[1].total)
-        let firstWin = firstSorted.filter(x => x[1].firstHalf == firstSorted[0][1].firstHalf).map(x => x[0])
-        let secondWin = secondSorted.filter(x => x[1].secondHalf == secondSorted[0][1].secondHalf).map(x => x[0])
-        let totalWin = totalSorted.filter(x => x[1].total == totalSorted[0][1].total).map(x => x[0])
-        if (firstSorted[0][1].firstHalf > 0) {
-            this.winners.firstHalf = firstWin.length == 1 ? firstWin[0] : firstWin
-        }
-        if (secondSorted[0][1].secondHalf > 0) {
-            this.winners.secondHalf = secondWin.length == 1 ? secondWin[0] : secondWin
-        }
-
-        if (totalSorted[0][1].total > 0) {
-            this.winners.total = totalWin.length == 1 ? totalWin[0] : totalWin
-        }
-
-        return this.winners
-    }
-
-    getWinner() {
-        return Object.values(this.winners).join(" - ")
-    }
-
-    generateScoreCard(dir="h") {
-        let tbl = super.generateScoreCard(dir)
-        if (!this.winners) {this.calculateScores()}
-        const w = this.winners
-        let resStr = `
-        <table class="scorecard">
-            <tr>
-                <th>Del</th>
-                <th>Vinnare</th>
-            </tr>
-            <tr>
-                <td>Första halvan</td>
-                <td>${Array.isArray(w.firstHalf) ? w.firstHalf.join(", "): w.firstHalf}</td>
-            </tr>
-            <tr>
-                <td>Andra halvan</td>
-                <td>${Array.isArray(w.secondHalf) ? w.secondHalf.join(", "): w.secondHalf}</td>
-            </tr>
-            <tr>
-                <td>Totalt</td>
-                <td>${Array.isArray(w.total) ? w.total.join(", ") : w.total}</td>
-            </tr>
-        </table>`
-        return tbl + resStr
-    }
-}
-
 class GolfSome extends TeamGame {
     constructor(players, holes, name="some") {
         super(players, holes, name)
@@ -1920,67 +1807,12 @@ class GolfSome extends TeamGame {
         // this.teamCount = gameObject.teamCount
     }
 
-    // holeForm(hole) {
-    //     let content = ""
-    //     // const inputFields = this.players.map(player => {
-    //     //     return `<label>${player.name}: <input type="number" name="${player.name}-${hole}" min="0" max="999"></label>`
-    //     // })
-    //     let parVal = ""
-    //     let indVal = ""
-    //     if (gameObject.courseData) {
-    //         parVal = ` value="${gameObject.courseData.holes[hole-1].par}"`
-    //         indVal = ` value="${gameObject.courseData.holes[hole-1].index}"`
-    //     }
-
-    //     content = `
-    //     <div class="col white hole" id="hole${hole}">
-    //         <h3>Hål ${hole}</h3>
-    //         <label>Par: <input type="number" name="par-${hole}" min="1" max="99"${parVal}></label>
-    //         <label class="separate">Index: <input type="number" name="index-${hole}" min="1" max="99"${indVal}></label>`
-
-    //     for (let i=1; i<=this.teamCount; i++) {
-    //         content += `<fieldset><legend>Lag ${i}</legend><label>Utslag:</label>
-    //         <div class="horizontal-radio-buttons teeshot-radios">`
-    //         content += this.players.map(player => {
-    //             if (player.team == i) {
-    //                 return `<span><input type="radio" name="teeshot-t${i}-${hole}" value="${player.name}" id="teeshot-${hole}-${player.name.replace(" ", "-")}">
-    //                 <label for="teeshot-${hole}-${player.name.replace(" ", "-")}">${player.name}</label></span>`
-    //             }
-    //         }).join("\n")
-    //         content += `</div><label>Slag: <input type="number" name="team${i}-${hole}" min="0" max="999"></label></fieldset>`
-    //     }
-
-    //     content += `</div>`
-
-    //     return content
-    // }
-
     calculateHcp (team) {
         let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
         let res = 0
         hcps.map(h=>res += h*0.5)
         return Math.round(res)
     }
-
-
-    // readInputs() {
-    //     let formData = new FormData(forms["keeper"])
-    //     let points = {}
-    //     for (let i = 1; i<=this.holes; i++) {
-    //         points[i] = {
-    //             "par": parseInt(formData.get(`par-${i}`)) || 0,
-    //             "index": parseInt(formData.get(`index-${i}`)) || 0
-    //         }
-    //         for (let j=1; j<=this.teamCount; j++) {
-    //             points[i][`Lag ${j}`] = [parseInt(formData.get(`team${j}-${i}`))||0, formData.get(`teeshot-t${j}-${i}`)||""]
-    //         }
-    //         // this.players.forEach(p => {
-    //         //     points[i][p.name] = parseInt(formData.get(`${p.name}-${i}`)) || 0
-    //         // })
-    //     }
-    //     this.setPoints(points)
-    //     console.log(points)
-    // }
 }
 
 class Scram extends TeamGame {
@@ -2328,8 +2160,7 @@ class FourBall extends TeamGame {
 const rules = {
     forms: [],
     implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", 
-        "copenhagener", "nassauShotgolf", "nassauShotcomp",
-        "nassauPointbogey", "foursome", "greensome", "irishgreen", "scramble", 
+        "copenhagener", "nassau", "foursome", "greensome", "irishgreen", "scramble", 
         "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto", "tryall"],
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
     usingTopBanner: ["matchgame"],
@@ -2697,74 +2528,116 @@ const rules = {
             return tbl.replaceAll("Netto", "Poäng")
         }
     },
-    nassauShotgolf: class NassauShotgolf extends Nassau {
+    nassau: class Nassau extends GameRules {
         constructor(players, holes) {
-            super(players, holes)
+            super(players, holes, "nassau")
+            this.winners = {}
+            this.sumPoints = {}
         }
-        calculatePoints () {
-            let points = {}
-            for (let i=1; i<=this.holes; i++) {
-                points[i] = {}
-                this.players.forEach(player => {
-                    points[i][player.name] = 0
-                    let point = this._points[i][player.name]
-                    if (!this._points[i][player.name]) { return }
-                    let par = this._points[i]["par"]
-                    let extra = this.calculatePlayerPar(player.handicap, this._points[i].index)
-                    let hcpPoint = point - extra
-                    let max = par + 5
-                    points[i][player.name] += hcpPoint > max ? max : hcpPoint
-                })
+    
+        setPoints(points) {
+            this._points = points
+            this.calculateScores()
+        }
+    
+        calculatePoints() {
+            if (this.subtype && baseTypes[this.subtype]) {
+                this.order = baseTypes.getOrder(this.subtype)
+                const points = baseTypes[this.subtype](this)
+                console.log(this.subtype, points)
+                this.calculatedPoints = points
+                return points
+            } else {
+                return super.calculatePoints()
             }
-            this.calculatedPoints = points
-            return points
         }
-
+    
         calculateScores() {
-            // Set max shots
+            console.log("calcScores")
+            this.calculatePoints()
+            let total = {}
+            let half = Math.round(this.holes / 2)
+            let points = this.calculatedPoints
             this.players.map((player) => {
-                Object.keys(this._points).forEach(key => {
-                    let point = this._points[key][player.name]
-                    if (!point) { return }
-                    let par = this._points[key]["par"]
-                    let max = par + 5
-                    this._points[key][player.name] = point < max ? point : max
-                })
-            })
-            return super.calculateScores()
-        }
-    },
-    nassauShotcomp: class NassauShotcomp extends Nassau {
-        constructor(players, holes) {
-            super(players, holes)
-            this.subtype = "shotcomp"
-        }
-    },
-    nassauPointbogey: class NassauPointbogey extends Nassau {
-        constructor(players, holes) {
-            super(players, holes)
-            this.order = "desc"
-        }
-        calculatePoints () {
-            let points = {}
-            for (let i=1; i<=this.holes; i++) {
-                points[i] = {}
-                this.players.forEach(player => {
-                    points[i][player.name] = 0
-                    let hits = this._points[i][player.name]
-                    if (!hits) { return }
-                    let par = this._points[i]["par"]
-                    let index = this._points[i]["index"]
-                    let player_par = par + this.calculatePlayerPar(player.handicap, index)
-                    let point = 2 - (hits - player_par)
-                    if (point < 0) {
-                        point = 0
+                let score = {
+                    firstHalf: 0,
+                    secondHalf: 0,
+                    total: 0
+                }
+                Object.keys(points).forEach(key => {
+                    if (!points[key][player.name]) { return }
+                    let pts = points[key][player.name]
+                    score.total += pts
+                    if (key <= half) {
+                        score.firstHalf += pts
+                    } else {
+                        score.secondHalf += pts
                     }
-                    points[i][player.name] = point
                 })
+                total[player.name] = score
+            })
+            console.log(total)
+            this.sumPoints = total
+            this.calculateWinners()
+            return total
+        }
+    
+        calculateWinners() {
+            const res = this.sumPoints
+            this.winners = {
+                firstHalf: "",
+                secondHalf: "",
+                total: ""
             }
-            this.calculatedPoints = points
-            return points
+    
+            let firstSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].firstHalf - b[1].firstHalf: b[1].firstHalf - a[1].firstHalf)
+            let secondSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].secondHalf - b[1].secondHalf: b[1].secondHalf - a[1].secondHalf)
+            let totalSorted = [...Object.entries(res)].toSorted((a, b) => this.order=="asc" ? a[1].total - b[1].total: b[1].total - a[1].total)
+            let firstWin = firstSorted.filter(x => x[1].firstHalf == firstSorted[0][1].firstHalf).map(x => x[0])
+            let secondWin = secondSorted.filter(x => x[1].secondHalf == secondSorted[0][1].secondHalf).map(x => x[0])
+            let totalWin = totalSorted.filter(x => x[1].total == totalSorted[0][1].total).map(x => x[0])
+            if (firstSorted[0][1].firstHalf > 0) {
+                this.winners.firstHalf = firstWin.length == 1 ? firstWin[0] : firstWin
+            }
+            if (secondSorted[0][1].secondHalf > 0) {
+                this.winners.secondHalf = secondWin.length == 1 ? secondWin[0] : secondWin
+            }
+    
+            if (totalSorted[0][1].total > 0) {
+                this.winners.total = totalWin.length == 1 ? totalWin[0] : totalWin
+            }
+    
+            return this.winners
+        }
+    
+        getWinner() {
+            return Object.values(this.winners).join(" - ")
+        }
+    
+        generateScoreCard(dir="h") {
+            let tbl = super.generateScoreCard(dir)
+            if (!this.winners) {this.calculateScores()}
+            const w = this.winners
+            let resStr = `
+            <table class="scorecard">
+                <tr>
+                    <th>Del</th>
+                    <th>Vinnare</th>
+                </tr>
+                <tr>
+                    <td>Första halvan</td>
+                    <td>${Array.isArray(w.firstHalf) ? w.firstHalf.join(", "): w.firstHalf}</td>
+                </tr>
+                <tr>
+                    <td>Andra halvan</td>
+                    <td>${Array.isArray(w.secondHalf) ? w.secondHalf.join(", "): w.secondHalf}</td>
+                </tr>
+                <tr>
+                    <td>Totalt</td>
+                    <td>${Array.isArray(w.total) ? w.total.join(", ") : w.total}</td>
+                </tr>
+            </table>`
+            return tbl + resStr
         }
     },
     foursome: class Foursome extends GolfSome {
