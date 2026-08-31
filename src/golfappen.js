@@ -258,7 +258,7 @@ function reloadOverlayPos() {
     // console.log("resize")
     pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight),
     pos["partResCollapsed"] = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top'))
-    views["partRes"].style.top = pos["partResCollapsed"] + "px"
+    // views["partRes"].style.top = pos["partResCollapsed"] + "px"
 }
 
 const infoWindow = {
@@ -598,7 +598,7 @@ const gameObject = {
             content += this.generateRuleSwitch("part")
         }
         if (rules.hcpSwitch.includes(this.gameType)) {
-            console.log("incl")
+            // console.log("incl")
             content += `<label>Behåll original handicap<input type="checkbox" class="checkbox" id="hcpSwitch"${this.ruleset.keepHcp?' checked':''}></label>`
         }
         content += this.ruleset.generateScoreCard("v")
@@ -810,9 +810,10 @@ const gameObject = {
         // forms["keeper"].scrollTo(0, 0)
     },
     generateRuleSwitch(id="general") {
-        let content = '<div class="radio-group rule-switch">'
-        content += this.play.play_as.map(x=> `<label for="${id}-switch-${x}"><input type="radio" id="${id}-switch-${x}" name="${id}-ruleswitch" value="${x}"/>
-            ${gameObject.playTypes.find(p => p.id === x).name}</label>`).join("\n")
+        let content = '<div class="radio-group radio-outer-container rule-switch">'
+        content += this.play.play_as.map(x=> `<label class="radio-inner-container">
+            <input type="radio" id="${id}-switch-${x}" name="${id}-ruleswitch" value="${x}"/>
+            <span class="radio-button">${gameObject.playTypes.find(p => p.id === x).name}</span></label>`).join("\n")
         content += `</div>`
         return content
     }
@@ -2556,7 +2557,7 @@ const rules = {
             if (this.subtype && baseTypes[this.subtype]) {
                 this.order = baseTypes.getOrder(this.subtype)
                 const points = baseTypes[this.subtype](this)
-                console.log(this.subtype, points)
+                // console.log(this.subtype, points)
                 this.calculatedPoints = points
                 return points
             } else {
@@ -2565,7 +2566,7 @@ const rules = {
         }
     
         calculateScores() {
-            console.log("calcScores")
+            // console.log("calcScores")
             this.calculatePoints()
             let total = {}
             let half = Math.round(this.holes / 2)
@@ -2588,7 +2589,7 @@ const rules = {
                 })
                 total[player.name] = score
             })
-            console.log(total)
+            // console.log(total)
             this.sumPoints = total
             this.calculateWinners()
             return total
