@@ -1268,13 +1268,12 @@ fieldset {
 }
 
 .autocomplete-items {
-  position: absolute;
+  position: relative;
   border: 1px solid #d4d4d4;
   border-bottom: none;
   border-top: none;
   z-index: 1000;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
+  top: 0;
   left: 0;
   right: 0;
   overflow-y: auto;
@@ -1283,13 +1282,13 @@ fieldset {
   flex-direction: column;
 }
 
-@media all and (max-width: 600px) and (orientation: portrait) {
+/* @media all and (max-width: 600px) and (orientation: portrait) {
   .autocomplete-items {
     top: unset;
     bottom: 100%;
     flex-direction: column-reverse;
   }
-}
+} */
 
 
 .autocomplete-items div {

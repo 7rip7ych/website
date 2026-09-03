@@ -15,6 +15,7 @@ function autocomplete(inp, arr, callback=false) {
         a.setAttribute("class", "autocomplete-items")
         /*append the DIV element as a child of the autocomplete container:*/
         this.parentNode.appendChild(a)
+        // a.scrollIntoView()
         /*for each item in the array...*/
         for (i = 0; i < arr.length; i++) {
             /*check if the item starts with the same letters as the text field value:*/
@@ -43,6 +44,7 @@ function autocomplete(inp, arr, callback=false) {
                 a.appendChild(b)
             }
         }
+        // inp.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
     })
     /*execute a function presses a key on the keyboard:*/
     inp.addEventListener("keydown", function(e) {
