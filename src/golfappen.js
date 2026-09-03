@@ -134,7 +134,7 @@ const data = {
         return plays
     },
     loadGolfClubs: async function loadGolfClubs() {
-        const courses = await getFile("assets/golfbanor.json")
+        const courses = await getFile("assets/golfklubbar.json")
         // storage.setItem("courses", JSON.stringify(plays))
         return courses
     },
@@ -410,7 +410,7 @@ const gameObject = {
     },
     loadCourseData: async function() {
         this.clubData = await data.getClubData(this.club)
-        this.courseData = this.clubData.courseArray.find(x => x.name == this.course)
+        this.courseData = this.clubData.club.courses?.find(x => x.name == this.course) || this.clubData.courseArray?.find(x => x.name == this.course)
         // console.log(this.courseData)
     },
     openPlayerSetup: function(count) {

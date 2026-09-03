@@ -1,0 +1,1886 @@
+[
+  {
+    "id": "a6-golfklubb",
+    "name": "A6 Golfklubb"
+  },
+  {
+    "id": "agesta-golfklubb",
+    "name": "Ågesta Golfklubb"
+  },
+  {
+    "id": "akersberga-golfklubb",
+    "name": "Åkersberga Golfklubb"
+  },
+  {
+    "id": "albatross-golfklubb",
+    "name": "Albatross Golfklubb"
+  },
+  {
+    "id": "ale-golfklubb",
+    "name": "Ale Golfklubb"
+  },
+  {
+    "id": "arboga-golfklubb",
+    "name": "Arboga Golfklubb"
+  },
+  {
+    "id": "arlandastad-golfklubb",
+    "name": "Arlandastad Golfklubb"
+  },
+  {
+    "id": "arninge-golfklubb",
+    "name": "Arninge Golfklubb"
+  },
+  {
+    "id": "askersunds-golfklubb",
+    "name": "Askersunds Golfklubb"
+  },
+  {
+    "id": "asundsholms-golfklubb",
+    "name": "Åsundsholms Golfklubb"
+  },
+  {
+    "id": "avesta-golfklubb",
+    "name": "Avesta Golfklubb"
+  },
+  {
+    "id": "barseback-golf-resort",
+    "name": "Barsebäck Golf &amp; Resort"
+  },
+  {
+    "id": "bedinge-golfklubb",
+    "name": "Bedinge Golfklubb"
+  },
+  {
+    "id": "bjorkhagens-golfklubb",
+    "name": "Björkhagens Golfklubb"
+  },
+  {
+    "id": "bollnas-golfklubb",
+    "name": "Bollnäs Golfklubb"
+  },
+  {
+    "id": "boras-golfklubb",
+    "name": "Borås Golfklubb"
+  },
+  {
+    "id": "botkyrka-golfklubb",
+    "name": "Botkyrka Golfklubb"
+  },
+  {
+    "id": "bro-balsta-golfklubb",
+    "name": "Bro-Bålsta Golfklubb"
+  },
+  {
+    "id": "bro-hof-slott-golf-club",
+    "name": "Bro Hof Slott Golf Club"
+  },
+  {
+    "id": "burviks-golfklubb",
+    "name": "Burviks Golfklubb"
+  },
+  {
+    "id": "chalmers-golfklubb",
+    "name": "Chalmers Golfklubb"
+  },
+  {
+    "id": "dalsjo-golfklubb",
+    "name": "Dalsjö Golfklubb"
+  },
+  {
+    "id": "delsjo-golfklubb",
+    "name": "Delsjö Golfklubb"
+  },
+  {
+    "id": "djursholms-golfklubb",
+    "name": "Djursholms Golfklubb"
+  },
+  {
+    "id": "eda-golfklubb",
+    "name": "Eda Golfklubb"
+  },
+  {
+    "id": "edenhof-gk",
+    "name": "Edenhof GK"
+  },
+  {
+    "id": "ekerum-golfklubb",
+    "name": "Ekerum Golfklubb"
+  },
+  {
+    "id": "eksjo-golfklubb",
+    "name": "Eksjö Golfklubb"
+  },
+  {
+    "id": "enkopings-golfklubb",
+    "name": "Enköpings Golfklubb"
+  },
+  {
+    "id": "falsterbo-golfklubb",
+    "name": "Falsterbo Golfklubb"
+  },
+  {
+    "id": "falun-borlange-golfklubb",
+    "name": "Falun-Borlänge Golfklubb"
+  },
+  {
+    "id": "fjallbacka-golfklubb",
+    "name": "Fjällbacka Golfklubb"
+  },
+  {
+    "id": "flommens-golfklubb",
+    "name": "Flommens Golfklubb"
+  },
+  {
+    "id": "forsgardens-golfklubb",
+    "name": "Forsgårdens Golfklubb"
+  },
+  {
+    "id": "fors-golf",
+    "name": "Fors Golf"
+  },
+  {
+    "id": "forshaga-golfklubb",
+    "name": "Forshaga Golfklubb"
+  },
+  {
+    "id": "friiberghs-golfklubb",
+    "name": "Friiberghs Golfklubb"
+  },
+  {
+    "id": "frosaker-golf-country-club",
+    "name": "Frösåker Golf &amp; Country Club"
+  },
+  {
+    "id": "fullero-golfklubb",
+    "name": "Fullerö Golfklubb"
+  },
+  {
+    "id": "golfstar-golf-club",
+    "name": "GolfStar Golf Club"
+  },
+  {
+    "id": "golfuppsala",
+    "name": "GolfUppsala"
+  },
+  {
+    "id": "grappas-golfklubb",
+    "name": "Gräppås Golfklubb"
+  },
+  {
+    "id": "gronlund-golfklubb",
+    "name": "Grönlund Golfklubb"
+  },
+  {
+    "id": "hagby-golfklubb",
+    "name": "Hagby Golfklubb"
+  },
+  {
+    "id": "hagge-golfklubb",
+    "name": "Hagge Golfklubb"
+  },
+  {
+    "id": "halla-golfklubb",
+    "name": "Hälla Golfklubb"
+  },
+  {
+    "id": "halmstad-golfklubb",
+    "name": "Halmstad Golfklubb"
+  },
+  {
+    "id": "hasselby-golfklubb",
+    "name": "Hässelby Golfklubb"
+  },
+  {
+    "id": "hasslegardens-golfklubb",
+    "name": "Hässlegårdens Golfklubb"
+  },
+  {
+    "id": "haverdals-golfklubb",
+    "name": "Haverdals Golfklubb"
+  },
+  {
+    "id": "hinton-golf-club",
+    "name": "Hinton Golf Club"
+  },
+  {
+    "id": "holms-golfklubb",
+    "name": "Holms Golfklubb"
+  },
+  {
+    "id": "hudiksvalls-golfklubb",
+    "name": "Hudiksvalls Golfklubb"
+  },
+  {
+    "id": "huvudstadens-golfklubb",
+    "name": "Huvudstadens Golfklubb"
+  },
+  {
+    "id": "idrefjallens-golfklubb",
+    "name": "Idrefjällens Golfklubb"
+  },
+  {
+    "id": "igc-arlanda",
+    "name": "IGC Arlanda"
+  },
+  {
+    "id": "ingaro-golfklubb",
+    "name": "Ingarö Golfklubb"
+  },
+  {
+    "id": "jarfalla-golfklubb",
+    "name": "Järfälla Golfklubb"
+  },
+  {
+    "id": "jarlabanke-golfklubb",
+    "name": "Jarlabanke Golfklubb"
+  },
+  {
+    "id": "kallfors-golf",
+    "name": "Kallfors Golf"
+  },
+  {
+    "id": "karlskoga-golfklubb",
+    "name": "Karlskoga Golfklubb"
+  },
+  {
+    "id": "karsta-golfklubb",
+    "name": "Kårsta Golfklubb"
+  },
+  {
+    "id": "katrineholms-golfklubb",
+    "name": "Katrineholms Golfklubb"
+  },
+  {
+    "id": "klovsjo-vemdalens-golfklubb",
+    "name": "Klövsjö-Vemdalens Golfklubb"
+  },
+  {
+    "id": "koberg-golfklubb",
+    "name": "Koberg Golfklubb"
+  },
+  {
+    "id": "kristianstads-golfklubb",
+    "name": "Kristianstads Golfklubb "
+  },
+  {
+    "id": "kristinehamns-golfklubb",
+    "name": "Kristinehamns Golfklubb"
+  },
+  {
+    "id": "kungl-drottningholms-golfklubb",
+    "name": "Kungl. Drottningholms Golfklubb"
+  },
+  {
+    "id": "kungsbacka-golfklubb",
+    "name": "Kungsbacka Golfklubb"
+  },
+  {
+    "id": "lacko-golfklubb",
+    "name": "Läckö Golfklubb"
+  },
+  {
+    "id": "laholms-golfklubb",
+    "name": "Laholms Golfklubb"
+  },
+  {
+    "id": "lannalodge-golfresort",
+    "name": "Lannalodge Golfresort"
+  },
+  {
+    "id": "leksands-golfklubb",
+    "name": "Leksands Golfklubb"
+  },
+  {
+    "id": "linkopings-golfklubb",
+    "name": "Linköpings Golfklubb"
+  },
+  {
+    "id": "ljunghusens-golfklubb",
+    "name": "Ljunghusens Golfklubb"
+  },
+  {
+    "id": "lulea-golfklubb",
+    "name": "Luleå Golfklubb"
+  },
+  {
+    "id": "lundsbrunn-golfklubb",
+    "name": "Lundsbrunn Golfklubb"
+  },
+  {
+    "id": "lyckorna-golfklubb",
+    "name": "Lyckorna Golfklubb"
+  },
+  {
+    "id": "malmo-burlov-golfklubb",
+    "name": "Malmö Burlöv Golfklubb"
+  },
+  {
+    "id": "marks-golfklubb",
+    "name": "Marks Golfklubb"
+  },
+  {
+    "id": "mauritzbergs-slott-golf",
+    "name": "Mauritzbergs Slott &amp; Golf"
+  },
+  {
+    "id": "mjolby-golfklubb",
+    "name": "Mjölby Golfklubb"
+  },
+  {
+    "id": "molle-golfklubb",
+    "name": "Mölle Golfklubb"
+  },
+  {
+    "id": "nacka-golfklubb",
+    "name": "Nacka Golfklubb"
+  },
+  {
+    "id": "nassjo-golfklubb",
+    "name": "Nässjö Golfklubb"
+  },
+  {
+    "id": "naturligtvis-golf-country-club",
+    "name": "Naturligtvis Golf &amp; Country Club"
+  },
+  {
+    "id": "norrava-golfklubb",
+    "name": "Norråva Golfklubb"
+  },
+  {
+    "id": "norrby-golf",
+    "name": "Norrby Golf"
+  },
+  {
+    "id": "nykopings-golfklubb",
+    "name": "Nyköpings Golfklubb"
+  },
+  {
+    "id": "oijared-golfklubb",
+    "name": "Öijared Golfklubb"
+  },
+  {
+    "id": "ombergs-golf-resort",
+    "name": "Ombergs Golf Resort"
+  },
+  {
+    "id": "onsjo-golfklubb",
+    "name": "Onsjö Golfklubb"
+  },
+  {
+    "id": "orestads-golfklubb",
+    "name": "Örestads Golfklubb"
+  },
+  {
+    "id": "orust-golfklubb",
+    "name": "Orust Golfklubb"
+  },
+  {
+    "id": "osterakers-golfklubb",
+    "name": "Österåkers Golfklubb"
+  },
+  {
+    "id": "osterlens-golfklubb",
+    "name": "Österlens Golfklubb"
+  },
+  {
+    "id": "reftele-golfklubb",
+    "name": "Reftele Golfklubb"
+  },
+  {
+    "id": "ringenas-golfklubb",
+    "name": "Ringenäs Golfklubb"
+  },
+  {
+    "id": "romeleasens-golfklubb",
+    "name": "Romeleåsens Golfklubb"
+  },
+  {
+    "id": "roslagens-golfklubb-norrtalje",
+    "name": "Roslagens Golfklubb Norrtälje"
+  },
+  {
+    "id": "salenfjallens-golfklubb",
+    "name": "Sälenfjällens Golfklubb"
+  },
+  {
+    "id": "saltsjobadens-golfklubb",
+    "name": "Saltsjöbadens Golfklubb"
+  },
+  {
+    "id": "samuelsdals-golfklubb",
+    "name": "Samuelsdals Golfklubb"
+  },
+  {
+    "id": "sand-golf-club",
+    "name": "Sand Golf Club"
+  },
+  {
+    "id": "saters-golfklubb",
+    "name": "Säters Golfklubb"
+  },
+  {
+    "id": "saxa-golfklubb",
+    "name": "Saxå Golfklubb"
+  },
+  {
+    "id": "skafto-golfklubb",
+    "name": "Skaftö Golfklubb"
+  },
+  {
+    "id": "slite-golfklubb",
+    "name": "Slite Golfklubb"
+  },
+  {
+    "id": "soderasens-golfklubb",
+    "name": "Söderåsens Golfklubb"
+  },
+  {
+    "id": "solbacka-golfklubb",
+    "name": "Solbacka Golfklubb"
+  },
+  {
+    "id": "sollentuna-golfklubb",
+    "name": "Sollentuna Golfklubb"
+  },
+  {
+    "id": "solvesborgs-golfklubb",
+    "name": "Sölvesborgs Golfklubb"
+  },
+  {
+    "id": "sonnertorps-golfklubb",
+    "name": "Sönnertorps Golfklubb"
+  },
+  {
+    "id": "sparren-golfklubb",
+    "name": "Sparren Golfklubb"
+  },
+  {
+    "id": "stannum-golfklubb",
+    "name": "Stannum Golfklubb"
+  },
+  {
+    "id": "st-arild-golfklubb",
+    "name": "S:t Arild Golfklubb"
+  },
+  {
+    "id": "stenungsund-golfklubb",
+    "name": "Stenungsund Golfklubb"
+  },
+  {
+    "id": "storsjobygdens-golfklubb",
+    "name": "Storsjöbygdens Golfklubb"
+  },
+  {
+    "id": "strangnas-golfklubb",
+    "name": "Strängnäs Golfklubb"
+  },
+  {
+    "id": "sundsta-golf-norrtalje",
+    "name": "Sundsta Golf Norrtälje"
+  },
+  {
+    "id": "sunne-golfklubb",
+    "name": "Sunne Golfklubb"
+  },
+  {
+    "id": "tomelilla-golfklubb",
+    "name": "Tomelilla Golfklubb"
+  },
+  {
+    "id": "tonnersjo-golfklubb",
+    "name": "Tönnersjö Golfklubb"
+  },
+  {
+    "id": "torekovs-golfklubb",
+    "name": "Torekovs Golfklubb"
+  },
+  {
+    "id": "torreby-golfklubb",
+    "name": "Torreby Golfklubb"
+  },
+  {
+    "id": "torslanda-golfklubb",
+    "name": "Torslanda Golfklubb"
+  },
+  {
+    "id": "tranas-golfklubb",
+    "name": "Tranås Golfklubb"
+  },
+  {
+    "id": "trosa-golfklubb",
+    "name": "Trosa Golfklubb"
+  },
+  {
+    "id": "ullna-golf-country-club",
+    "name": "Ullna Golf &amp; Country Club"
+  },
+  {
+    "id": "ulricehamns-golfklubb",
+    "name": "Ulricehamns Golfklubb"
+  },
+  {
+    "id": "umea-norrmjole-golfklubb",
+    "name": "Umeå Norrmjöle Golfklubb"
+  },
+  {
+    "id": "vaddo-golfklubb-i-almsta",
+    "name": "Väddö Golfklubb i Älmsta"
+  },
+  {
+    "id": "vadstena-golfklubb",
+    "name": "Vadstena Golfklubb"
+  },
+  {
+    "id": "vallentuna-golfklubb",
+    "name": "Vallentuna Golfklubb"
+  },
+  {
+    "id": "vara-bjertorp-golfklubb",
+    "name": "Vara-Bjertorp Golfklubb"
+  },
+  {
+    "id": "varnamo-golfklubb",
+    "name": "Värnamo Golfklubb"
+  },
+  {
+    "id": "vasatorps-golfklubb",
+    "name": "Vasatorps Golfklubb"
+  },
+  {
+    "id": "vassunda-golfklubb",
+    "name": "Vassunda Golfklubb"
+  },
+  {
+    "id": "vidbynas-golf",
+    "name": "Vidbynäs Golf"
+  },
+  {
+    "id": "villa-baro-golf-atvidaberg",
+    "name": "Villa Baro Golf Åtvidaberg "
+  },
+  {
+    "id": "vinbergs-golfklubb",
+    "name": "Vinbergs Golfklubb"
+  },
+  {
+    "id": "vingakers-golfklubb",
+    "name": "Vingåkers Golfklubb"
+  },
+  {
+    "id": "visby-golfklubb",
+    "name": "Visby Golfklubb"
+  },
+  {
+    "id": "welcome-to-a-different-world",
+    "name": "Welcome to A Different World"
+  },
+  {
+    "id": "wermdo-golf-country-club",
+    "name": "Wermdö Golf &amp; Country Club"
+  },
+  {
+    "id": "wiredaholm-golf-konferens",
+    "name": "Wiredaholm Golf &amp; Konferens"
+  },
+  {
+    "id": "ystad-golfklubb",
+    "name": "Ystad Golfklubb"
+  },
+  {
+    "id": "alcanada",
+    "name": "Alcanada"
+  },
+  {
+    "id": "basozabal",
+    "name": "Basozabal"
+  },
+  {
+    "id": "centro-nacional",
+    "name": "Centro Nacional"
+  },
+  {
+    "id": "costa-adeje",
+    "name": "Costa Adeje"
+  },
+  {
+    "id": "estepona",
+    "name": "Estepona"
+  },
+  {
+    "id": "finca-cortesin",
+    "name": "Finca Cortesin"
+  },
+  {
+    "id": "golf-d-aro",
+    "name": "Golf d´Aro"
+  },
+  {
+    "id": "golf-torrequebrada",
+    "name": "Golf Torrequebrada"
+  },
+  {
+    "id": "las-brisas",
+    "name": "Las Brisas"
+  },
+  {
+    "id": "lauro-golf",
+    "name": "Lauro Golf"
+  },
+  {
+    "id": "la-zagaleta",
+    "name": "La Zagaleta"
+  },
+  {
+    "id": "llavaneras",
+    "name": "Llavaneras"
+  },
+  {
+    "id": "los-naranjos",
+    "name": "Los Naranjos"
+  },
+  {
+    "id": "real-guadalhorce-club-de-golf",
+    "name": "Real Guadalhorce Club de Golf"
+  },
+  {
+    "id": "santa-clara-golf-marbella",
+    "name": "Santa Clara Golf Marbella"
+  },
+  {
+    "id": "santana-golf",
+    "name": "Santana Golf"
+  },
+  {
+    "id": "valle-del-este",
+    "name": "Valle del Este"
+  },
+  {
+    "id": "aulanko-golf",
+    "name": "Aulanko Golf"
+  },
+  {
+    "id": "master-golf",
+    "name": "Master Golf"
+  },
+  {
+    "id": "benamor",
+    "name": "Benamor"
+  },
+  {
+    "id": "elverum-golfklubb",
+    "name": "Elverum Golfklubb"
+  },
+  {
+    "id": "abbekas-golfklubb",
+    "name": "Abbekås Golfklubb"
+  },
+  {
+    "id": "aik-golfklubb",
+    "name": "AIK Golfklubb"
+  },
+  {
+    "id": "alfta-edsbyns-golfklubb",
+    "name": "Alfta-Edsbyns Golfklubb"
+  },
+  {
+    "id": "alingsas-golfklubb",
+    "name": "Alingsås Golfklubb"
+  },
+  {
+    "id": "allerum-golf",
+    "name": "Allerum Golf"
+  },
+  {
+    "id": "allmag-golf-country-club",
+    "name": "Allmag Golf & Country Club"
+  },
+  {
+    "id": "alvesta-golfklubb",
+    "name": "Alvesta Golfklubb"
+  },
+  {
+    "id": "araslov-golf-resort",
+    "name": "Araslöv Golf & Resort"
+  },
+  {
+    "id": "arvidsjaurs-golfklubb",
+    "name": "Arvidsjaurs Golfklubb"
+  },
+  {
+    "id": "arvika-golfklubb",
+    "name": "Arvika Golfklubb"
+  },
+  {
+    "id": "backa-sateri-if",
+    "name": "Backa Säteri IF"
+  },
+  {
+    "id": "billeruds-golfklubb",
+    "name": "Billeruds Golfklubb"
+  },
+  {
+    "id": "billingens-golfklubb",
+    "name": "Billingens Golfklubb"
+  },
+  {
+    "id": "binga-golf",
+    "name": "Binga Golf"
+  },
+  {
+    "id": "bjurholms-golfklubb",
+    "name": "Bjurholms Golfklubb"
+  },
+  {
+    "id": "bjare-golfklubb",
+    "name": "Bjäre Golfklubb"
+  },
+  {
+    "id": "bjorkenas-golf",
+    "name": "Björkenäs Golf"
+  },
+  {
+    "id": "bjorklidens-golfklubb",
+    "name": "Björklidens Golfklubb"
+  },
+  {
+    "id": "bjornhults-golfklubb",
+    "name": "Björnhults Golfklubb"
+  },
+  {
+    "id": "blixtorps-golf",
+    "name": "Blixtorps Golf"
+  },
+  {
+    "id": "boa-golfklubb-olofstrom",
+    "name": "Boa Golfklubb Olofström"
+  },
+  {
+    "id": "bodens-golfklubb",
+    "name": "Bodens Golfklubb"
+  },
+  {
+    "id": "bokskogens-golfklubb",
+    "name": "Bokskogens Golfklubb"
+  },
+  {
+    "id": "bolidens-golfklubb",
+    "name": "Bolidens Golfklubb"
+  },
+  {
+    "id": "bosjokloster-golfklubb",
+    "name": "Bosjökloster Golfklubb"
+  },
+  {
+    "id": "brastad-golfklubb",
+    "name": "Brastad Golfklubb"
+  },
+  {
+    "id": "bredareds-golfklubb",
+    "name": "Bredareds Golfklubb"
+  },
+  {
+    "id": "brevikens-golfklubb",
+    "name": "Brevikens Golfklubb"
+  },
+  {
+    "id": "bro-hof-golf-forening",
+    "name": "Bro Hof Golf förening"
+  },
+  {
+    "id": "bryngfjordens-golfklubb",
+    "name": "Bryngfjordens Golfklubb"
+  },
+  {
+    "id": "bryttsatter-golfklubb",
+    "name": "Bryttsätter Golfklubb"
+  },
+  {
+    "id": "bravikens-golfklubb",
+    "name": "Bråvikens Golfklubb"
+  },
+  {
+    "id": "byxelkroks-golfklubb",
+    "name": "Byxelkroks Golfklubb"
+  },
+  {
+    "id": "bastad-golfklubb",
+    "name": "Båstad Golfklubb"
+  },
+  {
+    "id": "boda-sands-golfklubb",
+    "name": "Böda Sands Golfklubb"
+  },
+  {
+    "id": "carlskrona-golfklubb",
+    "name": "Carlskrona Golfklubb"
+  },
+  {
+    "id": "cloud-golf-club",
+    "name": "Cloud Golf Club"
+  },
+  {
+    "id": "crownwood-golf",
+    "name": "Crownwood Golf"
+  },
+  {
+    "id": "dagsholm-golfklubb",
+    "name": "Dagsholm Golfklubb"
+  },
+  {
+    "id": "danderyds-golfklubb",
+    "name": "Danderyds Golfklubb"
+  },
+  {
+    "id": "degeberga-widtskofle-golfklubb",
+    "name": "Degeberga-Widtsköfle Golfklubb"
+  },
+  {
+    "id": "degerfors-golf",
+    "name": "Degerfors Golf"
+  },
+  {
+    "id": "djurgardens-if-golfforening",
+    "name": "Djurgårdens IF Golfförening"
+  },
+  {
+    "id": "dynekilens-golfklubb",
+    "name": "Dynekilens Golfklubb"
+  },
+  {
+    "id": "ekarnas-golfklubb",
+    "name": "Ekarnas Golfklubb"
+  },
+  {
+    "id": "ekholmsnas-golf-lidingo",
+    "name": "Ekholmsnäs Golf Lidingö"
+  },
+  {
+    "id": "elisefarm-golf-club",
+    "name": "Elisefarm Golf Club"
+  },
+  {
+    "id": "emmaboda-golfklubb",
+    "name": "Emmaboda Golfklubb"
+  },
+  {
+    "id": "eskilstuna-golfklubb",
+    "name": "Eskilstuna Golfklubb"
+  },
+  {
+    "id": "eslovs-golfklubb",
+    "name": "Eslövs Golfklubb"
+  },
+  {
+    "id": "fagersta-golfklubb",
+    "name": "Fagersta Golfklubb"
+  },
+  {
+    "id": "falkenbergs-golfklubb",
+    "name": "Falkenbergs Golfklubb"
+  },
+  {
+    "id": "falkopings-golfklubb",
+    "name": "Falköpings Golfklubb"
+  },
+  {
+    "id": "finspangs-golfklubb",
+    "name": "Finspångs Golfklubb"
+  },
+  {
+    "id": "flemminge-golfklubb",
+    "name": "Flemminge Golfklubb"
+  },
+  {
+    "id": "flens-golfklubb",
+    "name": "Flens Golfklubb"
+  },
+  {
+    "id": "flygstadens-golfklubb",
+    "name": "Flygstadens Golfklubb"
+  },
+  {
+    "id": "fogdo-golfklubb",
+    "name": "Fogdö Golfklubb"
+  },
+  {
+    "id": "forsbacka-golfklubb",
+    "name": "Forsbacka Golfklubb"
+  },
+  {
+    "id": "funasfjallens-golfklubb",
+    "name": "Funäsfjällens Golfklubb"
+  },
+  {
+    "id": "furudals-bruks-golfklubb",
+    "name": "Furudals-Bruks Golfklubb"
+  },
+  {
+    "id": "fagelbro-golf-country-club",
+    "name": "Fågelbro Golf & Country Club"
+  },
+  {
+    "id": "gagnefs-golfklubb",
+    "name": "Gagnefs Golfklubb"
+  },
+  {
+    "id": "glasrikets-golfklubb-vaxjo",
+    "name": "Glasrikets Golfklubb Växjö"
+  },
+  {
+    "id": "golfuppsala-allmanna-idrottsklubb",
+    "name": "GolfUppsala Allmänna Idrottsklubb"
+  },
+  {
+    "id": "gotska-golfklubb",
+    "name": "Gotska Golfklubb"
+  },
+  {
+    "id": "granobygdens-golfklubb",
+    "name": "Granöbygdens Golfklubb"
+  },
+  {
+    "id": "grindslanten-golfklubb",
+    "name": "Grindslanten Golfklubb"
+  },
+  {
+    "id": "gripsholms-golfklubb",
+    "name": "Gripsholms Golfklubb"
+  },
+  {
+    "id": "granna-golfklubb",
+    "name": "Gränna Golfklubb"
+  },
+  {
+    "id": "gullbringa-golf-country-club",
+    "name": "Gullbringa Golf & Country Club"
+  },
+  {
+    "id": "gumbalde-resort",
+    "name": "Gumbalde Resort"
+  },
+  {
+    "id": "gunnarns-golfklubb",
+    "name": "Gunnarns Golfklubb"
+  },
+  {
+    "id": "gallivare-malmbergets-golfklubb",
+    "name": "Gällivare-Malmbergets Golfklubb"
+  },
+  {
+    "id": "gavle-golfklubb",
+    "name": "Gävle Golfklubb"
+  },
+  {
+    "id": "gotastroms-golfklubb",
+    "name": "Götaströms Golfklubb"
+  },
+  {
+    "id": "goteborgs-golf-klubb",
+    "name": "Göteborgs Golf Klubb"
+  },
+  {
+    "id": "hallstaviks-golfklubb",
+    "name": "Hallstaviks Golfklubb"
+  },
+  {
+    "id": "halmstad-golfarena",
+    "name": "Halmstad Golfarena"
+  },
+  {
+    "id": "hammarby-if-golfforening",
+    "name": "Hammarby IF Golfförening"
+  },
+  {
+    "id": "hammaro-golfklubb",
+    "name": "Hammarö Golfklubb"
+  },
+  {
+    "id": "haninge-golfklubb",
+    "name": "Haninge Golfklubb"
+  },
+  {
+    "id": "haningestrand-golfklubb",
+    "name": "HaningeStrand Golfklubb"
+  },
+  {
+    "id": "haparanda-golfklubb",
+    "name": "Haparanda Golfklubb"
+  },
+  {
+    "id": "happy-golfers",
+    "name": "Happy Golfers"
+  },
+  {
+    "id": "harabackens-golfklubb",
+    "name": "Harabäckens Golfklubb"
+  },
+  {
+    "id": "hasselabygdens-golfklubb",
+    "name": "Hasselabygdens Golfklubb"
+  },
+  {
+    "id": "hedemora-golfklubb",
+    "name": "Hedemora Golfklubb"
+  },
+  {
+    "id": "hede-vemdalens-golfklubb",
+    "name": "Hede-Vemdalens Golfklubb"
+  },
+  {
+    "id": "helsingborgs-golfklubb",
+    "name": "Helsingborgs Golfklubb"
+  },
+  {
+    "id": "herrljunga-golfklubb",
+    "name": "Herrljunga Golfklubb"
+  },
+  {
+    "id": "hg-golf-glumslov",
+    "name": "HG Golf Glumslöv"
+  },
+  {
+    "id": "hills-golf-sports-club",
+    "name": "Hills Golf & Sports Club"
+  },
+  {
+    "id": "hills-golfklubb",
+    "name": "Hills Golfklubb"
+  },
+  {
+    "id": "hofgards-golfklubb",
+    "name": "Hofgårds Golfklubb"
+  },
+  {
+    "id": "hofors-golfklubb",
+    "name": "Hofors Golfklubb"
+  },
+  {
+    "id": "holma-stangenas-golf",
+    "name": "Holma Stångenäs Golf"
+  },
+  {
+    "id": "hooks-golfklubb",
+    "name": "Hooks Golfklubb"
+  },
+  {
+    "id": "hulta-bollebygd-golfklubb",
+    "name": "Hulta-Bollebygd Golfklubb"
+  },
+  {
+    "id": "hussborg-golfklubb",
+    "name": "Hussborg Golfklubb"
+  },
+  {
+    "id": "harnosands-golfklubb",
+    "name": "Härnösands Golfklubb"
+  },
+  {
+    "id": "hoganas-golfklubb",
+    "name": "Höganäs Golfklubb"
+  },
+  {
+    "id": "hogbo-golfklubb",
+    "name": "Högbo Golfklubb"
+  },
+  {
+    "id": "hokensas-golfklubb",
+    "name": "Hökensås Golfklubb"
+  },
+  {
+    "id": "horlycke-golfklubb",
+    "name": "Hörlycke Golfklubb"
+  },
+  {
+    "id": "idrottshogskolans-golfklubb",
+    "name": "Idrottshögskolans Golfklubb"
+  },
+  {
+    "id": "ingelsta-golfklubb",
+    "name": "Ingelsta Golfklubb"
+  },
+  {
+    "id": "isaberg-golfklubb",
+    "name": "Isaberg Golfklubb"
+  },
+  {
+    "id": "johannesberg-golfklubb",
+    "name": "Johannesberg Golfklubb"
+  },
+  {
+    "id": "jarvsobadens-golfklubb",
+    "name": "Järvsöbadens Golfklubb"
+  },
+  {
+    "id": "jonkopings-golfklubb",
+    "name": "Jönköpings Golfklubb"
+  },
+  {
+    "id": "jonakers-golfklubb",
+    "name": "Jönåkers Golfklubb"
+  },
+  {
+    "id": "kalix-golfklubb",
+    "name": "Kalix Golfklubb"
+  },
+  {
+    "id": "kalmar-golfklubb",
+    "name": "Kalmar Golfklubb"
+  },
+  {
+    "id": "karlshamns-golfklubb",
+    "name": "Karlshamns Golfklubb"
+  },
+  {
+    "id": "karlstads-golfklubb",
+    "name": "Karlstads Golfklubb"
+  },
+  {
+    "id": "kiladalens-golfklubb",
+    "name": "Kiladalens Golfklubb"
+  },
+  {
+    "id": "kils-golfklubb",
+    "name": "Kils Golfklubb"
+  },
+  {
+    "id": "kinda-golfklubb",
+    "name": "Kinda Golfklubb"
+  },
+  {
+    "id": "kinds-golfklubb",
+    "name": "Kinds Golfklubb"
+  },
+  {
+    "id": "kiruna-golfklubb",
+    "name": "Kiruna Golfklubb"
+  },
+  {
+    "id": "klosterfjordens-golfklubb",
+    "name": "Klosterfjordens Golfklubb"
+  },
+  {
+    "id": "knistad-golf-country-club",
+    "name": "Knistad Golf & Country Club"
+  },
+  {
+    "id": "kumla-golfklubb",
+    "name": "Kumla Golfklubb"
+  },
+  {
+    "id": "kungalv-kode-golfklubb",
+    "name": "Kungälv-Kode Golfklubb"
+  },
+  {
+    "id": "kvicksund-golfklubb",
+    "name": "Kvicksund Golfklubb"
+  },
+  {
+    "id": "kavlinge-golfklubb",
+    "name": "Kävlinge Golfklubb"
+  },
+  {
+    "id": "kopings-golfklubb",
+    "name": "Köpings Golfklubb"
+  },
+  {
+    "id": "lagans-golfklubb",
+    "name": "Lagans Golfklubb"
+  },
+  {
+    "id": "landeryds-golfklubb",
+    "name": "Landeryds Golfklubb"
+  },
+  {
+    "id": "landskrona-golfklubb",
+    "name": "Landskrona Golfklubb"
+  },
+  {
+    "id": "lanna-golfklubb",
+    "name": "Lanna Golfklubb"
+  },
+  {
+    "id": "lerjedalens-golfklubb",
+    "name": "Lerjedalens Golfklubb"
+  },
+  {
+    "id": "lerakra-golfklubb",
+    "name": "Leråkra Golfklubb"
+  },
+  {
+    "id": "lidingo-golfklubb",
+    "name": "Lidingö Golfklubb"
+  },
+  {
+    "id": "lidkopings-golfklubb",
+    "name": "Lidköpings Golfklubb"
+  },
+  {
+    "id": "lindesbergs-golfklubb",
+    "name": "Lindesbergs Golfklubb"
+  },
+  {
+    "id": "linksgolf-oland-i-gronhogen",
+    "name": "LinksGolf Öland i Grönhögen"
+  },
+  {
+    "id": "ljugarns-golfklubb",
+    "name": "Ljugarns Golfklubb"
+  },
+  {
+    "id": "ljungbyheds-golfklubb",
+    "name": "Ljungbyheds Golfklubb"
+  },
+  {
+    "id": "ljusdals-golfklubb",
+    "name": "Ljusdals Golfklubb"
+  },
+  {
+    "id": "ljustero-golfklubb",
+    "name": "Ljusterö Golfklubb"
+  },
+  {
+    "id": "loftahammars-golfklubb",
+    "name": "Loftahammars Golfklubb"
+  },
+  {
+    "id": "lunds-akademiska-golfklubb",
+    "name": "Lunds Akademiska Golfklubb"
+  },
+  {
+    "id": "lundsbergs-golfklubb",
+    "name": "Lundsbergs Golfklubb"
+  },
+  {
+    "id": "lycke-golf-country-club-marstrand",
+    "name": "Lycke Golf & Country Club Marstrand"
+  },
+  {
+    "id": "lycksele-golfklubb",
+    "name": "Lycksele Golfklubb"
+  },
+  {
+    "id": "lydinge-golfklubb",
+    "name": "Lydinge Golfklubb"
+  },
+  {
+    "id": "lysegardens-golfklubb",
+    "name": "Lysegårdens Golfklubb"
+  },
+  {
+    "id": "lysingsbadets-golfklubb",
+    "name": "Lysingsbadets Golfklubb"
+  },
+  {
+    "id": "lokeberg-golfklubb",
+    "name": "Lökeberg Golfklubb"
+  },
+  {
+    "id": "mackmyra-golf",
+    "name": "Mackmyra Golf"
+  },
+  {
+    "id": "malungs-golfklubb",
+    "name": "Malungs Golfklubb"
+  },
+  {
+    "id": "mariestads-golfklubb",
+    "name": "Mariestads Golfklubb"
+  },
+  {
+    "id": "melleruds-golfklubb",
+    "name": "Melleruds Golfklubb"
+  },
+  {
+    "id": "mjolkerods-golfklubb",
+    "name": "Mjölkeröds Golfklubb"
+  },
+  {
+    "id": "mora-golfklubb",
+    "name": "Mora Golfklubb"
+  },
+  {
+    "id": "motala-golfklubb",
+    "name": "Motala Golfklubb"
+  },
+  {
+    "id": "myra-golfklubb",
+    "name": "Myra Golfklubb"
+  },
+  {
+    "id": "malarbadens-golfklubb",
+    "name": "Mälarbadens Golfklubb"
+  },
+  {
+    "id": "malaro-golfklubb-skytteholm",
+    "name": "Mälarö Golfklubb Skytteholm"
+  },
+  {
+    "id": "molndals-golfklubb",
+    "name": "Mölndals Golfklubb"
+  },
+  {
+    "id": "monsteras-golfklubb",
+    "name": "Mönsterås Golfklubb"
+  },
+  {
+    "id": "more-golfklubb",
+    "name": "Möre Golfklubb"
+  },
+  {
+    "id": "nicklastorp-golfklubb",
+    "name": "Nicklastorp Golfklubb"
+  },
+  {
+    "id": "nora-golfklubb",
+    "name": "Nora Golfklubb"
+  },
+  {
+    "id": "norderons-golfklubb/njord",
+    "name": "Norderöns Golfklubb/Njord"
+  },
+  {
+    "id": "norra-backa-golf-fjallbacka",
+    "name": "Norra Backa Golf Fjällbacka"
+  },
+  {
+    "id": "norrfallsvikens-golfklubb",
+    "name": "Norrfällsvikens Golfklubb"
+  },
+  {
+    "id": "norrkoping-soderkoping-golfklubb",
+    "name": "Norrköping Söderköping Golfklubb"
+  },
+  {
+    "id": "norsjo-golfklubb",
+    "name": "Norsjö Golfklubb"
+  },
+  {
+    "id": "nya-ullared-fladje-golfklubb",
+    "name": "Nya Ullared Flädje Golfklubb"
+  },
+  {
+    "id": "nybro-golfklubb",
+    "name": "Nybro Golfklubb"
+  },
+  {
+    "id": "nynashamns-golfklubb",
+    "name": "Nynäshamns Golfklubb"
+  },
+  {
+    "id": "nar-golfklubb",
+    "name": "När Golfklubb"
+  },
+  {
+    "id": "olandsbygdens-golfklubb",
+    "name": "Olandsbygdens Golfklubb"
+  },
+  {
+    "id": "orresta-golfklubb",
+    "name": "Orresta Golfklubb"
+  },
+  {
+    "id": "oskarshamns-golfklubb",
+    "name": "Oskarshamns Golfklubb"
+  },
+  {
+    "id": "oxie-golfklubb",
+    "name": "Oxie Golfklubb"
+  },
+  {
+    "id": "partille-golfklubb",
+    "name": "Partille Golfklubb"
+  },
+  {
+    "id": "perstorps-golfklubb",
+    "name": "Perstorps Golfklubb"
+  },
+  {
+    "id": "pitea-golfklubb",
+    "name": "Piteå Golfklubb"
+  },
+  {
+    "id": "porjus-golfklubb",
+    "name": "Porjus Golfklubb"
+  },
+  {
+    "id": "ramkvilla-golfklubb",
+    "name": "Ramkvilla Golfklubb"
+  },
+  {
+    "id": "ribbingsfors-golf-kultur",
+    "name": "Ribbingsfors Golf & Kultur"
+  },
+  {
+    "id": "robertsfors-golfklubb",
+    "name": "Robertsfors Golfklubb"
+  },
+  {
+    "id": "ronneby-golfklubb",
+    "name": "Ronneby Golfklubb"
+  },
+  {
+    "id": "rossons-golfklubb",
+    "name": "Rossöns Golfklubb"
+  },
+  {
+    "id": "rya-golfklubb",
+    "name": "Rya Golfklubb"
+  },
+  {
+    "id": "rydo-golfklubb",
+    "name": "Rydö Golfklubb"
+  },
+  {
+    "id": "ryfors-golfklubb",
+    "name": "Ryfors Golfklubb"
+  },
+  {
+    "id": "rattviks-golfklubb",
+    "name": "Rättviks Golfklubb"
+  },
+  {
+    "id": "s:t-ibbs-golfklubb",
+    "name": "S:t Ibbs Golfklubb"
+  },
+  {
+    "id": "saik-golfklubb",
+    "name": "SAIK Golfklubb"
+  },
+  {
+    "id": "sala-golfklubb",
+    "name": "Sala Golfklubb"
+  },
+  {
+    "id": "salems-golfklubb",
+    "name": "Salems Golfklubb"
+  },
+  {
+    "id": "sandnaset-golf",
+    "name": "Sandnäset Golf"
+  },
+  {
+    "id": "sankt-jorgen-park-golf",
+    "name": "Sankt Jörgen Park Golf"
+  },
+  {
+    "id": "saxnas-golfklubb",
+    "name": "Saxnäs Golfklubb"
+  },
+  {
+    "id": "sigtuna-golfklubb",
+    "name": "Sigtuna Golfklubb"
+  },
+  {
+    "id": "sisjo-golfklubb",
+    "name": "Sisjö Golfklubb"
+  },
+  {
+    "id": "sjobo-golfklubb",
+    "name": "Sjöbo Golfklubb"
+  },
+  {
+    "id": "sjogarde-golfklubb",
+    "name": "Sjögärde Golfklubb"
+  },
+  {
+    "id": "skelleftea-golfklubb",
+    "name": "Skellefteå Golfklubb"
+  },
+  {
+    "id": "skepparslovs-golfklubb",
+    "name": "Skepparslövs Golfklubb"
+  },
+  {
+    "id": "skepptuna-golfklubb-valla",
+    "name": "Skepptuna Golfklubb Valla"
+  },
+  {
+    "id": "skerike-golfklubb",
+    "name": "Skerike Golfklubb"
+  },
+  {
+    "id": "skinnarebo-golf-country-club",
+    "name": "Skinnarebo Golf & Country Club"
+  },
+  {
+    "id": "skogaby-golfklubb",
+    "name": "Skogaby Golfklubb"
+  },
+  {
+    "id": "skyrups-golfklubb",
+    "name": "Skyrups Golfklubb"
+  },
+  {
+    "id": "skovde-golfklubb",
+    "name": "Skövde Golfklubb"
+  },
+  {
+    "id": "smadalaro-golf",
+    "name": "Smådalarö Golf"
+  },
+  {
+    "id": "snoa-golfklubb",
+    "name": "Snöå Golfklubb"
+  },
+  {
+    "id": "solleftea-golfklubb",
+    "name": "Sollefteå Golfklubb"
+  },
+  {
+    "id": "sommarro-golf",
+    "name": "Sommarro Golf"
+  },
+  {
+    "id": "sotenas-golfklubb",
+    "name": "Sotenäs Golfklubb"
+  },
+  {
+    "id": "stjernfors-golfklubb",
+    "name": "Stjernfors Golfklubb"
+  },
+  {
+    "id": "stockholms-golfklubb",
+    "name": "Stockholms Golfklubb"
+  },
+  {
+    "id": "strand-golf",
+    "name": "Strand Golf"
+  },
+  {
+    "id": "strands-golfklubb",
+    "name": "Strands Golfklubb"
+  },
+  {
+    "id": "strandtorps-golfklubb",
+    "name": "Strandtorps Golfklubb"
+  },
+  {
+    "id": "stromsholms-golfklubb",
+    "name": "Strömsholms Golfklubb"
+  },
+  {
+    "id": "stromstad-golfklubb",
+    "name": "Strömstad Golfklubb"
+  },
+  {
+    "id": "stromsunds-golfklubb",
+    "name": "Strömsunds Golfklubb"
+  },
+  {
+    "id": "sundsvalls-golfklubb",
+    "name": "Sundsvalls Golfklubb"
+  },
+  {
+    "id": "surahammars-golfklubb",
+    "name": "Surahammars Golfklubb"
+  },
+  {
+    "id": "svegs-golfklubb",
+    "name": "Svegs Golfklubb"
+  },
+  {
+    "id": "saro-golf-club",
+    "name": "Särö Golf Club"
+  },
+  {
+    "id": "soderhamns-golfklubb",
+    "name": "Söderhamns Golfklubb"
+  },
+  {
+    "id": "soderslatts-golfklubb",
+    "name": "Söderslätts Golfklubb"
+  },
+  {
+    "id": "sorfjardens-golfklubb",
+    "name": "Sörfjärdens Golfklubb"
+  },
+  {
+    "id": "tegelberga-golfklubb",
+    "name": "Tegelberga Golfklubb"
+  },
+  {
+    "id": "the-national-golfresort",
+    "name": "The National Golfresort"
+  },
+  {
+    "id": "timra-golfklubb",
+    "name": "Timrå Golfklubb"
+  },
+  {
+    "id": "tjusta-golf",
+    "name": "Tjusta Golf"
+  },
+  {
+    "id": "tjorns-golfklubb",
+    "name": "Tjörns Golfklubb"
+  },
+  {
+    "id": "tobo-golfklubb",
+    "name": "Tobo Golfklubb"
+  },
+  {
+    "id": "torsby-golfklubb",
+    "name": "Torsby Golfklubb"
+  },
+  {
+    "id": "torshalla-golfklubb",
+    "name": "Torshälla Golfklubb"
+  },
+  {
+    "id": "tortuna-golfklubb",
+    "name": "Tortuna Golfklubb"
+  },
+  {
+    "id": "trelleborgs-golfklubb",
+    "name": "Trelleborgs Golfklubb"
+  },
+  {
+    "id": "troxhammar-golfklubb",
+    "name": "Troxhammar Golfklubb"
+  },
+  {
+    "id": "trummenas-golfklubb",
+    "name": "Trummenäs Golfklubb"
+  },
+  {
+    "id": "tureholms-nya-golfklubb",
+    "name": "Tureholms Nya Golfklubb"
+  },
+  {
+    "id": "tyreso-golf",
+    "name": "Tyresö Golf"
+  },
+  {
+    "id": "taby-golfklubb",
+    "name": "Täby Golfklubb"
+  },
+  {
+    "id": "tallbergsbyarnas-golfklubb",
+    "name": "Tällbergsbyarnas Golfklubb"
+  },
+  {
+    "id": "toreboda-golfklubb",
+    "name": "Töreboda Golfklubb"
+  },
+  {
+    "id": "uddeholms-golfklubb",
+    "name": "Uddeholms Golfklubb"
+  },
+  {
+    "id": "uddevalla-golfklubb",
+    "name": "Uddevalla Golfklubb"
+  },
+  {
+    "id": "ulriksdals-golfklubb",
+    "name": "Ulriksdals Golfklubb"
+  },
+  {
+    "id": "umea-golfklubb",
+    "name": "Umeå Golfklubb"
+  },
+  {
+    "id": "umea-sorfors-golfklubb",
+    "name": "Umeå Sörfors Golfklubb"
+  },
+  {
+    "id": "uppvidinge-golfklubb",
+    "name": "Uppvidinge Golfklubb"
+  },
+  {
+    "id": "upsala-golfklubb",
+    "name": "Upsala Golfklubb"
+  },
+  {
+    "id": "vallda-golf-country-club",
+    "name": "Vallda Golf & Country Club"
+  },
+  {
+    "id": "valley-golfklubb",
+    "name": "Valley Golfklubb"
+  },
+  {
+    "id": "vallgardens-golfklubb-akarp",
+    "name": "Vallgårdens Golfklubb Åkarp"
+  },
+  {
+    "id": "varbergs-golfklubb",
+    "name": "Varbergs Golfklubb"
+  },
+  {
+    "id": "veckefjardens-golf-club",
+    "name": "Veckefjärdens Golf Club"
+  },
+  {
+    "id": "vellinge-golfklubb",
+    "name": "Vellinge Golfklubb"
+  },
+  {
+    "id": "vetlanda-golfklubb",
+    "name": "Vetlanda Golfklubb"
+  },
+  {
+    "id": "viksbergs-golfklubb",
+    "name": "Viksbergs Golfklubb"
+  },
+  {
+    "id": "viksjo-golfklubb",
+    "name": "Viksjö Golfklubb"
+  },
+  {
+    "id": "vimmerby-golfklubb",
+    "name": "Vimmerby Golfklubb"
+  },
+  {
+    "id": "vippy-junior-golfklubb",
+    "name": "Vippy Junior Golfklubb"
+  },
+  {
+    "id": "visingso-links-golfklubb",
+    "name": "Visingsö Links Golfklubb"
+  },
+  {
+    "id": "vreta-kloster-golfklubb",
+    "name": "Vreta Kloster Golfklubb"
+  },
+  {
+    "id": "vardsbergs-golfklubb",
+    "name": "Vårdsbergs Golfklubb"
+  },
+  {
+    "id": "vargarda-golfklubb",
+    "name": "Vårgårda Golfklubb"
+  },
+  {
+    "id": "vaddo-golfklubb",
+    "name": "Väddö Golfklubb"
+  },
+  {
+    "id": "varpinge-golfklubb",
+    "name": "Värpinge Golfklubb"
+  },
+  {
+    "id": "vasterviks-golf",
+    "name": "Västerviks Golf"
+  },
+  {
+    "id": "vasteras-golfklubb",
+    "name": "Västerås Golfklubb"
+  },
+  {
+    "id": "vaxjo-golfklubb",
+    "name": "Växjö Golfklubb"
+  },
+  {
+    "id": "waldemarsviks-golfbana",
+    "name": "Waldemarsviks Golfbana"
+  },
+  {
+    "id": "wasa-golfklubb",
+    "name": "Wasa Golfklubb"
+  },
+  {
+    "id": "wattholma-golfklubb",
+    "name": "Wattholma Golfklubb"
+  },
+  {
+    "id": "waxholms-golfklubb",
+    "name": "Waxholms Golfklubb"
+  },
+  {
+    "id": "wittsjo-golfklubb",
+    "name": "Wittsjö Golfklubb"
+  },
+  {
+    "id": "woodlands-golf-country-club",
+    "name": "Woodlands Golf & Country Club"
+  },
+  {
+    "id": "world-of-golf-city-club",
+    "name": "World of Golf City Club"
+  },
+  {
+    "id": "wasby-golfklubb",
+    "name": "Wäsby Golfklubb"
+  },
+  {
+    "id": "ada-golf-country-club",
+    "name": "Åda Golf & Country Club"
+  },
+  {
+    "id": "akagardens-golfklubb",
+    "name": "Åkagårdens Golfklubb"
+  },
+  {
+    "id": "are-golfklubb",
+    "name": "Åre Golfklubb"
+  },
+  {
+    "id": "arjangs-golfklubb",
+    "name": "Årjängs Golfklubb"
+  },
+  {
+    "id": "asele-nya-golfklubb",
+    "name": "Åsele Nya Golfklubb"
+  },
+  {
+    "id": "almhults-golfklubb",
+    "name": "Älmhults Golfklubb"
+  },
+  {
+    "id": "alvdalens-golfklubb",
+    "name": "Älvdalens Golfklubb"
+  },
+  {
+    "id": "alvkarleby-golfklubb",
+    "name": "Älvkarleby Golfklubb"
+  },
+  {
+    "id": "angelholms-golfklubb",
+    "name": "Ängelholms Golfklubb"
+  },
+  {
+    "id": "angso-golfklubb",
+    "name": "Ängsö Golfklubb"
+  },
+  {
+    "id": "ojestrand-golf-club",
+    "name": "Öjestrand Golf Club"
+  },
+  {
+    "id": "olands-golfklubb",
+    "name": "Ölands Golfklubb"
+  },
+  {
+    "id": "orbyhus-golfklubb",
+    "name": "Örbyhus Golfklubb"
+  },
+  {
+    "id": "orebro-city-golf-country-club",
+    "name": "Örebro City Golf & Country Club"
+  },
+  {
+    "id": "oregrunds-golfklubb",
+    "name": "Öregrunds Golfklubb"
+  },
+  {
+    "id": "oresunds-golf",
+    "name": "Öresunds Golf"
+  },
+  {
+    "id": "ornskoldsviks-golfklubb-puttom",
+    "name": "Örnsköldsviks Golfklubb Puttom"
+  },
+  {
+    "id": "ostad-golf-vaderstad",
+    "name": "Östad Golf Väderstad"
+  },
+  {
+    "id": "ostersund-froso-golfklubb",
+    "name": "Östersund-Frösö Golfklubb"
+  },
+  {
+    "id": "ostra-goinge-golfklubb",
+    "name": "Östra Göinge Golfklubb"
+  }
+]
