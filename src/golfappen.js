@@ -254,11 +254,14 @@ async function populateNewGameForm(playTypes, golfClubs) {
     })
 }
 
-function reloadOverlayPos() {
+function reloadOverlayPos(collapse=false) {
     // console.log("resize")
     pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight),
     pos["partResCollapsed"] = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top'))
-    // views["partRes"].style.top = pos["partResCollapsed"] + "px"
+    if (collapse) {
+        views["partRes"].style.top = pos["partResCollapsed"] + "px"
+        views["partRes"].classList.add("collapsed")
+    }
 }
 
 const infoWindow = {
@@ -361,7 +364,7 @@ function switchView(newView) {
 
     if (newView == "play") {
         gameInfoWindow.createListeners()
-        reloadOverlayPos()
+        reloadOverlayPos(true)
         // gameObject.cacheGame()
     } else if (newView == "history") {
         historyManager.populateHistory()
