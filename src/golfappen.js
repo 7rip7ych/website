@@ -4,6 +4,7 @@
 
 import { getFile } from "./modules/files.js"
 import { elements } from "./modules/elements.js"
+import { autocomplete } from "./modules/customInputs.js"
 
 // declare variables
 const main = document.querySelector(".wrapper")
@@ -158,7 +159,8 @@ const data = {
 async function populateNewGameForm(playTypes, golfClubs) {
     // console.log(playTypes)
     const gameSelect = document.getElementById("gameType")
-    const clubSelect = document.getElementById("golfClub")
+    // const clubSelect = document.getElementById("golfClub")
+    const clubInput = document.getElementById("golfClub")
     const courseSelect = document.getElementById("golfCourse")
     const playerCount = document.getElementById("playerCount")
     const teamSize = document.getElementById("teamSize")
@@ -229,11 +231,10 @@ async function populateNewGameForm(playTypes, golfClubs) {
         }
     }
 
-    for (const course in golfClubs) {
-        clubSelect.add(new Option(golfClubs[course]["name"], golfClubs[course]["id"]))
-    }
-    clubSelect.addEventListener("change", async(e) => {
-        const clubData = await data.getClubData(e.target.value)
+    // for (const club in golfClubs) {
+    //     clubSelect.add(new Option(golfClubs[club]["name"], golfClubs[club]["id"]))
+    // }
+    const fillCourses = (clubData) => {
         courseSelect.innerHTML = `<option selected disabled>Välj golfbana</option>`
         if (!clubData || !clubData?.club?.courses) {
             courseSelect.disabled = true
@@ -251,7 +252,17 @@ async function populateNewGameForm(playTypes, golfClubs) {
         }
 
         courseSelect.disabled = false
-    })
+    }
+    // clubSelect.addEventListener("change", async(e) => {
+    //     const clubData = await data.getClubData(e.target.value)
+    //     fillCourses(clubData)
+    // })
+    const clubSelectedCallback = async() => {
+        const club = golfClubs.find(x => x.name == clubInput.value)
+        const clubData = await data.getClubData(club?.id)
+        fillCourses(clubData)
+    }
+    autocomplete(clubInput, golfClubs.map(x => x.name), clubSelectedCallback)
 }
 
 function reloadOverlayPos(collapse=false) {
@@ -330,9 +341,10 @@ async function setup() {
     createListeners()
     const plays =  await data.loadPlayTypes()
     gameObject.playTypes = plays
-    const courses = await data.loadGolfClubs()
+    const clubs = await data.loadGolfClubs()
+    gameObject.golfClubs = clubs
     await data.loadClubData()
-    populateNewGameForm(plays, courses)
+    populateNewGameForm(plays, clubs)
     infoWindow.init(plays)
     gameInfoWindow.init(plays)
 }
@@ -383,6 +395,7 @@ const gameObject = {
     holes: 18,
     gameType: null, // type name
     club: null, // club name
+    golfClubs: [], // all clubs
     course: null, // course name
     players: [],
     playTypes: [], // all playforms
@@ -398,7 +411,8 @@ const gameObject = {
         this.playerCount = parseInt(data.get("players"))
         this.holes = parseInt(data.get("holes"))
         this.gameType = data.get("type")
-        this.club = data.get("club")
+        let clubname = data.get("club")
+        this.club = this.golfClubs.find(x => x.name == clubname)?.id
         this.course = data.get("course")
         if (this.course) {
             this.loadCourseData()

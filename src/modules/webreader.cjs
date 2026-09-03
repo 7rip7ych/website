@@ -60,6 +60,19 @@ const clubs = {
         console.log(clublist.length)
         return clublist.length
     },
+    sort: async function() {
+        let clublist = await clubs.getClubList()
+        await clublist.sort((a, b) => {
+            if (a.name < b.name) {
+                return -1
+            }
+            if (a.name > b.name) {
+                return 1
+            }
+            return 0
+        })
+        await fs.writeFile('../../assets/golfklubbar.json', JSON.stringify(clublist, null, 2))
+    },
     getClubs: async function() {
         const page = await webReader.fetchAsText(this.cluburl)
         const re = new RegExp(String.raw`<a [^>]*class="ClubItem__GoToLink-sc-655ca86b-6 dnaAPa"[^>]*href="\/klubb\/(?<id>[^"]*)"[^>]*>(?<name>[^<]*)<\/a>`, 'gm')
@@ -207,7 +220,7 @@ async function second() {
 }
 
 async function golfstarComplement() {
-    const url = "https://www.caddee.se/klubb/golfstar-golf-club"
+    // const url = "https://www.caddee.se/klubb/golfstar-golf-club"
     let clublist = await clubs.getClubList()
     let courses = await clublist.map(x => x.id)
     let data = await clubs.getExistingData()
@@ -248,6 +261,9 @@ async function golfstarComplement() {
     let data
     let res
     switch(process.argv[2]) {
+        case "sort":
+            clubs.sort()
+            break
         case "count":
             clubs.count()
             break

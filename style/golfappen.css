@@ -1258,6 +1258,54 @@ fieldset {
   padding: 0;
 } */
 
+.autocomplete {
+  position: relative;
+  display: block;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 1000;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media all and (max-width: 600px) and (orientation: portrait) {
+  .autocomplete-items {
+    top: unset;
+    bottom: 100%;
+    flex-direction: column-reverse;
+  }
+}
+
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  color: var(--text-color-dark);
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete .autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: #9cdda1;
+  /* color: #ffffff; */
+}
+
+
 .space-saver {
   position: relative;
   max-height: -webkit-fill-available;
