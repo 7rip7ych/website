@@ -263,12 +263,12 @@ async function populateNewGameForm(playTypes, golfClubs) {
         fillCourses(clubData)
     }
     clubInput.onfocus = () => {
-        views["new"].style.paddingBottom = "60vh"
+        // views["new"].style.paddingBottom = "60vh"
         document.querySelector(".autocomplete").scrollIntoView(true)
     }
-    clubInput.onblur = () => {
-        views["new"].style.paddingBottom = "unset"
-    }
+    // clubInput.onblur = () => {
+    //     views["new"].style.paddingBottom = "unset"
+    // }
     autocomplete(clubInput, golfClubs.map(x => x.name), clubSelectedCallback)
 }
 
