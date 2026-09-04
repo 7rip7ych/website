@@ -1426,7 +1426,8 @@ class GameRules {
                 `).join("\n")
 
         } else {
-            tbl += `<table class="scorecard vertical">
+            const scratch = !this.players.map(x=>x.handicap).find(x=>x !== 0)
+            tbl += `<table class="scorecard vertical${scratch?" hide-notes":""}">
             <tr>
                 <th rowspan="2">Hole</th>
                 <th rowspan="2">Par</th>
@@ -2197,11 +2198,11 @@ const rules = {
     forms: [],
     implemented: ["shotcomp","pointbogey","matchgame", "shotgolf", 
         "copenhagener", "nassau", "foursome", "greensome", "irishgreen", "scramble", 
-        "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto", "tryall"],
+        "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto", "tryall", "hallington"],
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
     usingTopBanner: ["matchgame"],
     hcpSwitch: ["fourball", "fourballbewo", "fourballbeto"],
-    pointGames: ["matchgame", "pointbogey", "copenhagener", "fourballbewo", "fourballbeto"],
+    pointGames: ["matchgame", "pointbogey", "copenhagener", "fourballbewo", "fourballbeto", "hallington"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes, "matchgame")
@@ -2675,6 +2676,136 @@ const rules = {
                 </tr>
             </table>`
             return tbl + resStr
+        }
+    },
+    hallington: class Hallington extends GameRules {
+        constructor(players, holes) {
+            super(players, holes, "hallington")
+            this.order = "desc"
+        }
+
+        calculatePoints() {
+            let points = {}
+            for (let i=1; i<=this.holes; i++) {
+                points[i] = {}
+                this.players.forEach(player => {
+                    points[i][player.name] = 0
+                    let hits = this._points[i][player.name]
+                    if (!this._points[i][player.name]) { return }
+                    let par = this._points[i]["par"]
+                    let point = par * 2 - hits
+                    points[i][player.name] += point > 0 ? point : 0
+                })
+            }
+            this.calculatedPoints = points
+            return points
+        }
+
+        generateScoreCard(dir="v", match=false) {
+            const pointgame = rules.pointGames.includes(this.name) || rules.pointGames.includes(this.subtype)
+            let tbl = `<div class="horizontal-scroll">`
+            if (dir == "h" || dir.includes("h")) {
+                tbl += `<table class="scorecard horizontal">
+                <tr>
+                    <th colspan="2">Hole</th>`
+                for (let i=1; i<=this.holes; i++) {
+                    tbl += `<td>${i}</td>`
+                }
+                tbl += `</tr>
+                <tr>
+                    <th colspan="2">Par</th>
+                    ${Object.values(this._points).map(hole => `<td>${hole.par}</td>`).join("\n")}
+                </tr>
+                <tr>
+                    <th colspan="2">Index</th>
+                    ${Object.values(this._points).map(hole => `<td>${hole.index}</td>`).join("\n")}
+                </tr>`
+                tbl += this.playernames.map(player => `<tr>
+                    <th colspan="2">${player}</th>
+                    ${Object.values(this._points).map(hole => `<td>${hole[player]}</td>`).join("\n")}
+                    </tr>
+                    <tr><th>Slag</th><th>Netto</th>
+                    ${Object.values(this.calculatedPoints).map(hole => `<td>${hole[player]}</td>`).join("\n")}
+                    </tr>
+                    `).join("\n")
+    
+            } else {
+                tbl += `<table class="scorecard vertical">
+                <tr>
+                    <th rowspan="2">Hole</th>
+                    <th rowspan="2">Par</th>
+                    <th rowspan="2">Index</th>
+                `
+                tbl += this.players.map(player => `<th colspan="2">${player.name} (${player.handicap}hcp)</th>`).join("\n")
+                tbl += `</tr><tr>`
+                tbl += `<th>Slag</th><th>${match||pointgame?"Poäng":"Netto"}</th>\n`.repeat(this.playernames.length)
+                tbl += `</tr>`
+                let sum1 = {
+                    par: 0,
+                    index: 0
+                }
+                let sum2 = {
+                    par: 0,
+                    index: 0
+                }
+                this.playernames.map(player => {
+                    sum1[player] = [0, 0]
+                    sum2[player] = [0, 0]
+                })
+                for (let i=1; i<=this.holes; i++) {
+                    (i<=9?sum1:sum2).par += this._points[i].par;
+                    (i<=9?sum1:sum2).index += this._points[i].index
+                    this.playernames.map(player => {
+                        (i<=9?sum1:sum2)[player][0] += this._points[i][player];
+                        (i<=9?sum1:sum2)[player][1] += this.calculatedPoints[i][player]
+                    })
+                    tbl += `
+                    <tr${i == 9 || i == this.holes?' class="last-row"': ""}>
+                        <td>${i}</td>
+                        <td>${this._points[i].par}</td>
+                        <td>${this._points[i].index}</td>
+                        ${this.playernames.map(player => `<td>${this._points[i][player]}</td>
+                            <td>${this.calculatedPoints[i][player]}</td>`).join("\n")}
+                    </tr>
+                    `
+                    if (i == 9) {
+                        tbl += `
+                        <tr class="sum-row">
+                            <th>Del 1</th>
+                            <td>${sum1.par}</td>
+                            <td></td>
+                            ${this.playernames.map(player => `<td>${sum1[player][0]}</td><td>${sum1[player][1]}</td>`).join("\n")}
+                        </tr>`
+                    } else if (i == 18) {
+                        tbl += `
+                        <tr class="sum-row">
+                            <th>Del 2</th>
+                            <td>${sum2.par}</td>
+                            <td></td>
+                            ${this.playernames.map(player => `<td>${sum2[player][0]}</td><td>${sum2[player][1]}</td>`).join("\n")}
+                        </tr>`
+                    }
+                    if (i == this.holes) {
+                        tbl += `
+                        <tr class="sum-row">
+                            <th>Total</th>
+                            <td>${sum1.par + sum2.par}</td>
+                            <td></td>
+                            ${this.playernames.map(player => `<td>${sum1[player][0] + sum2[player][0]}</td><td>${sum1[player][1] + sum2[player][1]}</td>`).join("\n")}
+                        </tr>
+                        <tr class="sum-row">
+                            <th colspan="3">Slutlig poäng</th>
+                            
+                            ${this.players.map(player => `<td colspan="2" class="left-indent">
+                                <span class="super">${player.handicap}</span>
+                                ${sum1[player.name][1] + sum2[player.name][1] + player.handicap}</td>`).join("\n")}
+                        </tr>
+                        `
+                    }
+                }
+            }
+            tbl += `</table></div>`
+            return tbl
         }
     },
     foursome: class Foursome extends GolfSome {

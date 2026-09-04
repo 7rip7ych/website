@@ -50,6 +50,14 @@
         "play_as": ["shotcomp", "shotgolf", "pointbogey"]
     },
     {
+        "name": "Hallington",
+        "id": "hallington",
+        "desc": "En variant av Stableford. Spelas som en poängbaserad modifierad version av slaggolf och spelas utan spelhandicap på enskilda hål. Poäng räknas som (hålets par x 2) - använda slag. Bollen plockas upp när man slagit dubbelt så många slag som hålets par och därav inte kan få några poäng på hålet.",
+        "minPlayers": 1,
+        "team": false,
+        "play_as": []
+    },
+    {
         "name": "Foursome",
         "id": "foursome",
         "desc": "Denna spelform bygger på att två spelare bildar ett par och spelar på gemensam boll. Spelarna slår vartannat slag och före spelets start bestämmer de vem som skall slå ut från udda- respektive jämna hålnummer. Efter att ha studerat banan blir denna spelfördelning upphov till taktiska diskussioner vilket resulterar i att den som har normalt har flest greenträffar på korthålen, självfallet väljer den variant med flest korthål.",

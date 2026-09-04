@@ -933,6 +933,24 @@ table {
   border-bottom: 1pt solid #000b;
 }
 
+.sum-row {
+  text-align:center;
+  font-weight: bold;
+}
+
+.sum-row .super {
+  margin: 0;
+  transform: translate(-100%, -20%);
+}
+
+/* .scorecard .sum-row:last-of-type {
+  font-weight: bold;
+}
+
+.sum-row td[colspan="2"] {
+  text-align: center;
+} */
+
 .empty {
   background-color: #0000000f;
 }
@@ -972,6 +990,9 @@ table {
   position: relative;
 }
 
+td.green {
+  background-color: #a2eda0;
+}
 
 .horizontal-scroll {
   max-width: 100%;
@@ -979,9 +1000,6 @@ table {
   overflow-x: auto;
 }
 
-td.green {
-  background-color: #a2eda0;
-}
 
 .info-button, .close-button {
   border-radius: 50%;
@@ -1308,6 +1326,15 @@ fieldset {
   /* color: #ffffff; */
 }
 
+/* Hide hcp notes */
+.hide-notes {
+  .super {
+    display: none;
+  }
+  td.left-indent {
+    padding-left: 0.4em;
+  }
+}
 
 .space-saver {
   position: relative;
