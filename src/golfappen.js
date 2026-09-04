@@ -252,7 +252,15 @@ async function populateNewGameForm(playTypes, golfClubs) {
         }
 
         courseSelect.disabled = false
+        // courseSelect.oninput = () => {
+        //     const selCourse = courses.find(course=> course.name == courseSelect.value)
+        //     console.log(selCourse)
+        //     if (!selCourse || !selCourse.holes) {return}
+        //     document.getElementById("holeCount").value = selCourse.number_of_holes || 18
+        // }
     }
+
+    
     // clubSelect.addEventListener("change", async(e) => {
     //     const clubData = await data.getClubData(e.target.value)
     //     fillCourses(clubData)
@@ -269,6 +277,7 @@ async function populateNewGameForm(playTypes, golfClubs) {
     // clubInput.onblur = () => {
     //     views["new"].style.paddingBottom = "unset"
     // }
+    clubInput.onblur = () => clubSelectedCallback()
     autocomplete(clubInput, golfClubs.map(x => x.name), clubSelectedCallback)
 }
 
@@ -2376,8 +2385,6 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            // let tbl = super.generateScoreCard(dir, true)
-            // return tbl//.replaceAll("Netto", "Poäng")
             return super.generateScoreCard(dir, true)
         }
     },
@@ -2406,11 +2413,6 @@ const rules = {
             }
             this.calculatedPoints = points
             return points
-        }
-
-        generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir)
-            return tbl.replaceAll("Netto", "Poäng")
         }
     },
     shotcomp: class ShotCompetition extends GameRules {
@@ -2559,11 +2561,6 @@ const rules = {
             }
             this.calculatedPoints = points
             return points
-        }
-
-        generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir)
-            return tbl.replaceAll("Netto", "Poäng")
         }
     },
     nassau: class Nassau extends GameRules {
@@ -2929,11 +2926,6 @@ const rules = {
             return tbl + resStr
         }
     },
-    rumble: class Rumble extends GameRules {
-        constructor(players, holes) {
-            super(players, holes, "rumble")
-        }
-    },
     fourball: class Four extends FourBall {
         constructor(players, holes) {
             super(players, holes)
@@ -3006,8 +2998,7 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir, true)
-            return tbl//.replaceAll("Netto", "Poäng")
+            return super.generateScoreCard(dir, true)
         }
     },
     fourballbeto: class FourballBeTo extends FourBall {
@@ -3077,8 +3068,12 @@ const rules = {
         }
 
         generateScoreCard(dir="v") {
-            let tbl = super.generateScoreCard(dir, true)
-            return tbl//.replaceAll("Netto", "Poäng")
+            return super.generateScoreCard(dir, true)
+        }
+    },
+    rumble: class Rumble extends GameRules {
+        constructor(players, holes) {
+            super(players, holes, "rumble")
         }
     },
     flagcomp: class FlagComp extends GameRules {
