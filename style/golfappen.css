@@ -1047,6 +1047,13 @@ td.green {
   padding: 1em;
 }
 
+.hcp-para {
+  b {
+    text-shadow: 0 0 1px #383838;
+    font-weight: normal;
+  }
+}
+
 .horizontal-flex {
   display: flex;
   align-items: center;

@@ -301,6 +301,7 @@ const infoWindow = {
             return `
             <h3>${play.name}</h3>
             <p>${play.desc}</p>
+            <p class="hcp-para"><b>Handicap beräknas som:</b> ${play.hcp_desc.length > 0? play.hcp_desc:"Samma som användaren skrivit in."}</p>
             `
         }).join("\n")
         this.window.innerHTML = content
@@ -326,6 +327,7 @@ const gameInfoWindow = {
             return `
             <h3>${play.name}</h3>
             <p>${play.desc}</p>
+            <p class="hcp-para"><b>Handicap beräknas som:</b> ${play.hcp_desc.length > 0? play.hcp_desc:"Samma som användaren skrivit in."}</p>
             `
         }).join("\n")
         this.window.innerHTML = content
@@ -1895,7 +1897,7 @@ class Scram extends TeamGame {
 
     calculateHcp (team) {
         let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
-        hcps.sort((a,b) => a - b)
+        hcps.sort((a,b) => a - b) // asc
         let res = 0
         if (hcps.length == 2) {
             res = hcps[0] * 0.5 + hcps[1] * 0.2
