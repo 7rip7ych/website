@@ -1333,6 +1333,19 @@ fieldset {
   /* color: #ffffff; */
 }
 
+
+
+.row video {
+  max-width: 50vw;
+  max-height: 50vw;
+}
+
+.row video::before {
+  content: "";
+  inset: 5%;
+  background-color: #000;
+}
+
 /* Hide hcp notes */
 .hide-notes {
   .super {

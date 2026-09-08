@@ -99,6 +99,12 @@ function createListeners() {
             document.querySelector("#historyView .list").innerHTML = ""
         }
     }
+    const golfball = document.getElementById("home-animation-golfball")
+    golfball.playbackRate = 0.75
+    golfball.onclick = () => {
+        if (!golfball.loop) {golfball.play()}
+        golfball.loop = !golfball.loop
+    }
 }
 
 // Source - https://stackoverflow.com/a/9039885

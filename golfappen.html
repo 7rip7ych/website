@@ -8,8 +8,8 @@
     <meta name="author" content="7rip7ych">
     <meta name="description" content="En app för att hålla koll på golf poäng.">
     <!-- <link rel="stylesheet" href="style/style.css"> -->
-    <link rel="preconnect" href="assets/golf_ball.glb">
-    <link rel="preconnect" href="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js">
+    <!-- <link rel="preconnect" href="assets/golf_ball.glb">
+    <link rel="preconnect" href="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"> -->
     <link rel="stylesheet" href="style/golfappen.css">
     <link rel="shortcut icon" href="favicon.ico">
     <title>Golfappen | 7rip7ych</title>
@@ -19,15 +19,7 @@
     <header class="siteheader">
         <div class="logo">
             <a href="#hem">
-                <img src="img/golfball.png" alt="Logo">
-                <!-- <model-viewer
-                    src="assets/golf_ball.glb"
-                    alt="golf ball"
-                    shadow_intensity="1"
-                    rotation-per-second="0.15rad"
-                    camera-orbit="0deg 140deg 105%"
-                    auto-rotate-delay="10"></model-viewer> -->
-                <!-- <span>Golfappen</span> -->
+                <img src="img/flat-golf1.png" alt="Logo">
             </a>
         </div>
         <div id="header-title" class="header-title"></div>
@@ -43,16 +35,11 @@
         <section id="startView" class="transparent visible">
             <div class="row cols-1 no-padding">
                 <div class="col centered-rows">
-                    <div class="row">
-                        <model-viewer
-                        src="assets/golf_ball.glb"
-                        alt="golf ball"
-                        shadow_intensity="1"
-                        rotation-per-second="0.1rad"
-                        camera-orbit="0deg 120deg 105%"
-                        auto-rotate-delay="10"
-                        ></model-viewer>
-                    </div>
+                    <!-- <div class="row centered"> -->
+                    <video class="row centered" autoplay="true" muted="true" loop disablepictureinpicture disableremoteplayback id="home-animation-golfball">
+                        <source src="assets/full-spin-reverse.webm" type="video/webm">
+                    </video>
+                    <!-- </div> -->
                     <!-- <h3 class="row centered">Golfappen</h3> -->
 
                     <button class="row centered main-button" id="newGame">Nytt spel</button>
