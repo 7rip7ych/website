@@ -440,7 +440,7 @@ const gameObject = {
         this.playerCount = parseInt(data.get("players"))
         this.holes = parseInt(data.get("holes"))
         this.gameType = data.get("type")
-        let clubname = data.get("club")
+        const clubname = data.get("club")
         this.club = this.golfClubs.find(x => x.name == clubname)?.id
         this.course = data.get("course")
         if (this.course) {
@@ -459,7 +459,7 @@ const gameObject = {
             this.clubData = await data.getClubData(this.club)
             this.courseData = this.clubData.club.courses?.find(x => x.name == this.course) || this.clubData.courseArray?.find(x => x.name == this.course)
         } catch (err) {
-            console.log("Lacking club info", err)
+            console.log("Lacking club info",this.club, err)
         }
         // console.log(this.courseData)
     },
@@ -559,20 +559,60 @@ const gameObject = {
         }
         console.log(players, this.players)
         // Decide whether to continue or start anew
-        if (players.map(x=>x.name).sort().join(',') === this.players.map(x=>x.name).sort().join(',') && this.time) {
-            this.players = players
-            this.ruleset.players = players
-            if (this.gameType == "matchgame") {
-                this.ruleset.minHcp = Math.min(...this.players.map(p => p.handicap))
-            }
+        if (JSON.stringify(players) === JSON.stringify(this.players) && this.time) {
             switchView("play")
+        } else if (this.time) {
+            const date = this.time.toISOString()
+            try {
+                this.replaceNames(players)
+                this.players = players
+                gameObject.cacheGame(false)
+                gameObject.resumeGame(date)
+            } catch {
+                // if replacement unsuccessful, create new game
+                this.time = new Date()
+                this.players = players
+                this.openScoreKeeper()
+                gameObject.cacheGame()
+            }
         } else {
             this.time = new Date()
             this.players = players
             this.openScoreKeeper()
+            gameObject.cacheGame()
         }
 
-        gameObject.cacheGame()
+        // gameObject.cacheGame()
+    },
+    replaceNames(newPlayers) {
+        let oldNames = this.players.map(p=>p.name)
+        let newNames = newPlayers.map(p=>p.name)
+        let pts = this.ruleset.getPoints()
+        for (let i=0; i<newNames.length;i++) {
+            if (oldNames[i] === newNames[i]) { continue }
+            for (let hole=1; hole <= this.holes; hole++) {
+                if (this.teamCount) {
+                    const team = newPlayers[i].team
+                    let key = `Lag ${team}`
+                    if (this.ruleset.teeshot) {
+                        const index = pts[hole][key].length -1
+                        if (!index) {continue}
+                        let tee = pts[hole][key][index]
+                        let nm = oldNames.indexOf(tee)
+                        pts[hole][key][index] = newNames[nm]
+                    } else {
+                        pts[hole][key][newNames[i]] = pts[hole][key][oldNames[i]]
+                        delete pts[hole][key][oldNames[i]]
+                    }
+                } else {
+                    pts[hole][newNames[i]] = pts[hole][oldNames[i]]
+                    delete pts[hole][oldNames[i]]
+                }
+            }
+
+        }
+        // console.log("namechange", pts)
+        this.ruleset.setPoints(pts)
     },
     openScoreKeeper: function() {
         switchView("play")
@@ -770,15 +810,15 @@ const gameObject = {
         }
         this.ruleset.setPoints(points)
     },
-    cacheGame: function() {
+    cacheGame: function(refresh=true) {
         const date = this.time.toISOString()
-        this.ruleset?.readInputs()
+        if (refresh) this.ruleset?.readInputs()
         const gameData = {
             playerCount: this.playerCount,
             players: this.players,
             holes: this.holes,
             gameType: this.gameType,
-            subtype: this.ruleset.subtype,
+            subtype: this.ruleset?.subtype,
             club: this.club,
             course: this.course,
             teamCount: this.teamCount,
@@ -831,8 +871,8 @@ const gameObject = {
         document.getElementById("gameType").value = this.gameType
         if (this.club) {
             const courseSelect = document.getElementById("golfCourse")
-            document.getElementById("golfClub").value = this.club
             const clubData = await data.getClubData(this.club)
+            document.getElementById("golfClub").value = clubData?.club?.name
             courseSelect.innerHTML = `<option selected disabled>Välj golfbana</option>`
             if (!clubData || !clubData?.club?.courses) {
                 courseSelect.disabled = true
