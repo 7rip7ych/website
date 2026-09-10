@@ -100,7 +100,7 @@ function createListeners() {
         }
     }
     const golfball = document.getElementById("home-animation-golfball")
-    golfball.playbackRate = 0.75
+    golfball.playbackRate = 0.7
     golfball.onclick = () => {
         if (!golfball.loop) {golfball.play()}
         golfball.loop = !golfball.loop

@@ -1334,17 +1334,25 @@ fieldset {
 }
 
 
-
-.row video {
+/* Video */
+.row video,
+video.row {
   max-width: 50vw;
   max-height: 50vw;
 }
 
-.row video::before {
+video.home-animation {
+  width: auto;
+  height: 60vw;
+  max-height: 300px;
+}
+
+/* .row video::before {
   content: "";
   inset: 5%;
   background-color: #000;
-}
+} */
+
 
 /* Hide hcp notes */
 .hide-notes {
