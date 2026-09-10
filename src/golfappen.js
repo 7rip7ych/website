@@ -455,8 +455,12 @@ const gameObject = {
         gameInfoWindow.setContent(this.gameType)
     },
     loadCourseData: async function() {
-        this.clubData = await data.getClubData(this.club)
-        this.courseData = this.clubData.club.courses?.find(x => x.name == this.course) || this.clubData.courseArray?.find(x => x.name == this.course)
+        try {
+            this.clubData = await data.getClubData(this.club)
+            this.courseData = this.clubData.club.courses?.find(x => x.name == this.course) || this.clubData.courseArray?.find(x => x.name == this.course)
+        } catch (err) {
+            console.log("Lacking club info", err)
+        }
         // console.log(this.courseData)
     },
     openPlayerSetup: function(count) {
@@ -557,6 +561,10 @@ const gameObject = {
         // Decide whether to continue or start anew
         if (players.map(x=>x.name).sort().join(',') === this.players.map(x=>x.name).sort().join(',') && this.time) {
             this.players = players
+            this.ruleset.players = players
+            if (this.gameType == "matchgame") {
+                this.ruleset.minHcp = Math.min(...this.players.map(p => p.handicap))
+            }
             switchView("play")
         } else {
             this.time = new Date()
@@ -664,6 +672,7 @@ const gameObject = {
             container.querySelector("#hcpSwitch")?.addEventListener("input", (e) => {
                 console.log(e.target.checked)
                 this.ruleset.keepHcp = e.target.checked
+                this.cacheGame()
                 this.showPartResults()
             })
         }
@@ -725,6 +734,7 @@ const gameObject = {
             container.querySelector("#hcpSwitchRes")?.addEventListener("input", (e) => {
                 console.log(e.target.checked)
                 this.ruleset.keepHcp = e.target.checked
+                this.cacheGame()
                 this.showResults(null)
             })
         }
@@ -773,6 +783,7 @@ const gameObject = {
             course: this.course,
             teamCount: this.teamCount,
             teamSize: this.teamSize,
+            keepHcp: this.ruleset?.keepHcp,
             time: date,
             scores: this.ruleset?.getPoints() || []
         }
@@ -802,6 +813,9 @@ const gameObject = {
         this.ruleset.setPoints(game.scores)
         if (game.subtype) {
             this.ruleset.subtype = game.subtype
+        }
+        if (game.keepHcp) {
+            this.ruleset.keepHcp = game.keepHcp
         }
         this.ruleset.fillInputs()
         gameInfoWindow.setContent(this.gameType)
@@ -1373,6 +1387,11 @@ class GameRules {
         this.setPoints(points)
     }
 
+    calculateHcp(player) {
+        let p = player?.handicap? player : this.players.find(x => x.name == player)
+        return Math.round(p.handicap)
+    }
+
     calculatePoints() {
         if (this.subtype && baseTypes[this.subtype]) {
             const res = baseTypes[this.subtype](this)
@@ -1455,7 +1474,7 @@ class GameRules {
                 <th rowspan="2">Par</th>
                 <th rowspan="2">Index</th>
             `
-            tbl += this.players.map(player => `<th colspan="2">${player.name} (${player.handicap}hcp)</th>`).join("\n")
+            tbl += this.players.map(player => `<th colspan="2">${player.name} (${this.calculateHcp(player)}hcp)</th>`).join("\n")
             tbl += `</tr><tr>`
             tbl += `<th>Slag</th><th>${match||pointgame?"Poäng":"Netto"}</th>\n`.repeat(this.playernames.length)
             tbl += `</tr>`
@@ -1483,9 +1502,15 @@ class GameRules {
                     <td>${i}</td>
                     <td>${this._points[i].par}</td>
                     <td>${this._points[i].index}</td>
-                    ${this.playernames.map(player => `<td>${this._points[i][player]}</td>
-                        <td class="left-indent${match && this.calculatedPoints[i][player]?' win':''}"><span class="super">${this.calculatePlayerPar(this.players.find(x=>x.name==player).handicap, this._points[i].index)}</span>
-                        ${this.calculatedPoints[i][player]}</td>`).join("\n")}
+                    ${this.playernames.map(player => {
+        if (match) {
+            return `<td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(player), this._points[i].index)}</span>${this._points[i][player]}</td>
+            <td${this.calculatedPoints[i][player]?' class="win"':''}>${this.calculatedPoints[i][player]}</td>`
+        }
+        return `<td>${this._points[i][player]}</td>
+        <td class="left-indent"><span class="super">${this.calculatePlayerPar(this.calculateHcp(player), this._points[i].index)}</span>
+        ${this.calculatedPoints[i][player]}</td>`
+    }).join("\n")}
                 </tr>
                 `
                 if (i == 9) {
@@ -1523,6 +1548,7 @@ class GameRules {
         // }
         return tbl
     }
+
     generateRuleSwitch() {
         let content = '<div class="radio-group rule-switch">'
         content += this.info.play_as.map(x=> `<input type="radio" id="switch-${x}" name="ruleswitch" value="${x}"/>
@@ -1939,7 +1965,7 @@ class FourBall extends TeamGame {
     }
 
     calculateHcp(player) {
-        let p = this.players.find(x => x.name == player)
+        let p = player?.handicap ? player : this.players.find(x => x.name == player)
         return this.keepHcp ? p.handicap : Math.round(p.handicap * 0.9)
     }
 
@@ -2200,12 +2226,19 @@ const rules = {
         "dropoutscram", "texscramble", "fourball", "fourballbewo", "fourballbeto", "tryall", "hallington", "rumble"],
     utslagGames: ["foursome", "greensome", "irishgreen", "texscramble", "some"],
     usingTopBanner: ["matchgame"],
-    hcpSwitch: ["fourball", "fourballbewo", "fourballbeto"],
+    hcpSwitch: ["fourball", "fourballbewo", "fourballbeto", "matchgame"],
     pointGames: ["matchgame", "pointbogey", "copenhagener", "fourballbewo", "fourballbeto", "hallington"],
     matchgame: class MatchGame extends GameRules {
         constructor(players, holes) {
             super(players, holes, "matchgame")
             this.order = "desc"
+            this.keepHcp = false
+            this.minHcp = Math.min(...this.players.map(p => p.handicap))
+        }
+
+        calculateHcp(player) {
+            let p = player?.handicap ? player :  this.players.find(x => x.name == player)
+            return this.keepHcp ? p.handicap : p.handicap - this.minHcp
         }
 
         holeForm(hole) {
@@ -2269,9 +2302,9 @@ const rules = {
             const formData = new FormData(forms["keeper"])
             let holePoints = {}
             let index = parseInt(formData.get(`index-${hole}`)) || 0
-            let minHcp = Math.min(...this.players.map(p => p.handicap))
+            
             this.players.forEach(p => {
-                const hcp = p.handicap - minHcp
+                const hcp = this.calculateHcp(p)
                 // console.log(hcp)
                 let extra_par = this.calculatePlayerPar(hcp, index)
                 holePoints[p.name] = (formData.get(`${p.name}-${hole}`) || 999) - extra_par
@@ -2295,7 +2328,7 @@ const rules = {
         calculatePoints () {
             let points = {}
             
-            let minHcp = Math.min(...this.players.map(p => p.handicap))
+            // let minHcp = Math.min(...this.players.map(p => p.handicap))
             for (let i=1; i<=this.holes; i++) {
                 points[i] = {}
                 let holePoints = []
@@ -2303,7 +2336,7 @@ const rules = {
                     points[i][player.name] = 0
                     let index = this._points[i]["index"]
                     let hits = this._points[i][player.name]
-                    const hcp = player.handicap - minHcp
+                    const hcp = this.calculateHcp(player)
                     let extra_par = this.calculatePlayerPar(hcp, index)
                     if (hits <= 0 || !hits) {
                         if (this._points[i]["winner"] == player.name){
