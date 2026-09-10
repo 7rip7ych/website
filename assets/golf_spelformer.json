@@ -141,7 +141,7 @@
         "hcp_desc": "",
         "minPlayers": 3,
         "team": true,
-        "teamSize": [3, 4, 5],
+        "teamSize": [3, 4],
         "play_as": []
     },
     {
