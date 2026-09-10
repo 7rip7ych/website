@@ -91,6 +91,7 @@ function createListeners() {
         views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
 
     window.onresize = () => reloadOverlayPos()
+    window.screen.orientation.onchange = () => reloadOverlayPos()
 
     buttons["clearHis"].onclick = () => {
         const confirmation = confirm("Är du säker på att du vill radera hela historiken?")
@@ -123,6 +124,7 @@ function iOS() {
   // iPad on iOS 13 detection
   || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
 }
+
 window.onload = () => {
     const isIOS = iOS()
     if (isIOS) {
@@ -289,12 +291,16 @@ async function populateNewGameForm(playTypes, golfClubs) {
 
 function reloadOverlayPos(collapse=false) {
     // console.log("resize")
-    pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight),
-    pos["partResCollapsed"] = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top'))
+    console.log(window.innerHeight)
+    // pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight)
+    let overHeight = buttons["partRes"].offsetHeight + 2*elements.getProperty(views["partRes"], 'padding-top')
+    pos["partResCollapsed"] = (window.innerHeight - (overHeight ? overHeight : 66.2)) // 66.2 is the standard height for the collapsed overlay
+    views["partRes"].style.top = (views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]) + "px"
     if (collapse) {
         views["partRes"].style.top = pos["partResCollapsed"] + "px"
         views["partRes"].classList.add("collapsed")
     }
+    console.log(pos)
 }
 
 const infoWindow = {
