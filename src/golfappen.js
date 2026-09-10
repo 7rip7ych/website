@@ -1492,7 +1492,7 @@ class GameRules {
                 if (i == 9) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Del 1</th>
+                        <th>Ut</th>
                         <td>${sum1.par}</td>
                         <td></td>
                         ${this.playernames.map(player => `<td>${sum1[player][0]}</td><td>${sum1[player][1]}</td>`).join("\n")}
@@ -1500,7 +1500,7 @@ class GameRules {
                 } else if (i == 18) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Del 2</th>
+                        <th>In</th>
                         <td>${sum2.par}</td>
                         <td></td>
                         ${this.playernames.map(player => `<td>${sum2[player][0]}</td><td>${sum2[player][1]}</td>`).join("\n")}
@@ -1792,7 +1792,7 @@ class TeamGame extends GameRules {
                 if (i == 9) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Del 1</th>
+                        <th>Ut</th>
                         <td>${sum1.par}</td>
                         <td class="empty"></td>
                         ${teams.map(team => `${this.teeshot?'<td class="empty"></td>':''}<td>${sum1[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1]}</td>`).join("\n")}
@@ -1800,7 +1800,7 @@ class TeamGame extends GameRules {
                 } else if (i == 18) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Del 2</th>
+                        <th>In</th>
                         <td>${sum2.par}</td>
                         <td class="empty"></td>
                         ${teams.map(team => `${this.teeshot?'<td class="empty"></td>':''}<td>${sum2[`Lag ${team}`][0]}</td><td>${sum2[`Lag ${team}`][1]}</td>`).join("\n")}
@@ -2154,7 +2154,7 @@ class FourBall extends TeamGame {
                 if (i == 9) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Del 1</th>
+                        <th>Ut</th>
                         <td>${sum1.par}</td>
                         <td class="empty"></td>
                         ${teams.map(team => `<td>${sum1[`Lag ${team}`][0]}</td><td>${sum1[`Lag ${team}`][1]}</td><td>${sum1[`Lag ${team}`][2]}</td>`).join("\n")}
@@ -2162,7 +2162,7 @@ class FourBall extends TeamGame {
                 } else if (i == 18) {
                     tbl += `
                     <tr class="sum-row">
-                        <th>Del 2</th>
+                        <th>In</th>
                         <td>${sum2.par}</td>
                         <td class="empty"></td>
                         ${teams.map(team => `<td>${sum2[`Lag ${team}`][0]}</td><td>${sum2[`Lag ${team}`][1]}</td><td>${sum2[`Lag ${team}`][2]}</td>`).join("\n")}
@@ -2782,7 +2782,7 @@ const rules = {
                     if (i == 9) {
                         tbl += `
                         <tr class="sum-row">
-                            <th>Del 1</th>
+                            <th>Ut</th>
                             <td>${sum1.par}</td>
                             <td></td>
                             ${this.playernames.map(player => `<td>${sum1[player][0]}</td><td>${sum1[player][1]}</td>`).join("\n")}
@@ -2790,7 +2790,7 @@ const rules = {
                     } else if (i == 18) {
                         tbl += `
                         <tr class="sum-row">
-                            <th>Del 2</th>
+                            <th>In</th>
                             <td>${sum2.par}</td>
                             <td></td>
                             ${this.playernames.map(player => `<td>${sum2[player][0]}</td><td>${sum2[player][1]}</td>`).join("\n")}
