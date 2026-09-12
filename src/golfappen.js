@@ -5,6 +5,7 @@
 import { getFile } from "./modules/files.js"
 import { elements } from "./modules/elements.js"
 import { autocomplete } from "./modules/customInputs.js"
+import ExportManager from "./modules/export.js"
 
 // declare variables
 const main = document.querySelector(".wrapper")
@@ -33,7 +34,9 @@ const buttons = {
     "backFromPlay": document.querySelector("#playView .back-button"),
     "partRes": document.querySelector("#partialResults .always-visible"),
     "nextHole": document.querySelector("#keeper-nav .right"),
-    "prevHole": document.querySelector("#keeper-nav .left"),
+    "prevHole": document.querySelectorAll("#keeper-nav .left")[1],
+    "firstHole": document.querySelector("#keeper-nav .left"),
+    "lastHole": document.querySelectorAll("#keeper-nav .right")[1],
     "typeInfo": document.getElementById("gameTypeInfo"),
     "gameInfo": document.getElementById("gameInfo"),
     "clearHis": document.getElementById("clearHistory")
@@ -72,6 +75,8 @@ function createListeners() {
         e.preventDefault()
         elements.scrollToNext(forms["keeper"])
     })
+    buttons["firstHole"].onclick = () => elements.scrollToStart(forms["keeper"])
+    buttons["lastHole"].onclick = () => elements.scrollToEnd(forms["keeper"])
 
     // form submits
     forms["newGame"].addEventListener("submit", (e) => gameObject.create(e))
@@ -106,6 +111,15 @@ function createListeners() {
         if (!golfball.loop) {golfball.play()}
         golfball.loop = !golfball.loop
     }
+
+    // close dropdown menu
+    window.addEventListener("click", (e) => {
+        const dropbutton = document.getElementById("result-action-button")
+        const dropdown = document.getElementById("result-action-list")
+        if (dropdown && dropdown.classList.contains("show") && !dropdown.contains(e.target) && !dropbutton.contains(e.target)) {
+            dropdown.classList.remove("show")
+        }
+    })
 }
 
 // Source - https://stackoverflow.com/a/9039885
@@ -739,13 +753,19 @@ const gameObject = {
         gameObject.ruleset.readInputs()
         let points = gameObject.ruleset.calculateScores()
         let container = forms["keeper"].querySelector(".results")
+        let content = ""
         let rank
         if (this.ruleset.order == "desc") {
             rank = Object.entries(points).sort((a, b) => b[1]["points"] - a[1]["points"])
         } else {
             rank = Object.entries(points).sort((a, b) => a[1]["points"] - b[1]["points"])
         }
-        let content = `<div class="col left"><h3>Rankning</h3>`
+        content += `<img class="dropdown-toggle action-button" id="result-action-button" src="img/icons/vertical-dots.svg" alt="menu button">
+        <ul class="dropdown-list" id="result-action-list">
+            <li class="save">Save</li>
+            <li class="share">Share</li>
+        </ul>`
+        content += `<div class="col left"><h3>Rankning</h3>`
         rank.forEach(rank => {
             content += `<p>${rank[0]}</p>`
         })
@@ -794,6 +814,19 @@ const gameObject = {
                     this.showResults(null)
                 }
             })
+        }
+
+        // dropdown action menu
+        const dropbutton = document.getElementById("result-action-button")
+        const dropdown = document.getElementById("result-action-list")
+        dropbutton.onclick = () => {dropdown.classList.toggle("show")}
+        document.querySelector("#result-action-list li.save").onclick = () => {
+            dropdown.classList.remove("show")
+            this.download()
+        }
+        document.querySelector("#result-action-list li.share").onclick = () => {
+            dropdown.classList.remove("show")
+            this.share()
         }
     },
     readInputs: function() {
@@ -916,8 +949,22 @@ const gameObject = {
             <span class="radio-button">${gameObject.playTypes.find(p => p.id === x).name}</span></label>`).join("\n")
         content += `</div>`
         return content
+    },
+    download: () => {
+        const content = gameObject.convertResults()
+        const expo = new ExportManager(content, "download")
+        expo.open()
+    },
+    share: () => {
+        const content = gameObject.convertResults()
+        const expo = new ExportManager(content, "share")
+        expo.open()
+    },
+    convertResults: () => {
+        return ""
     }
 }
+
 
 const historyManager = {
     createList: function() {},

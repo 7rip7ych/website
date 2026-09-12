@@ -92,6 +92,12 @@ const elements = {
 
         // parent.children[(Math.floor(pos / childWidth) - 1)]?.scrollIntoView()
     },
+    scrollToStart: function (parent) {
+        parent.scrollTo(0,0)
+    },
+    scrollToEnd: function (parent) {
+        parent.scrollTo(parent.scrollWidth, 0)
+    },
     focusAnotherInput: function (parent, child) {
         const childCont = parent.children[child]
         const inputs = Array.from(childCont.querySelectorAll('input'))

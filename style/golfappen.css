@@ -1016,7 +1016,7 @@ td.green {
   width: 3ch;
   font-size: 1.3rem;
   color: var(--text-color-dark);
-  background: inherit;
+  /* background: inherit; */
   position: fixed;
   right: 0.7rem;
   top: calc(10px + 0.7rem);
@@ -1352,6 +1352,120 @@ video.home-animation {
   inset: 5%;
   background-color: #000;
 } */
+.results {
+  position: relative;
+  padding: 0;
+  gap: 0.3rem;
+}
+
+.results .col {
+  padding: 0;
+}
+
+.results .col h3 {
+  margin: 0.7em 0 0.3em;
+}
+
+.results .col h4 {
+  margin: 0.7em 0 0.2em;
+}
+.results .col p {
+  margin: 0.4em 0;
+}
+
+.dropdown-toggle {
+  display: block;
+  right: -14px;
+  top: -45px;
+  height: 44px;
+  width: auto;
+  position: absolute;
+  padding: 0.7rem;
+}
+
+.dropdown-list {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: -25px;
+  right: -15px;
+  background-color: #e7e7e7;
+  width: fit-content;
+  min-width: 120px;
+  padding: 10px;
+  z-index: 1000;
+  gap: 0.25rem;
+  border: 1px solid #3f3f3f87;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px #00000024, -5px 5px 10px #00000026;
+}
+
+.dropdown-list li {
+  margin: 8px 0;
+  padding: 5px 10px;
+  border-bottom: 1px solid #5e5f66;
+  text-align: right;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Show menu when 'show' class is added by JS */
+.dropdown-list.show {
+  display: flex;
+}
+
+.dropdown-list .active {
+  border-bottom: 1px solid var(--header-highlight);
+  text-shadow: none;
+}
+
+.dropdown-list li::before {
+  width: 2ch;
+}
+.dropdown-list li.save::before {
+  content: url("../img/icons/download.svg");
+}
+
+.dropdown-list li.share::before {
+  content: url("../img/icons/share.svg");
+}
+
+.popup-window {
+  display: block;
+  position: fixed;
+  z-index: 1003;
+  border-radius: 1rem;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow-y: auto;
+  background: #3b3b3b;
+  top: 10vh;
+  left: 10px;
+  right: 10px;
+  bottom: 10vh;
+  color: var(--text-color-light);
+  padding: 1em;
+  box-shadow: 0 0 150px 115px #2d2d2d, inset 0 0 116px #ffffff21;
+  border: 1px solid #9f9f9f;
+}
+.popup-window::before {
+  /* content: ""; */
+  background: #0000004f;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* overflow: visible; */
+  width: 100vw;
+  display: block;
+  height: 100vh;
+}
+
+.popup-window .close-button {
+  position: absolute;
+  color: inherit;
+}
 
 
 /* Hide hcp notes */
