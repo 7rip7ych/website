@@ -37,6 +37,8 @@
     "stylelint-config-standard": "^40.0.0"
   },
   "dependencies": {
+    "downloadjs": "^1.4.7",
+    "html-to-image": "^1.11.13",
     "js-beautify": "^2.0.3"
   }
 }

@@ -961,7 +961,7 @@ const gameObject = {
         expo.open()
     },
     convertResults: () => {
-        return ""
+        return forms["keeper"].querySelector(".results .scorecard")
     }
 }
 
