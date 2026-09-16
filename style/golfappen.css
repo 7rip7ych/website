@@ -1,3 +1,4 @@
+@import url("popup.css");
 /* Declare variables */
 :root {
   --green1: #141609;
@@ -45,6 +46,11 @@
   --g8: #58ac14;
 
   --font: Garamond, Georgia, 'Times New Roman', Times, serif;
+  --theme1: #013b08;
+  --theme2: #046413;
+  --theme3: var(--dark-grass-1);
+  --theme4: var(--g4);
+  --theme5: var(--g5);
 }
 
 
@@ -1001,7 +1007,7 @@ td.green {
 }
 
 
-.info-button, .close-button {
+.info-button {
   border-radius: 50%;
   aspect-ratio: 1 / 1;
   padding: 0;
@@ -1011,16 +1017,16 @@ td.green {
   text-align: center;
   line-height: 1;
 }
-.close-button {
+/* .close-button {
   float: right;
   width: 3ch;
   font-size: 1.3rem;
   color: var(--text-color-dark);
-  /* background: inherit; */
+  background: inherit;
   position: fixed;
   right: 0.7rem;
   top: calc(10px + 0.7rem);
-}
+} */
 
 .info-button {
   color: var(--text-color-light);
@@ -1030,7 +1036,7 @@ td.green {
   font-size: 1.5rem;
 }
 
-.info-window {
+/* .info-window {
   display: none;
   position: fixed;
   z-index: 1000;
@@ -1045,7 +1051,7 @@ td.green {
   bottom: 0px;
   color: var(--text-color-dark);
   padding: 1em;
-}
+} */
 
 .hcp-para {
   b {
@@ -1432,7 +1438,7 @@ video.home-animation {
   content: url("../img/icons/share.svg");
 }
 
-.popup-window {
+/* .popup-window {
   display: block;
   position: fixed;
   z-index: 1003;
@@ -1450,22 +1456,7 @@ video.home-animation {
   box-shadow: 0 0 150px 115px #2d2d2d, inset 0 0 116px #ffffff21;
   border: 1px solid #9f9f9f;
 }
-.popup-window::before {
-  /* content: ""; */
-  background: #0000004f;
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  /* overflow: visible; */
-  width: 100vw;
-  display: block;
-  height: 100vh;
-}
-
-.popup-window .close-button {
-  position: absolute;
-  color: inherit;
-}
+*/
 
 
 /* Hide hcp notes */

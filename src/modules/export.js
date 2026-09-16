@@ -3,29 +3,63 @@
 // import * as download from '../../node_modules/downloadjs/download.js'
 
 class ExportManager {
-    constructor(content, manner="download") {
+    constructor(content, id, manner="download") {
         this.content = content
         this.manner = manner
+        this.title = id
         this.populate()
     }
 
     populate() {
         this.container = document.createElement("div")
-        this.container.className = "popup-window export"
+        this.container.className = "popup coloured-top only-focus export"
+
+        // top row
+        const topRow = document.createElement("div")
+        topRow.className = "top-row separated"
+        topRow.innerHTML = "<h2>Spara resultat</h2>"
+        // close button
         this.closeButton = document.createElement("button")
         this.closeButton.innerText = "X"
         this.closeButton.className = "close-button"
-        this.container.appendChild(this.closeButton)
+        topRow.appendChild(this.closeButton)
         this.closeButton.onclick = () => this.close()
+        this.container.appendChild(topRow)
 
-        let main = document.createElement("div")
+        // main content
+        let main = document.createElement("form")
+        main.className = "form popup-content"
+        // title
+        const titleInput = document.createElement("input")
+        titleInput.type = "text"
+        titleInput.name = "filename"
+        titleInput.id = "filenameInput"
+        titleInput.value = this.title
+
+        const titleLabel = document.createElement("label")
+        titleLabel.htmlFor = "filenameInput"
+        titleLabel.innerText = "Filnamn:"
+
+        main.appendChild(titleLabel)
+        main.appendChild(titleInput)
+
+        // submit
+        const subm = document.createElement("input")
+        subm.type = "submit"
+        subm.value = "Ladda ned"
+        main.appendChild(subm)
+        main.onsubmit = (e) => {
+            e.preventDefault()
+            this.title = titleInput.value
+            this.toImg()
+            this.close()
+        }
         this.container.appendChild(main)
-        main.innerText = this.manner
     }
 
     open() {
-        // document.body.appendChild(this.container)
-        this.toImg()
+        document.body.appendChild(this.container)
+        // this.toImg()
     }
 
     close() {
@@ -39,7 +73,7 @@ class ExportManager {
     toImg() {
         htmlToImage
             .toPng(this.content, {backgroundColor: "white", style: {margin: 0}})
-            .then((dataUrl) => download(dataUrl, 'resultat.png'))
+            .then((dataUrl) => download(dataUrl, `${this.title}.png`))
     }
 
     print() {
