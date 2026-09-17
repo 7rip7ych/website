@@ -5,6 +5,7 @@
 import { getFile } from "./modules/files.js"
 import { elements } from "./modules/elements.js"
 import { autocomplete } from "./modules/customInputs.js"
+import {random} from "./modules/math-extension.js"
 import ExportManager from "./modules/export.js"
 
 // declare variables
@@ -120,6 +121,13 @@ function createListeners() {
             dropdown.classList.remove("show")
         }
     })
+
+    window.onkeydown = (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key == "F" && views["play"].classList.contains("visible")) {
+            // console.log(e)
+            gameObject.fillRandom()
+        }
+    }
 }
 
 // Source - https://stackoverflow.com/a/9039885
@@ -967,6 +975,15 @@ const gameObject = {
     },
     convertResults: () => {
         return forms["keeper"].querySelector(".results .scorecard")
+    },
+    fillRandom: () => {
+        const inputs = forms["keeper"].querySelectorAll("input[type=number]")
+        inputs.forEach(inp => {
+            if (!inp.value) {
+                inp.value = random(1, 10)
+            }
+        })
+        gameObject.cacheGame(true)
     }
 }
 
@@ -1480,7 +1497,7 @@ class GameRules {
     }
 
     calculateHcp(player) {
-        let p = player?.handicap? player : this.players.find(x => x.name == player)
+        let p = Object.keys(player).includes("handicap") ? player : this.players.find(x => x.name == player)
         return Math.round(p.handicap)
     }
 
@@ -2057,7 +2074,7 @@ class FourBall extends TeamGame {
     }
 
     calculateHcp(player) {
-        let p = player?.handicap ? player : this.players.find(x => x.name == player)
+        let p = Object.keys(player).includes("handicap") ? player : this.players.find(x => x.name == player)
         return this.keepHcp ? p.handicap : Math.round(p.handicap * 0.9)
     }
 
@@ -2329,7 +2346,7 @@ const rules = {
         }
 
         calculateHcp(player) {
-            let p = player?.handicap ? player :  this.players.find(x => x.name == player)
+            let p = Object.keys(player).includes("handicap") ? player :  this.players.find(x => x.name == player)
             return this.keepHcp ? p.handicap : p.handicap - this.minHcp
         }
 
