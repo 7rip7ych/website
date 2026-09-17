@@ -51,7 +51,11 @@ class ExportManager {
         main.onsubmit = (e) => {
             e.preventDefault()
             this.title = titleInput.value
-            this.toImg()
+            if (this.manner == "share") {
+                this.share()
+            } else {
+                this.download()
+            }
             this.close()
         }
         this.container.appendChild(main)
@@ -65,7 +69,7 @@ class ExportManager {
     close() {
         this.container.remove()
     }
-
+    
     toPdf() {
         html2pdf().from(this.content).save()
     }
@@ -143,6 +147,10 @@ class ExportManager {
         newWindow.close()
     }
 
+    download() {
+        this.toPng()
+    }
+
     share() {
         htmlToImage
             .toBlob(this.content, {backgroundColor: "white", style: {margin: 0}})
@@ -150,6 +158,9 @@ class ExportManager {
                 const img = new File([blob], `${this.title}.jpg`, {type: 'image/jpeg'})
                 console.log("shareable", navigator.canShare({ files: [img] }))
                 try {
+                    if (!navigator.canShare || !navigator.canShare({ files: [img] }) ) {
+                        throw new Error()
+                    }
                     await navigator.share({
                         title: this.title,
                         text: "Spelresultat",
@@ -157,6 +168,7 @@ class ExportManager {
                     })
                 } catch (err) {
                     console.log(err)
+                    this.download()
                 }
             })
     }
