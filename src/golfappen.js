@@ -963,7 +963,7 @@ const gameObject = {
     share: () => {
         const content = gameObject.convertResults()
         const expo = new ExportManager(content, gameObject.time.toISOString(), "share")
-        expo.open()
+        expo.share()
     },
     convertResults: () => {
         return forms["keeper"].querySelector(".results .scorecard")

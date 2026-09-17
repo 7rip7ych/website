@@ -75,7 +75,29 @@ class ExportManager {
             .toPng(this.content, {backgroundColor: "white", style: {margin: 0}})
             .then((dataUrl) => download(dataUrl, `${this.title}.png`))
     }
+    
+    toPng() {
+        htmlToImage
+            .toBlob(this.content, {backgroundColor: "white", style: {margin: 0}})
+            .then((dataUrl) => download(dataUrl, `${this.title}.png`))
+    }
 
+    toBlob() {
+        htmlToImage
+            .toPng(this.content, {backgroundColor: "white", style: {margin: 0}})
+            .then((blob) => window.saveAs(blob, `${this.title}.png`))
+    }
+
+    toJpeg() {
+        htmlToImage
+            .toJpeg(this.content, {backgroundColor: "white", style: {margin: 0}})
+            .then(function (dataUrl) {
+                var link = document.createElement('a')
+                link.download = `${this.title}.jpeg`
+                link.href = dataUrl
+                link.click()
+            })
+    }
     print() {
         // newWindow object can only be created by window.open()
         // in an event listener.
@@ -119,6 +141,24 @@ class ExportManager {
 
         // close the new window after printing
         newWindow.close()
+    }
+
+    share() {
+        htmlToImage
+            .toBlob(this.content, {backgroundColor: "white", style: {margin: 0}})
+            .then(async(blob) => {
+                const img = new File([blob], `${this.title}.jpg`, {type: 'image/jpeg'})
+                console.log("shareable", navigator.canShare({ files: [img] }))
+                try {
+                    await navigator.share({
+                        title: this.title,
+                        text: "Spelresultat",
+                        files: [img]
+                    })
+                } catch (err) {
+                    console.log(err)
+                }
+            })
     }
 }
 
