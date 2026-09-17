@@ -3258,3 +3258,9 @@ rules.threadcomp = rules.shotgolf
 rules.kicker = rules.shotgolf
 
 setup() // run setup
+
+export {
+    gameObject,
+    GameRules,
+    rules
+}
