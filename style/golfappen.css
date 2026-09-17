@@ -1342,22 +1342,25 @@ fieldset {
 
 /* Video */
 .row video,
-video.row {
+video.row,
+.row.animation-backup,
+.row .animation-backup {
   max-width: 50vw;
   max-height: 50vw;
 }
 
-video.home-animation {
+video.home-animation,
+.animation-backup {
   width: auto;
   height: 60vw;
   max-height: 300px;
 }
 
-/* .row video::before {
-  content: "";
-  inset: 5%;
-  background-color: #000;
-} */
+
+.animation-backup {
+  display: none;
+}
+
 .results {
   position: relative;
   padding: 0;
@@ -1457,9 +1460,6 @@ video.home-animation {
   border: 1px solid #9f9f9f;
 }
 */
-.animation-backup {
-  display: none;
-}
 
 /* Hide hcp notes */
 .hide-notes {
