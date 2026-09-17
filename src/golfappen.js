@@ -151,9 +151,6 @@ window.onload = () => {
     const isIOS = iOS()
     if (isIOS) {
         document.querySelector('html').classList.add("ios-device")
-        const vidSrc = document.getElementById("home-animation-golfball").children[0]
-        vidSrc.src = "assets/full-spin-reverse.hevc.mp4"
-        vidSrc.type = "video/mp4"
     }
 }
 

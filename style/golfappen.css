@@ -1457,7 +1457,9 @@ video.home-animation {
   border: 1px solid #9f9f9f;
 }
 */
-
+.animation-backup {
+  display: none;
+}
 
 /* Hide hcp notes */
 .hide-notes {
@@ -1538,6 +1540,9 @@ video.home-animation {
   .space-saver .scorekeeper {
     margin-top: 37px;
   }
+
+  .home-animation {display: none;}
+  .animation-backup {display: block;}
 }
 
 .ios-device {
@@ -1550,6 +1555,9 @@ video.home-animation {
   .space-saver .scorekeeper {
     margin-top: 37px;
   }
+
+  .home-animation {display: none;}
+  .animation-backup {display: block;}
 }
 
 .hidden {
