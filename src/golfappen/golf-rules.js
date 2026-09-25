@@ -366,7 +366,7 @@ class GameRules {
             let score = {
                 shots: 0,
                 points: 0,
-                par: 0
+                par: player.handicap
             }
             Object.keys(this._points).forEach(key => {
                 if (!this._points[key][player.name]) { return }
@@ -464,7 +464,7 @@ class GameRules {
                     <tr class="sum-row">
                         <th>Ut</th>
                         <td>${sum1.par}</td>
-                        <td></td>
+                        <td class="empty"></td>
                         ${this.playernames.map(player => `<td>${sum1[player][0]}</td><td>${sum1[player][1]}</td>`).join("\n")}
                     </tr>`
                 } else if (i == 18) {
@@ -472,7 +472,7 @@ class GameRules {
                     <tr class="sum-row">
                         <th>In</th>
                         <td>${sum2.par}</td>
-                        <td></td>
+                        <td class="empty"></td>
                         ${this.playernames.map(player => `<td>${sum2[player][0]}</td><td>${sum2[player][1]}</td>`).join("\n")}
                     </tr>`
                 }
@@ -481,7 +481,7 @@ class GameRules {
                     <tr class="sum-row">
                         <th>Total</th>
                         <td>${sum1.par + sum2.par}</td>
-                        <td></td>
+                        <td class="empty"></td>
                         ${this.playernames.map(player => `<td>${sum1[player][0] + sum2[player][0]}</td><td>${sum1[player][1] + sum2[player][1]}</td>`).join("\n")}
                     </tr>`
                 }
@@ -573,6 +573,13 @@ class TeamGame extends GameRules {
         this.teeshot = rules.utslagGames.includes(this.name)
     }
 
+    calculateHcp (team) {
+        let hcps = this.players.filter(x => x.team == team).map(x=>x.handicap)
+        let res = 0
+        hcps.map(h=>res += h)
+        return Math.round(res/hcps.length)
+    }
+
     holeForm(hole) {
         let content = ""
         let topPart = `<div class="input-container-row separate-bottom"><label>Par: <input type="number" name="par-${hole}" min="1" max="99"></label>
@@ -659,11 +666,12 @@ class TeamGame extends GameRules {
         let total = {}
         for (let j=1; j<=this.teamCount; j++) {
             let name = `Lag ${j}`
+            const hcp = this.calculateHcp(j)
             let score = {
-                hcp: this.calculateHcp(j),
+                hcp: hcp,
                 shots: 0,
                 points: 0,
-                par: 0
+                par: hcp
             }
             Object.keys(this._points).forEach(key => {
                 if (!this._points[key][name]) { return }
@@ -1740,7 +1748,7 @@ const rules = {
                         <tr class="sum-row">
                             <th>Ut</th>
                             <td>${sum1.par}</td>
-                            <td></td>
+                            <td class="empty"></td>
                             ${this.playernames.map(player => `<td>${sum1[player][0]}</td><td>${sum1[player][1]}</td>`).join("\n")}
                         </tr>`
                     } else if (i == 18) {
@@ -1748,7 +1756,7 @@ const rules = {
                         <tr class="sum-row">
                             <th>In</th>
                             <td>${sum2.par}</td>
-                            <td></td>
+                            <td class="empty"></td>
                             ${this.playernames.map(player => `<td>${sum2[player][0]}</td><td>${sum2[player][1]}</td>`).join("\n")}
                         </tr>`
                     }
@@ -1757,7 +1765,7 @@ const rules = {
                         <tr class="sum-row">
                             <th>Total</th>
                             <td>${sum1.par + sum2.par}</td>
-                            <td></td>
+                            <td class="empty"></td>
                             ${this.playernames.map(player => `<td>${sum1[player][0] + sum2[player][0]}</td><td>${sum1[player][1] + sum2[player][1]}</td>`).join("\n")}
                         </tr>
                         <tr class="sum-row">

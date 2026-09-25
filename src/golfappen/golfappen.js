@@ -646,13 +646,13 @@ const gameObject = {
         }
         content += this.ruleset.generateScoreCard("v")
         // content += this.ruleset.generateScoreCard("h")
-        Object.keys(res).forEach(player => {
-            content += `<div class="player"><h4>${player}</h4>`
-            for (const [key, val] of Object.entries(res[player])) {
-                content += `<p><span>${key}</span> <span>${val}</span></p>\n`
-            }
-            content += "</div>"
-        })
+        // Object.keys(res).forEach(player => {
+        //     content += `<div class="player"><h4>${player}</h4>`
+        //     for (const [key, val] of Object.entries(res[player])) {
+        //         content += `<p><span>${key}</span> <span>${val}</span></p>\n`
+        //     }
+        //     content += "</div>"
+        // })
 
         container.innerHTML += content
 
@@ -695,26 +695,41 @@ const gameObject = {
         } else {
             rank = Object.entries(points).sort((a, b) => a[1]["points"] - b[1]["points"])
         }
+        // share
         content += `<img class="dropdown-toggle action-button" id="result-action-button" src="img/icons/vertical-dots.svg" alt="menu button">
         <ul class="dropdown-list" id="result-action-list">
             <li class="save">Save</li>
             <li class="share">Share</li>
         </ul>`
-        content += `<div class="col left"><h3>Rankning</h3>`
+        content += `<div class="col left"><h3>Rankning</h3><ol>`
+        console.log(rank)
+        const pointGame = rules.pointGames.includes(this.gameType)
         rank.forEach(rank => {
-            content += `<p>${rank[0]}</p>`
-        })
-        content += `</div>
-        <div class="col right">
-        <h3>Poäng</h3>`
-        Object.keys(points).forEach(player => {
-            content += `<div class="player"><h4>${player}</h4>`
-            for (const [key, val] of Object.entries(points[player])) {
-                content += `<p><span>${key}</span> <span>${val}</span></p>\n`
+            content += `<li class="expand-right">
+            <p>${rank[0]}</p>
+            <div class="expanding hidden">`
+            for (const [key, val] of Object.entries(rank[1])) {
+                let label = key
+                switch (key) {
+                    case "shots":
+                        label = "Slag"
+                        break
+                    case "par":
+                        label = "Spelarpar"
+                        break
+                    case "points":
+                        label = pointGame ? "Poäng" : "Netto"
+                        break
+                    case "hcp":
+                        continue
+                }
+                content += `<p><span>${label}:</span> <span>${val}</span></p>\n`
             }
-            content += "</div>"
+            content += `</div>
+            </li>`
         })
-        content += `</div>`
+        content += `</ol></div>`
+
         if (this.play.play_as.length > 1) {
             content += this.generateRuleSwitch("end")
         }
@@ -763,6 +778,17 @@ const gameObject = {
             dropdown.classList.remove("show")
             this.share()
         }
+
+        document.querySelectorAll("li.expand-right").forEach(ele => ele.onclick = () => {
+            const currEl = ele.querySelector(".expanding")
+            ele.parentNode.querySelectorAll(".expanding").forEach(element => {
+                if (!element.classList.contains("hidden") && element != currEl) {
+                    element.classList.add("hidden")
+                }
+            })
+            currEl.classList.toggle("hidden")
+            currEl.classList.contains("hidden") ? ele.parentNode.classList.remove("expanded-right") : ele.parentNode.classList.add("expanded-right")
+        })
     },
     readInputs: function() {
         let formData = new FormData(this.keeper)
