@@ -392,7 +392,7 @@ p.col {
   .wrapper .cols-2 .col  { flex: 1 1 100%; }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .wrapper .row { flex-wrap: wrap; }
   /* .wrapper .row .col { flex: 1 1 100%; }*/
   .sitefooter .cols-3 .footer-column { flex: 1 1 100%; }
@@ -698,14 +698,21 @@ label {
   display: flex;
   gap: 1rem;
   width: 100%;
-  height: 100%;
+  height: 78vh;
   padding: 1rem;
   overflow-x: auto;
   flex-wrap: nowrap;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  max-height: 80vh;
+  overflow-y: hidden;
 }
 
+@media (max-width: 500px) {
+  .step-scroll {
+    height: 80vh;
+  }
+}
 .step-scroll::-webkit-scrollbar {
   display: none;
 }
@@ -714,6 +721,7 @@ label {
   flex: 1 1 100%;
   box-shadow: 0 0 10px var(--green-shadow);
   min-width: 100%;
+  overflow: auto;
 }
 
 model-viewer {
@@ -796,7 +804,7 @@ input[type=number] {
   max-width: 100vw;
   overflow-x: hidden;
   top: 10vh;
-  transition: 0.2s all ease-out;
+  /* transition: 0.2s all ease-out; */
 }
 
 .expandable.collapsed .collapsing {
@@ -1090,7 +1098,9 @@ fieldset {
 }
 
 #playView {
-  margin-bottom: 2rem;
+  padding-bottom: 3.7rem;
+  padding: 0;
+  max-height: 100%;
 }
 
 .list {
@@ -1369,6 +1379,7 @@ video.home-animation,
 
 .results .col {
   padding: 0;
+  min-width: 300px;
 }
 
 .results .col h3 {
@@ -1452,8 +1463,22 @@ ol {
 .expand-right {
   position: relative;
   padding-left: 0.25em;
+  margin: 0.5em 0;
+  cursor: pointer;
 }
 
+.expand-right > p {
+  text-decoration-line: underline;
+  text-decoration-skip-ink: all;
+  text-decoration-style: solid;
+  text-decoration-color: #0005;
+  text-underline-offset: 2.4px;
+}
+
+.expand-right > p:hover,
+.expand-right > p:active {
+  text-decoration-color: #000000b0;
+}
 .expand-right .expanding {
   position: absolute;
   left: 100%;
