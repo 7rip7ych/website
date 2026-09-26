@@ -29,7 +29,7 @@ const dynamic = {
     "title": document.getElementById("header-title")
 }
 const buttons = {
-    "new": document.getElementById("newGame"),
+    // "new": document.getElementById("newGame"),
     "continue": document.getElementById("continueGame"),
     "history": document.getElementById("showHistory"),
     "backFromNew": document.querySelector("#newView .back-button"),
@@ -91,6 +91,7 @@ const setup = {
         if (isIOS) {
             document.querySelector('html').classList.add("ios-device")
         }
+        customSelect.init()
 
         setup.createListeners()
         const plays =  await data.loadPlayTypes()
@@ -104,7 +105,7 @@ const setup = {
     },
     createListeners: function() {
         // view switching
-        buttons["new"].addEventListener("click", () => switchView("new"))
+        // buttons["new"].addEventListener("click", () => switchView("new"))
         buttons["continue"].addEventListener("click", () => gameObject.resumeLatest())
         buttons["history"].addEventListener("click", () => switchView("history"))
         buttons["partRes"].addEventListener("click", () => gameObject.toggleOverlay())
@@ -317,6 +318,61 @@ const setup = {
     }
 }
 
+const customSelect = {
+    init: () => {
+        customSelect.select = document.getElementById("new-game-option-select")
+        customSelect.buttons = customSelect.select.parentNode.querySelectorAll(".select-option-button")
+        customSelect.hideSelectedOption()
+        customSelect.buttons.forEach(ele=>{
+            if(!ele) {
+                console.log("no ele")
+                return
+            }
+            ele.onmousedown = (e) => {
+                e.preventDefault()
+                customSelect.select.value = ele.innerText
+                customSelect.hideSelectedOption()
+                customSelect.activate(ele.innerText)
+            }
+            ele.ontouchstart = (e) => {
+                e.preventDefault()
+                customSelect.select.value = ele.innerText
+                customSelect.hideSelectedOption()
+                customSelect.activate(ele.innerText)
+            }
+        })
+
+        customSelect.select.onclick = (e) => {
+            e.preventDefault()
+            customSelect.activate(e.target.value)
+        }
+        // customSelect.select.onvaluechange = (e) => customSelect.activate(e)
+    },
+    hideSelectedOption: function hideSelectedOption() {
+        customSelect.buttons.forEach(ele=>{
+            if(!ele) {
+                console.log("no ele")
+                return
+            }
+            if (ele.innerText == customSelect.select.value) {
+                ele.classList.add("hidden")
+            } else {
+                ele.classList.remove("hidden")
+            }
+        })
+    },
+    activate: function(val) {
+        switch(val) {
+            case "Gå med":
+            case "Nytt event":
+            case "Nytt gruppspel":
+            case "Nytt spel":
+            default:
+                console.log(val)
+                switchView("new")
+        }
+    }
+}
 
 // repeatable functions
 function switchView(newView) {

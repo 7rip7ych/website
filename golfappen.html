@@ -43,7 +43,22 @@
                     <!-- </div> -->
                     <!-- <h3 class="row centered">Golfappen</h3> -->
 
-                    <button class="row centered main-button" id="newGame">Nytt spel</button>
+                    <!-- <button class="row centered main-button" id="newGame">Nytt spel</button> -->
+                    <div class="select-container round">
+                        <select class="input separate-select" id="new-game-option-select">
+                            <option selected>Nytt spel</option>
+                            <option>Nytt gruppspel</option>
+                            <option>Nytt event</option>
+                            <option>Gå med</option>
+                        </select>
+                        <button class="select-arrow"></button>
+                        <div class="select-dropdown">
+                            <button class="select-option-button">Nytt spel</button>
+                            <button class="select-option-button">Nytt gruppspel</button>
+                            <button class="select-option-button">Nytt event</button>
+                            <button class="select-option-button">Gå med</button>
+                        </div>
+                    </div>
 
                     <button class="row centered main-button" id="continueGame">Fortsätt senaste spel</button>
                     <button class="row centered main-button" id="showHistory">Historik</button>
