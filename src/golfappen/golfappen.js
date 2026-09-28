@@ -37,6 +37,7 @@ const buttons = {
     "backFromPla": document.querySelector("#playersView .back-button"),
     "backFromPlay": document.querySelector("#playView .back-button"),
     "partRes": document.querySelector("#partialResults .always-visible"),
+    "staticPartRes": document.querySelector("#staticPartRes .always-visible"),
     "nextHole": document.querySelector("#keeper-nav .right"),
     "prevHole": document.querySelectorAll("#keeper-nav .left")[1],
     "firstHole": document.querySelector("#keeper-nav .left"),
@@ -109,7 +110,7 @@ const setup = {
         buttons["continue"].addEventListener("click", () => gameObject.resumeLatest())
         buttons["history"].addEventListener("click", () => switchView("history"))
         buttons["partRes"].addEventListener("click", () => gameObject.toggleOverlay())
-    
+        buttons["staticPartRes"].addEventListener("click", () => gameObject.toggleOverlay())
         // navigation
         document.querySelector(".siteheader .logo").onclick = () => switchView("start")
         buttons["backFromNew"].addEventListener("click", () => switchView("start"))
@@ -147,8 +148,8 @@ const setup = {
         views["partRes"].addEventListener("touchend", (e) => elements.processTouchEnd(e, views["partRes"], 
             views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]), false)
     
-        window.onresize = () => reloadOverlayPos()
-        window.screen.orientation.onchange = () => reloadOverlayPos()
+        // window.onresize = () => reloadOverlayPos()
+        // window.screen.orientation.onchange = () => reloadOverlayPos()
     
         buttons["clearHis"].onclick = () => {
             const confirmation = confirm("Är du säker på att du vill radera hela historiken?")
@@ -399,7 +400,7 @@ function switchView(newView) {
 
     if (newView == "play") {
         gameInfoWindow.createListeners()
-        reloadOverlayPos(true)
+        views["partRes"].classList.add("collapsed")//reloadOverlayPos(true)
         // gameObject.cacheGame()
     } else if (newView == "history") {
         historyManager.populateHistory()
@@ -411,11 +412,11 @@ function switchView(newView) {
 function reloadOverlayPos(collapse=false) {
     // console.log("resize")
     // pos["partResExpanded"] = parseFloat(document.querySelector(".siteheader").offsetHeight)
-    let overHeight = buttons["partRes"].offsetHeight + 2*elements.getProperty(views["partRes"], 'padding-top')
-    pos["partResCollapsed"] = (window.innerHeight - (overHeight ? overHeight : 66.2)) // 66.2 is the standard height for the collapsed overlay
-    views["partRes"].style.top = (views["partRes"].classList.contains("collapsed") ? pos["partResCollapsed"] : pos["partResExpanded"]) + "px"
+    // let overHeight = buttons["partRes"].offsetHeight + 2*elements.getProperty(views["partRes"], 'padding-top')
+    // pos["partResCollapsed"] = window.innerHeight// - (overHeight ? overHeight : 66.2) // 66.2 is the standard height for the collapsed overlay
+    // views["partRes"].style.top = views["partRes"].classList.contains("collapsed") ? "100vh" : pos["partResExpanded"] + "px"
     if (collapse) {
-        views["partRes"].style.top = pos["partResCollapsed"] + "px"
+        // views["partRes"].style.top = "100vh" //pos["partResCollapsed"] + "px"
         views["partRes"].classList.add("collapsed")
     }
     // console.log(pos)
@@ -671,16 +672,16 @@ const gameObject = {
     },
     toggleOverlay: function () {
         views["partRes"].classList.toggle("collapsed")
+        views["partRes"].scrollTop = 0
         if (!views["partRes"].classList.contains("collapsed")) {
             // console.log(document.querySelector(".siteheader").offsetHeight + "px")
-            views["partRes"].style.top = parseFloat(document.querySelector(".siteheader").offsetHeight) + "px"
-            views["partRes"].scrollTop = 0
+            // views["partRes"].style.top = parseFloat(document.querySelector(".siteheader").offsetHeight) + "px"
             this.showPartResults()
-        } else {
-            // console.log((window.innerHeight - buttons["partRes"].offsetHeight - elements.getProperty(views["partRes"], 'padding-top')) + "px",elements.getProperty(views["partRes"], 'padding-top'))
-            views["partRes"].style.top = (window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top')) + "px"
-            views["partRes"].scrollTop = 0
-        }
+        } 
+        // else {
+        //     // console.log((window.innerHeight - buttons["partRes"].offsetHeight - elements.getProperty(views["partRes"], 'padding-top')) + "px",elements.getProperty(views["partRes"], 'padding-top'))
+        //     views["partRes"].style.top = "100vh"//(window.innerHeight - buttons["partRes"].offsetHeight - 2*elements.getProperty(views["partRes"], 'padding-top')) + "px"
+        // }
     },
     showPartResults: function() {
         // views["partRes"].classList.toggle("collapsed")
