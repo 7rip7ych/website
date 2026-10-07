@@ -176,6 +176,38 @@ body {
 }
 
 
+.code-container {
+  justify-self: end;
+  display: block;
+  background-color: var(--text-color-light);
+  color: var(--text-color-dark);
+  border: 1pt solid #838383;
+  border-radius: 10px;
+  height: 100%;
+  padding: 1%;
+  line-height: 1em;
+  font-size: 1.2rem;
+  font-family: monospace;
+  text-wrap: nowrap;
+  width: fit-content;
+}
+
+.code-container::before {
+  content: "#";
+  color: #888;
+  font-weight: lighter;
+  font-size: 0.95em;
+}
+
+.inline-icon {
+  display: inline;
+  max-height: 1em;
+  line-height: 1em;
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%);
+  cursor: pointer;
+}
 
 
 
@@ -304,7 +336,7 @@ body {
   justify-content: start;
   align-items: center;
   min-height: 5rem;
-  /* padding: 1rem; */
+  padding: 1rem;
 }
 
 section {
@@ -1259,7 +1291,7 @@ fieldset {
   align-items: center;
   gap: 0.5rem;
   border-bottom: 1px solid #7b7b7b;
-  padding-top: 0.5rem;
+  /* padding-top: 0.5rem; */
 }
 
 .win {

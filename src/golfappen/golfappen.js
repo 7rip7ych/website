@@ -10,6 +10,10 @@ import ExportManager from "../modules/export.js"
 import rules from "./golf-rules.js"
 import {infoWindow, gameInfoWindow} from "./info-window.js"
 import historyManager from "./history.js"
+import { copyToClipboard } from "../modules/functions.js"
+// import { io } from "socket.io-client"
+
+const SERVER_URL = "http://localhost:3000"//"https://golfappen-backend.onrender.com"
 
 // declare variables
 const main = document.querySelector(".wrapper")
@@ -17,6 +21,7 @@ const storage = window.localStorage //window.sessionStorage
 const views = {
     "start": document.getElementById("startView"),
     "new": document.getElementById("newView"),
+    "join": document.getElementById("joinView"),
     "play": document.getElementById("playView"),
     "score": document.getElementById("scoreView"),
     "history": document.getElementById("historyView"),
@@ -44,12 +49,14 @@ const buttons = {
     "lastHole": document.querySelectorAll("#keeper-nav .right")[1],
     "typeInfo": document.getElementById("gameTypeInfo"),
     "gameInfo": document.getElementById("gameInfo"),
-    "clearHis": document.getElementById("clearHistory")
+    "clearHis": document.getElementById("clearHistory"),
+    "copyCode": document.querySelector("#codeBox img")
 }
 const forms = {
     "newGame": document.getElementById("newGameForm"),
     "players": document.getElementById("playerForm"),
-    "keeper": document.getElementById("scoreKeeper")
+    "keeper": document.getElementById("scoreKeeper"),
+    "joinGame": document.getElementById("joinGameForm")
 }
 const pos = {
     "partResExpanded": parseFloat(document.querySelector(".siteheader").offsetHeight),
@@ -130,13 +137,16 @@ const setup = {
         })
         buttons["firstHole"].onclick = () => elements.scrollToStart(forms["keeper"])
         buttons["lastHole"].onclick = () => elements.scrollToEnd(forms["keeper"])
-    
+
+        buttons["copyCode"].onclick = () => copyToClipboard(buttons["copyCode"].parentElement.firstElementChild.innerText)
+
         // form submits
         forms["newGame"].addEventListener("submit", (e) => gameObject.create(e))
         forms["newGame"].onchange = () => { gameObject.time = null }
         forms["players"].addEventListener("submit", (e) => gameObject.setUpPlayers(e))
         forms["keeper"].addEventListener("submit", (e) => gameObject.showResults(e))
         forms["keeper"].onchange = () => gameObject.cacheGame()
+        forms["joinGame"].onsubmit = (e) => gameObject.join(e)
     
         // swipe
         views["partRes"].addEventListener("touchstart", (e) => elements.processTouchStart(e, views["partRes"], 
@@ -365,8 +375,15 @@ const customSelect = {
     activate: function(val) {
         switch(val) {
             case "Gå med":
+                switchView("join")
+                break
             case "Nytt event":
             case "Nytt gruppspel":
+                sock.init()
+                sock.new()
+                forms["newGame"].addEventListener("submit", (e) => gameObject.codePopup(e))
+                switchView("new")
+                break
             case "Nytt spel":
             default:
                 console.log(val)
@@ -386,6 +403,7 @@ function switchView(newView) {
     const titles = {
         "start": `<h1>Golfappen</h1>`,
         "new": `<h2>Nytt spel</h2>`,
+        "join": `<h2>Anslut</h2>`,
         "players": `<h2>Ange spelare</h2>`,
         "play": `<h2>Poängräknare</h2><button class="info-button" id="gameInfo">i</button>`,
         "score": `<h2>Resultat</h2>`,
@@ -421,6 +439,42 @@ function reloadOverlayPos(collapse=false) {
     }
     // console.log(pos)
 }
+let socket
+const sock = {
+    init: () => {
+        socket = io(SERVER_URL)
+        socket.on("content", (data) => sock.receive(data))
+        socket.on("joined", (id) => {
+            sock.room = id
+            console.log("joined: ", id)
+        })
+    },
+    join: (id) => {
+        socket.emit('join', id)
+        sock.room = id
+    },
+    new: () => {
+        socket.emit('new room')
+        socket.on("new player joined", (id) => {
+            socket.emit("initial content", {
+                id: id,
+                data: gameObject.getGameData()
+            })
+        })
+        // socket.on("joined", (id) => {
+        //     this.room = id
+        //     console.log(id)
+        // })
+    },
+    send: (game) => {
+        console.log(game)
+        socket.emit("content", game)
+    },
+    receive: (game) => {
+        console.log(game)
+        gameObject.updateInfo(game)
+    }
+}
 
 const gameObject = {
     view: views["play"],
@@ -438,6 +492,7 @@ const gameObject = {
     teamCount: null,
     teamSize: 1,
     time: null, // game start time
+    groupGame: false, // group game
     create: function(e) {
         e.preventDefault()
         const data = new FormData(e.target)
@@ -459,6 +514,10 @@ const gameObject = {
         switchView("players")
         this.openPlayerSetup(this.playerCount)
         gameInfoWindow.setContent(this.gameType)
+    },
+    createGroupGame: function(e) {
+        this.groupGame = true // might stay alive between games?
+        this.create(e)
     },
     loadCourseData: async function() {
         try {
@@ -880,7 +939,28 @@ const gameObject = {
         }
         historyManager.updateHistory(date)
         historyManager.setGame(date, gameData)
+        if (this.groupGame) {
+            sock.send(gameData)
+        }
         console.log("cached", gameData)
+    },
+    getGameData: function() {
+        const date = this.time.toISOString()
+        const gameData = {
+            playerCount: this.playerCount,
+            players: this.players,
+            holes: this.holes,
+            gameType: this.gameType,
+            subtype: this.ruleset?.subtype,
+            club: this.club,
+            course: this.course,
+            teamCount: this.teamCount,
+            teamSize: this.teamSize,
+            keepHcp: this.ruleset?.keepHcp,
+            time: date,
+            scores: this.ruleset?.getPoints() || []
+        }
+        return gameData
     },
     resumeGame: async function(game) {
         if (typeof game == 'string' || game instanceof String) {
@@ -910,6 +990,39 @@ const gameObject = {
         }
         this.ruleset.fillInputs()
         gameInfoWindow.setContent(this.gameType)
+        console.log(game.scores)
+    },
+    updateInfo: function(game) {
+        // if (typeof game == 'string' || game instanceof String) {
+        //     game = game.length > 25 ? JSON.parse(game) : historyManager.getGame(game)
+        // }
+        let setupChanged = (this.playerCount !== game.playerCount || this.players !== game.players || this.holes !== game.holes
+            || this.teamCount !== game.teamCount || this.teamSize !== game.teamSize
+        )
+        this.playerCount = game.playerCount
+        this.players = game.players
+        this.holes = game.holes
+        // this.gameType = game.gameType
+        // this.club = game.club
+        // this.course = game.course
+        this.teamCount = game.teamCount
+        this.teamSize = game.teamSize
+        // this.time = new Date(game.time)
+        // this.play = this.playTypes.find(x => x.id === this.gameType)
+        // if (this.course) {
+        //     await this.loadCourseData()
+        // }
+        if (setupChanged) {this.fillSetupInputs()}
+        this.openScoreKeeper()
+        this.ruleset.setPoints(game.scores)
+        // if (game.subtype) {
+        //     this.ruleset.subtype = game.subtype
+        // }
+        if (game.keepHcp) {
+            this.ruleset.keepHcp = game.keepHcp
+        }
+        this.ruleset.fillInputs()
+        // gameInfoWindow.setContent(this.gameType)
         console.log(game.scores)
     },
     resumeLatest: function() {
@@ -989,6 +1102,24 @@ const gameObject = {
             }
         })
         gameObject.cacheGame(true)
+    },
+    join: (e) => {
+        e.preventDefault()
+        const data = new FormData(e.target)
+        // console.log(data.get("code"))
+        // join socket room with that id
+        sock.init()
+        sock.join(data.get("code"))
+        // show popup that prompts user name and hcp
+    },
+    codePopup: (e) => {
+        e.preventDefault(e)
+        gameObject.time = new Date()
+        gameObject.cacheGame()
+        alert(`Din kod är: ${sock.room}`)
+        let codeBox = document.getElementById("codeBox")
+        codeBox.classList.remove("hidden")
+        codeBox.firstElementChild.innerText = sock.room
     }
 }
 

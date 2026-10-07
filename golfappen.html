@@ -29,6 +29,10 @@
                 <li><a href="#collage">Kollage</a></li>
             </ul>
         </nav> -->
+        <div id="codeBox" class="code-container hidden">
+            <span></span>
+            <img src="img/icons/copy.svg" class="inline-icon">
+        </div>
     </header>
 
     <div class="wrapper">
@@ -99,7 +103,7 @@
                     <option selected disabled>Välj golfklubb</option>
                 </select> -->
                 <div class="autocomplete">
-                    <input id="golfClub" type="text" name="club" placeholder="Golfklubb">
+                    <input id="golfClub" type="text" name="club" placeholder="Golfklubb" autocomplete="off">
                 </div>
 
                 <select id="golfCourse" name="course" disabled>
@@ -109,6 +113,15 @@
                 <input type="submit" name="submit" value="Nästa">
             </form>
         </section>
+
+        <section id="joinView" class="hidden">
+            <button class="back-button navigation-button">&lt; Tillbaka</button>
+            <form id="joinGameForm">
+                <input type="text" name="code" placeholder="Skriv in koden här">
+                <input type="submit" value="Gå med">
+            </form>
+        </section>
+        
 
         <section id="playersView" class="hidden">
             <button class="back-button navigation-button">&lt; Tillbaka</button>
@@ -302,6 +315,7 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
     <script src="/node_modules/downloadjs/download.js"></script>
     <script src="/node_modules/html-to-image/dist/html-to-image.js"></script>
+    <script src="/node_modules/socket.io-client/dist/socket.io.js"></script>
     <script src="src/modules/responsive.js" type="module"></script>
     <script src="src/golfappen/golfappen.js" type="module"></script>
 </body>

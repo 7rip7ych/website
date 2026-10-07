@@ -40,6 +40,8 @@
   "dependencies": {
     "downloadjs": "^1.4.7",
     "html-to-image": "^1.11.13",
-    "js-beautify": "^2.0.3"
+    "js-beautify": "^2.0.3",
+    "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4"
   }
 }
