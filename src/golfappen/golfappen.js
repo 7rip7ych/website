@@ -357,6 +357,10 @@ const customSelect = {
             e.preventDefault()
             customSelect.activate(e.target.value)
         }
+
+        document.querySelector(".select-container .select-arrow").ontouchstart = (e) => {
+            e.target.focus()
+        }
         // customSelect.select.onvaluechange = (e) => customSelect.activate(e)
     },
     hideSelectedOption: function hideSelectedOption() {
