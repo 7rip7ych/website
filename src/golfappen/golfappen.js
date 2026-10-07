@@ -13,8 +13,8 @@ import historyManager from "./history.js"
 import { copyToClipboard } from "../modules/functions.js"
 // import { io } from "socket.io-client"
 
-const SERVER_URL = "http://localhost:3000"//"https://golfappen-backend.onrender.com"
-
+// const SERVER_URL = "http://localhost:3000"
+const SERVER_URL = "https://golfappen-backend.onrender.com"
 // declare variables
 const main = document.querySelector(".wrapper")
 const storage = window.localStorage //window.sessionStorage
@@ -441,7 +441,9 @@ function reloadOverlayPos(collapse=false) {
 }
 let socket
 const sock = {
+    room: null,
     init: () => {
+        gameObject.groupGame = true
         socket = io(SERVER_URL)
         socket.on("content", (data) => sock.receive(data))
         socket.on("joined", (id) => {
@@ -449,17 +451,26 @@ const sock = {
             console.log("joined: ", id)
         })
     },
-    join: (id) => {
-        socket.emit('join', id)
+    join: (id, player) => {
+        socket.emit('join', {
+            room: id,
+            player: player
+        })
         sock.room = id
     },
     new: () => {
         socket.emit('new room')
-        socket.on("new player joined", (id) => {
+        socket.on("new player joined", (data) => {
+            // if (!data.player.name) {
+            //     data.player.name = `Spelare ${this.players.length + 1}`
+            // }
+            gameObject.players.push(data.player)
+            const game = gameObject.getGameData()
             socket.emit("initial content", {
-                id: id,
-                data: gameObject.getGameData()
+                id: data.id,
+                data: game
             })
+            gameObject.updateInfo(game)
         })
         // socket.on("joined", (id) => {
         //     this.room = id
@@ -487,6 +498,7 @@ const gameObject = {
     golfClubs: [], // all clubs
     course: null, // course name
     players: [],
+    player: null,
     playTypes: [], // all playforms
     play: null, // playtype info
     teamCount: null,
@@ -532,7 +544,25 @@ const gameObject = {
         let playerForm = forms["players"]
         playerForm.innerHTML = ""
         this.play = this.playTypes.find(x => x.id === this.gameType)
-        if (!this.play.team) {
+        if (this.groupGame) {
+            playerForm.innerHTML = `
+                <fieldset>
+                    <label>Namn: <input type="text" name="p${0}name" id="p${0}name" required min-length="1"></label>
+                    <label>Spelhandicap: <input type="number" name="p${0}handicap" id="p${0}handicap" max="999" min="0" placeholder="0"></label>
+                </fieldset>
+                <button id="addMorePlayers">Lägg till spelare +</button>
+                <input type="submit" name="submit" value="Klar">
+                `
+            document.getElementById("addMorePlayers").onclick = (e) => {
+                e.preventDefault()
+                const lngth = playerForm.querySelectorAll("fieldset").length
+                const field = document.createElement("fieldset")
+                field.innerHTML = `
+                <label>Namn: <input type="text" name="p${lngth}name" id="p${lngth}name" required min-length="1"></label>
+                <label>Spelhandicap: <input type="number" name="p${lngth}handicap" id="p${lngth}handicap" max="999" min="0" placeholder="0"></label>`
+                playerForm.insertBefore(field, e.target)
+            }
+        } else if (!this.play.team) {
             for (let i = 1; i<=count; i++) {
                 let extraField = ``
                 let exists = this.players && this.players.length >= i && this.players[i-1] ? this.players[i-1] : null
@@ -541,7 +571,7 @@ const gameObject = {
                 }
                 playerForm.innerHTML += `
                 <fieldset>
-                    <legend>Player ${i}</legend>
+                    <legend>Spelare ${i}</legend>
                     <label>Namn: <input type="text" name="p${i}name" id="p${i}name" value="${exists?exists.name:""}"></label>
                     <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap" value="${exists?exists.handicap:""}"></label>
                     ${extraField}
@@ -569,7 +599,7 @@ const gameObject = {
                 }
                 content += `
                 <fieldset>
-                    <legend>Player ${i}</legend>
+                    <legend>Spelare ${i}</legend>
                     <label>Namn: <input type="text" name="p${i}name" id="p${i}name" value="${exists?exists.name:""}"></label>
                     <label>Spelhandicap: <input type="number" name="p${i}handicap" id="p${i}handicap" value="${exists?exists.handicap:""}"></label>
                 </fieldset>
@@ -611,6 +641,35 @@ const gameObject = {
         e.preventDefault()
         const data = new FormData(e.target)
         // console.log([...data.entries()])
+        if (this.groupGame) {
+            // let nm = data.get("p0name")
+            // if (!data.get("p0name")) {
+            //     nm = `Spelare ${this.players.length + 1}`
+            // }
+            let player = {
+                "name": data.get("p0name"),
+                "handicap": parseFloat(data.get(`p0handicap`)) || 0
+            }
+            this.players.push(player)
+            this.player = player
+            const lngth = forms["players"].querySelectorAll("fieldset").length
+            for (let i = 1; i < lngth; i++) {
+                this.players.push({
+                    "name": data.get(`p${i}name`),
+                    "handicap": parseFloat(data.get(`p${i}handicap`)) || 0
+                })
+            }
+            // gameObject.cacheGame(false)
+            // gameObject.resumeGame(this.time.toISOString())
+            if (!this.time) {
+                sock.init()
+                sock.join(sock.room, player)
+            } else {
+                this.openScoreKeeper()
+                gameObject.cacheGame()
+            }
+            return
+        }
         let players = []
         for (let i = 1; i<=this.playerCount; i++) {
             let player = {
@@ -993,37 +1052,49 @@ const gameObject = {
         console.log(game.scores)
     },
     updateInfo: function(game) {
+        console.log(this.time)
         // if (typeof game == 'string' || game instanceof String) {
         //     game = game.length > 25 ? JSON.parse(game) : historyManager.getGame(game)
         // }
-        let setupChanged = (this.playerCount !== game.playerCount || this.players !== game.players || this.holes !== game.holes
-            || this.teamCount !== game.teamCount || this.teamSize !== game.teamSize
-        )
-        this.playerCount = game.playerCount
-        this.players = game.players
-        this.holes = game.holes
-        // this.gameType = game.gameType
-        // this.club = game.club
-        // this.course = game.course
-        this.teamCount = game.teamCount
-        this.teamSize = game.teamSize
-        // this.time = new Date(game.time)
-        // this.play = this.playTypes.find(x => x.id === this.gameType)
-        // if (this.course) {
-        //     await this.loadCourseData()
-        // }
-        if (setupChanged) {this.fillSetupInputs()}
-        this.openScoreKeeper()
-        this.ruleset.setPoints(game.scores)
-        // if (game.subtype) {
-        //     this.ruleset.subtype = game.subtype
-        // }
-        if (game.keepHcp) {
-            this.ruleset.keepHcp = game.keepHcp
+        if (this.time != new Date(game.time) || this.players.length !== game.players.length) {
+            let setupChanged = (this.playerCount !== game.playerCount || this.players !== game.players || this.holes !== game.holes
+                || this.teamCount !== game.teamCount || this.teamSize !== game.teamSize
+            )
+            this.time = new Date(game.time)
+            this.playerCount = game.playerCount
+            this.players = game.players
+            this.holes = game.holes
+            this.gameType = game.gameType
+            this.club = game.club
+            this.course = game.course
+            this.teamCount = game.teamCount
+            this.teamSize = game.teamSize
+            this.play = this.playTypes.find(x => x.id === this.gameType)
+            // if (this.course) {
+            //     await this.loadCourseData()
+            // }
+            if (setupChanged) {this.fillSetupInputs()}
+            this.openScoreKeeper()
+            this.ruleset.setPoints(game.scores)
+            if (game.subtype) {
+                this.ruleset.subtype = game.subtype
+            }
+            if (game.keepHcp) {
+                this.ruleset.keepHcp = game.keepHcp
+            }
+            this.ruleset.fillInputs()
+            gameInfoWindow.setContent(this.gameType)
+            console.log(game.scores)
+        } else {
+            this.playerCount = game.playerCount
+            this.players = game.players
+            this.ruleset.setPoints(game.scores)
+            if (game.keepHcp) {
+                this.ruleset.keepHcp = game.keepHcp
+            }
+            this.ruleset.fillInputs()
         }
-        this.ruleset.fillInputs()
-        // gameInfoWindow.setContent(this.gameType)
-        console.log(game.scores)
+        
     },
     resumeLatest: function() {
         const latest = historyManager.getLatest()
@@ -1108,9 +1179,17 @@ const gameObject = {
         const data = new FormData(e.target)
         // console.log(data.get("code"))
         // join socket room with that id
-        sock.init()
-        sock.join(data.get("code"))
+        gameObject.groupGame = true
+        switchView("players")
+        gameObject.openPlayerSetup(1)
+        sock.room = data.get("code")
+        // forms["players"].onsubmit = () => {
+        //     sock.init()
+        //     sock.join(data.get("code"), gameObject.player)
+        // }
+        
         // show popup that prompts user name and hcp
+        
     },
     codePopup: (e) => {
         e.preventDefault(e)

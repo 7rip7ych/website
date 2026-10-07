@@ -308,6 +308,9 @@ class GameRules {
                     document.getElementsByName(`index-${i}`)[0].value = ind
                 }
             }
+            if (document.getElementsByName(`par-${i}`)[0].value && document.getElementsByName(`index-${i}`)[0].value) {
+                document.querySelector(`#hole${i} .input-container-row`).classList.add("plain-text")
+            }
 
             this.players.forEach(p => {
                 let pts = this._points[i][p.name]
